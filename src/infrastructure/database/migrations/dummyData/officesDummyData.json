@@ -1,0 +1,24 @@
+[
+  {
+    "floor": "floorObjectId",
+    "court": "courtObjectId",
+    "officeType": "officeTypeObjectId",
+    "roomNumber": "101",
+    "locationDirection": "الجهة الشمالية",
+    "startingWorkingHours": "09:00",
+    "endWorkingHours": "18:00",
+    "services": ["خدمة استقبال", "إنترنت", "مكتبة"],
+    "mapUrl": "https://maps.example.com/office-101"
+  },
+  {
+    "floor": "floorObjectId",
+    "court": "courtObjectId",
+    "officeType": "officeTypeObjectId",
+    "roomNumber": "102",
+    "locationDirection": "الجهة الشرقية",
+    "startingWorkingHours": "09:00",
+    "endWorkingHours": "18:00",
+    "services": ["إنترنت", "جلسات", "ممر خاص"],
+    "mapUrl": "https://maps.example.com/office-102"
+  }
+]

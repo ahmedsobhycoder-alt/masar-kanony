@@ -1,0 +1,26 @@
+[
+  {
+    "name": "محكمة القاهرة الابتدائية",
+    "address": "القاهرة، وسط المدينة",
+    "nFloors": 3,
+    "nOffices": 8,
+    "startingWorkingHours": "09:00",
+    "endWorkingHours": "18:00"
+  },
+  {
+    "name": "محكمة الجيزة التجارية",
+    "address": "الجيزة، شارع النيل",
+    "nFloors": 4,
+    "nOffices": 10,
+    "startingWorkingHours": "08:30",
+    "endWorkingHours": "17:30"
+  },
+  {
+    "name": "محكمة الرياض المركزية",
+    "address": "الرياض، حي المربع",
+    "nFloors": 5,
+    "nOffices": 12,
+    "startingWorkingHours": "09:30",
+    "endWorkingHours": "19:00"
+  }
+]

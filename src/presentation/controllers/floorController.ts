@@ -1,0 +1,28 @@
+import { FloorUseCases } from "../../domain/usecases/floorUseCases";
+import asyncHandler from "express-async-handler";
+import { Request, Response, NextFunction } from "express";
+
+import { formatJson } from "../../shared/utils/formatJson";
+import { printGreen } from "../../shared/utils/printColors";
+import { stringify } from "node:querystring";
+export class FloorController {
+    private readonly floorUseCases: FloorUseCases;
+    constructor(floorUseCases: FloorUseCases) {
+        this.floorUseCases = floorUseCases;
+    }
+    createFloor = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const floorData = req.body;
+        const createdFloor = await this.floorUseCases.createFloor(floorData);
+        res.status(201).json(formatJson({ data: createdFloor, message: "Floor created successfully", status: "success" }));
+    })
+    getAllFloors = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+   
+        const query = {
+            ...req.query,
+            ...req.filter
+        }
+        const { data, pagination } = await this.floorUseCases.getFloors(query) ;
+        res.status(200).json(formatJson({ data: { list: data, paginationResult: pagination }, message: "Floors fetched successfully", status: "success" }));
+    })  
+
+}

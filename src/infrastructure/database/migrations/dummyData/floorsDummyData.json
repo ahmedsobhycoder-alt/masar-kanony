@@ -1,0 +1,20 @@
+[
+  {
+    "court": "courtObjectId",
+    "floorName": "floorNameObjectId",
+    "nOfficesPerFloor": 2,
+    "image": "floor-1.jpg"
+  },
+  {
+    "court": "courtObjectId",
+    "floorName": "floorNameObjectId",
+    "nOfficesPerFloor": 3,
+    "image": "floor-2.jpg"
+  },
+  {
+    "court": "courtObjectId",
+    "floorName": "floorNameObjectId",
+    "nOfficesPerFloor": 2,
+    "image": "floor-3.jpg"
+  }
+]
