@@ -10,7 +10,8 @@ export default interface CourtEntity {
     floors: mongoose.Types.ObjectId[];
     startingWorkingHours: string; // e.g., "09:00"
     endWorkingHours: string;
-    governorate: mongoose.Types.ObjectId;
-    courtType: mongoose.Types.ObjectId;
+    governorate: string;
+    courtType: String;
+    nViews: number;
     
 }

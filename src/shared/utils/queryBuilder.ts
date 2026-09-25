@@ -8,7 +8,7 @@ export type QueryPagination = {
     prev?: { page: number; limit: number };
 };
 
- export class QueryBuilder<T = any> {
+export class QueryBuilder<T = any> {
     mongooseQuery: any;
     query: Record<string, any>;
     pagination?: QueryPagination;
@@ -37,12 +37,11 @@ export type QueryPagination = {
         return this;
     }
 
-    sort(defaultField = "-createdAt") {
-        const sortValue = this.query.sort
-            ? (this.query.sort as string).split(",").join(" ")
-            : defaultField;
+    sort(sortValue: Object = {
+        createdAt: -1
+    }) {
 
-        this.mongooseQuery = this.mongooseQuery.sort(sortValue);
+        this.mongooseQuery = this.mongooseQuery.sort(sortValue ?? { createdAt: -1 });
         return this;
     }
 
@@ -103,4 +102,4 @@ export type QueryPagination = {
     }
 }
 
- export default QueryBuilder;
+export default QueryBuilder;

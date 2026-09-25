@@ -6,5 +6,6 @@ export interface CourtRepo {
     getCourts(query?: Record<string, any>): Promise<{ data: CourtEntity[]; pagination?: QueryPagination }>;
     getCourtById(id: string): Promise<CourtEntity | null>;
     deleteCourtById(id: string): Promise<CourtEntity | null>;
-    countDocuments(): Promise<number>;
+    getMostSeenCourts( query : Record<string, any>): Promise<CourtEntity[]>
+
 }

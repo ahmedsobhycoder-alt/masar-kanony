@@ -10,10 +10,7 @@ class FloorRepoImpl implements FloorRepo {
 
     async createFloor(floorData: FloorEntity): Promise<FloorEntity> {
         const floor = await FloorModel.create(floorData);
-        return await floor.populate(["offices", {
-            path: "court",
-            populate: { path: "governorate" },
-        }]);
+        return await floor.populate(["offices"]);
     }
 
     async getFloors(query: Record<string, any> = {}): Promise<{ data: FloorEntity[]; pagination?: QueryPagination }> {

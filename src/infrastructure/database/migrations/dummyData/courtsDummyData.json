@@ -2,25 +2,131 @@
   {
     "name": "محكمة القاهرة الابتدائية",
     "address": "القاهرة، وسط المدينة",
-    "nFloors": 3,
-    "nOffices": 8,
+    "nFloors": 0,
+    "nOffices": 0,
     "startingWorkingHours": "09:00",
-    "endWorkingHours": "18:00"
+    "endWorkingHours": "18:00",
+    "governorate": "القاهرة",
+    "courtType": "المحاكم الابتدائية"
   },
   {
     "name": "محكمة الجيزة التجارية",
     "address": "الجيزة، شارع النيل",
-    "nFloors": 4,
-    "nOffices": 10,
+    "nFloors": 0,
+    "nOffices": 0,
     "startingWorkingHours": "08:30",
-    "endWorkingHours": "17:30"
+    "endWorkingHours": "17:30",
+    "governorate": "الجيزة",
+    "courtType": "محكمة تجارية"
   },
   {
-    "name": "محكمة الرياض المركزية",
-    "address": "الرياض، حي المربع",
-    "nFloors": 5,
-    "nOffices": 12,
-    "startingWorkingHours": "09:30",
-    "endWorkingHours": "19:00"
+    "name": "محكمة استئناف القاهرة",
+    "address": "القاهرة، دار القضاء العالي، وسط البلد",
+    "nFloors": 0,
+    "nOffices": 0,
+    "startingWorkingHours": "08:30",
+    "endWorkingHours": "15:30",
+    "governorate": "القاهرة",
+    "courtType": "محاكم الاستئناف"
+  },
+  {
+    "name": "محكمة الأسرة بمدينة نصر",
+    "address": "القاهرة، الحي السابع، مدينة نصر",
+    "nFloors": 0,
+    "nOffices": 0,
+    "startingWorkingHours": "09:00",
+    "endWorkingHours": "16:00",
+    "governorate": "القاهرة",
+    "courtType": "محكمة الأسرة"
+  },
+  {
+    "name": "محكمة الإسكندرية الابتدائية",
+    "address": "الإسكندرية، ميدان المنشية",
+    "nFloors": 0,
+    "nOffices": 0,
+    "startingWorkingHours": "08:30",
+    "endWorkingHours": "15:00",
+    "governorate": "الإسكندرية",
+    "courtType": "المحاكم الابتدائية"
+  },
+  {
+    "name": "محكمة شمال الجيزة الابتدائية",
+    "address": "الجيزة، شارع السودان، المهندسين",
+    "nFloors": 0,
+    "nOffices": 0,
+    "startingWorkingHours": "09:00",
+    "endWorkingHours": "16:00",
+    "governorate": "الجيزة",
+    "courtType": "المحاكم الابتدائية"
+  },
+  {
+    "name": "محكمة مصر الجديدة الجزئية",
+    "address": "القاهرة، ميدان المحكمة، هليوبوليس",
+    "nFloors": 0,
+    "nOffices": 0,
+    "startingWorkingHours": "09:00",
+    "endWorkingHours": "15:30",
+    "governorate": "القاهرة",
+    "courtType": "المحاكم الجزئية"
+  },
+  {
+    "name": "محكمة طنطا الابتدائية",
+    "address": "الغربية، مجمع المحاكم، طنطا",
+    "nFloors": 0,
+    "nOffices": 0,
+    "startingWorkingHours": "08:30",
+    "endWorkingHours": "15:00",
+    "governorate": "الغربية",
+    "courtType": "المحاكم الابتدائية"
+  },
+  {
+    "name": "محكمة المنصورة الابتدائية",
+    "address": "الدقهلية، حي شرق، المنصورة",
+    "nFloors": 0,
+    "nOffices": 0,
+    "startingWorkingHours": "08:30",
+    "endWorkingHours": "15:00",
+    "governorate": "الدقهلية",
+    "courtType": "المحاكم الابتدائية"
+  },
+  {
+    "name": "محكمة أسيوط الابتدائية",
+    "address": "أسيوط، شارع المحافظة",
+    "nFloors": 0,
+    "nOffices": 0,
+    "startingWorkingHours": "09:00",
+    "endWorkingHours": "15:30",
+    "governorate": "أسيوط",
+    "courtType": "المحاكم الابتدائية"
+  },
+  {
+    "name": "محكمة الزقازيق الابتدائية",
+    "address": "الشرقية، شارع الجلاء، الزقازيق",
+    "nFloors": 0,
+    "nOffices": 0,
+    "startingWorkingHours": "08:30",
+    "endWorkingHours": "15:00",
+    "governorate": "الشرقية",
+    "courtType": "المحاكم الابتدائية"
+  },
+  {
+    "name": "محكمة شبرا الخيمة الابتدائية",
+    "address": "القليوبية، ميدان المؤسسة، شبرا الخيمة",
+    "nFloors": 0,
+    "nOffices": 0,
+    "startingWorkingHours": "09:00",
+    "endWorkingHours": "16:00",
+    "governorate": "القليوبية",
+    "courtType": "المحاكم الابتدائية"
+  },
+  {
+    "name": "محكمة الإسماعيلية الابتدائية",
+    "address": "الإسماعيلية، شارع شبين الكوم",
+    "nFloors": 0,
+    "nOffices": 0,
+    "startingWorkingHours": "09:00",
+    "endWorkingHours": "15:00",
+    "governorate": "الإسماعيلية",
+    "courtType": "المحاكم الابتدائية"
   }
 ]

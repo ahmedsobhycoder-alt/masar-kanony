@@ -20,7 +20,7 @@ export class GovernorateController {
                 formatJson({
                     data: createdGovernorate,
                     message: "Governorate created successfully",
-                    status: "success",
+                    status:true,
                 }),
             );
         },
@@ -38,7 +38,7 @@ export class GovernorateController {
                         paginationResult: pagination,
                     },
                     message: "Governorates fetched successfully",
-                    status: "success",
+                    status: true,
                 }),
             );
         },
@@ -53,7 +53,7 @@ export class GovernorateController {
                 formatJson({
                     data: governorate,
                     message: "Governorate fetched successfully",
-                    status: "success",
+                    status: true,
                 }),
             );
         },

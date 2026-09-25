@@ -18,7 +18,7 @@ export class AdsController {
       formatJson({
         data: createdAd,
         message: "Ad created successfully",
-        status: "success",
+        status: true,
       })
     );
   });
@@ -29,7 +29,7 @@ export class AdsController {
       formatJson({
         data: { list: data, paginationResult: pagination },
         message: "Ads fetched successfully",
-        status: "success",
+        status: true,
       })
     );
   });
@@ -41,7 +41,18 @@ export class AdsController {
       formatJson({
         data: ad,
         message: "Ad fetched successfully",
-        status: "success",
+        status: true,
+      })
+    );
+  });
+  deleteAdById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const adId = req.params.id as string;
+    const deletedAd = await this.adsUseCases.deleteAdById(adId);
+    res.status(200).json(
+      formatJson({
+        data: deletedAd,
+        message: "Ad deleted successfully",
+        status: true,
       })
     );
   });

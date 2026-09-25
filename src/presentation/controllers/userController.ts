@@ -17,7 +17,7 @@ export class UserController {
             formatJson({
                 data: { list: data, paginationResult: pagination },
                 message: "Users fetched successfully",
-                status: "success",
+                status: true,
             })
         );
     });
@@ -30,7 +30,7 @@ export class UserController {
             formatJson({
                 data: user,
                 message: "User fetched successfully",
-                status: "success",
+                status: true,
             })
         );
     });
@@ -43,7 +43,7 @@ export class UserController {
             formatJson({
                 data: deletedUser,
                 message: "User deleted successfully",
-                status: "success",
+                status: true,
             })
         );
     });

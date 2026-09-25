@@ -1,7 +1,7 @@
 interface FormatResponseParams {
     data?: any;
     message: string;
-    status: string  | boolean;
+    status: boolean;
 }
 
 export const formatJson = ({ data, message, status }: FormatResponseParams) => {

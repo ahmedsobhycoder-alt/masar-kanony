@@ -18,7 +18,7 @@ export class CourtTypeController {
       formatJson({
         data: createdCourtType,
         message: "Court type created successfully",
-        status: "success",
+        status: true,
       })
     );
   });
@@ -29,7 +29,7 @@ export class CourtTypeController {
       formatJson({
         data: { list: data, paginationResult: pagination },
         message: "Court types fetched successfully",
-        status: "success",
+        status: true,
       })
     );
   });
@@ -41,7 +41,7 @@ export class CourtTypeController {
       formatJson({
         data: courtType,
         message: "Court type fetched successfully",
-        status: "success",
+        status: true,
       })
     );
   });

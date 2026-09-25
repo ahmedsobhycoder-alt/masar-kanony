@@ -6,6 +6,9 @@ import { createCourtValidator, getCourtByIdValidator } from "../validators/court
 import { courtRepoImpl } from "../../infrastructure/database/repositories/courtRepoImpl"; 
 const courtRouter = Router();
 const courtController = new CourtController(new CourtUseCases({ courtRepo: courtRepoImpl }));
-courtRouter.post("/", createCourtValidator, courtController.createCourt).
-get("/:id",getCourtByIdValidator ,courtController.getCourtById).get("/", courtController.getAllCourts);
+courtRouter.post("/", createCourtValidator, courtController.createCourt)
+.get("/mostseen", courtController.getMostSeenCourts).
+get("/:id",getCourtByIdValidator ,courtController.getCourtById)
+.get("/", courtController.getAllCourts);
+
 export default courtRouter;

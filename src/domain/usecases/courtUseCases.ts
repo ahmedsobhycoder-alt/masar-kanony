@@ -20,6 +20,9 @@ export class CourtUseCases {
     async getCourtById(id: string): Promise<CourtEntity | null> {
         return await this.courtRepo.getCourtById(id);
     }
+    async getMostSeenCourts(query: Record<string, any> = {}): Promise<CourtEntity[]> {
+        return await this.courtRepo.getMostSeenCourts(query);
+    }
 
-    countDocuments = async (): Promise<number> => this.courtRepo.countDocuments();
+
 }
