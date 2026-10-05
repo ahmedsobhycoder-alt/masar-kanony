@@ -18,7 +18,7 @@ export class OfficeTypeController {
       formatJson({
         data: createdOfficeType,
         message: "Office type created successfully",
-        status: "success",
+        status: true,
       })
     );
   });
@@ -29,7 +29,7 @@ export class OfficeTypeController {
       formatJson({
         data: { list: data, paginationResult: pagination },
         message: "Office types fetched successfully",
-        status: "success",
+        status: true,
       })
     );
   });
@@ -41,7 +41,7 @@ export class OfficeTypeController {
       formatJson({
         data: officeType,
         message: "Office type fetched successfully",
-        status: "success",
+        status: true,
       })
     );
   });

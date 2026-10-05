@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Admin User",
+    "email": "admin@dwar.com",
+    "phone": "+966500000001",
+    "password": "Admin123!",
+    "profileImage": "",
+    "role": "admin",
+    "active": true,
+    "verified": true
+  },
+  {
+    "name": "Manager User",
+    "email": "manager@dwar.com",
+    "phone": "+966500000002",
+    "password": "Manager123!",
+    "profileImage": "",
+    "role": "manager",
+    "active": true,
+    "verified": true
+  },
+  {
+    "name": "Regular User",
+    "email": "user@dwar.com",
+    "phone": "+966500000003",
+    "password": "User123!",
+    "profileImage": "",
+    "role": "user",
+    "active": true,
+    "verified": false
+  }
+]

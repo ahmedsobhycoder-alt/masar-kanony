@@ -1,6 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 import UserEntity from "../../../domain/entities/userEntity";
 import UserUtils from "../../../shared/utils/userUtils";
+import { printGreen } from "../../../shared/utils/printColors";
+import UserRole from "../../../shared/constants/user-roles.enum";
 const userSchema = new Schema<UserEntity>({
     name: {
         type: String,
@@ -47,22 +49,23 @@ const userSchema = new Schema<UserEntity>({
     role: {
         type: String,
         enum: ["user", "admin", "manager"],
-        default: "user",
+        default: UserRole.USER,
     },
+    isSubscribed: {
+        type: Boolean,
+        default: false
+    }
 
 
 });
-userSchema.pre("save",async function (next) {
-    this.password = await UserUtils.hashPassword(this.password);
-    // if (!this.isModified("password")) return next();
-    // bcrypt.genSalt(10, (err, salt) => {
-    //     if (err) return next(err);
-    //     bcrypt.hash(this.password, salt, (err, hash) => {
-    //         if (err) return next(err);
-    //         this.password = hash;
-    //         next();
-    //     });
-    // });
-})
+userSchema.pre("save", async function () {
+  // Only hash the password if it has actually been modified (or is new)
+  printGreen("password",`Password before hashing: ${this.password}`);
+  if (!this.isModified("password")) return;
+  printGreen("password",`Password after hashing: ${this.password}`);
+
+  this.password = await UserUtils.hashPassword(this.password);
+});
+
 const UserModel = mongoose.model<UserEntity>("users", userSchema);
 export default UserModel;

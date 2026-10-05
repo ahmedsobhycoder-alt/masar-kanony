@@ -13,11 +13,11 @@ class OfficeTypeRepoImpl implements OfficeTypeRepo {
   }
 
   async getOfficeTypes(query: Record<string, any> = {}): Promise<{ data: OfficeTypeEntity[]; pagination?: QueryPagination }> {
-    const totalDocuments = await this.countDocuments();
     const queryBuilder = new QueryBuilder<OfficeTypeEntity>(OfficeTypeModel.find(), query)
-      .filter()
+    const countDocuements =await queryBuilder.mongooseQuery.clone().countDocuments();
+      queryBuilder.filter()
       .search(undefined, ["name"])
-      .paginate(totalDocuments)
+      .paginate(countDocuements)
       .sort()
       .limitFields();
 

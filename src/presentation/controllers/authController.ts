@@ -24,7 +24,7 @@ class AuthController {
         const password = req.body.password;
 
         const userAndToken=await this.userUseCases.login(email, password);
-            res.status(200).json(formatJson({ message: "Account verified successfully", status: true, data: userAndToken }));
+            res.status(200).json(formatJson({ message: "logged in successfully", status: true, data: userAndToken }));
     };
     forgetPassword = async (req: any, res: any) => {
         const email = req.body.email;

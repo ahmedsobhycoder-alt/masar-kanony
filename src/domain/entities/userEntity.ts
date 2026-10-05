@@ -6,11 +6,12 @@ interface UserEntity {
     profileImage: string;
     role: string;
     active: Boolean;
-    passwordChangedAt: Date,
-    resetCode: String,
-    resetCodeExpires: Date,
+    passwordChangedAt?: Date,
+    resetCode?: String,
+    resetCodeExpires?: Date,
     otp: String,
-    resetCodeVerified: Boolean,
-    verified: Boolean
+    resetCodeVerified?: Boolean,
+    verified: Boolean,
+    isSubscribed: Boolean
 }
 export default UserEntity;

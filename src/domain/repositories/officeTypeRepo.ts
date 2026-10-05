@@ -6,7 +6,6 @@ interface OfficeTypeRepo {
   getOfficeTypes(query?: Record<string, any>): Promise<{ data: OfficeTypeEntity[]; pagination?: QueryPagination }>;
   getOfficeTypeById(id: string): Promise<OfficeTypeEntity | null>;
   deleteOfficeTypeById(id: string): Promise<OfficeTypeEntity | null>;
-  countDocuments(): Promise<number>;
 }
 
 export default OfficeTypeRepo;

@@ -1,8 +1,9 @@
 import UserModel from "../../infrastructure/database/models/userModel";
 import { check } from "express-validator";
 import validatorMiddleware from "../middlewares/validatorMiddleWare";
-import OtpModel from "../../infrastructure/database/models/otpModel";
 import ApiError from "../../shared/errors/apiError";
+
+import OtpModel from "../../infrastructure/database/models/otpModel";
 export const signUpValidator = [
     check("name").notEmpty().withMessage("User name is required").trim(),
     check("email").isEmail().withMessage("User email is required").trim().custom(async (email) => {
@@ -51,6 +52,6 @@ export const verifyResetCodeValidator = [
 
 export const resetPasswordValidator = [
     check("email").isEmail().withMessage("User email is required").trim(),
-    check("newPassword").isLength({ min: 6 }).withMessage("Password must be at least 6 characters").trim(),
+    check("newPassword").isString().withMessage("password must be a string").isLength({ min: 6 }).withMessage("Password must be at least 6 characters").trim(),
     validatorMiddleware,
 ];

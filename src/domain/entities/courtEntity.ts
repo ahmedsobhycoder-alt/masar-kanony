@@ -13,5 +13,7 @@ export default interface CourtEntity {
     governorate: string;
     courtType: String;
     nViews: number;
+    updatedAt?: Date;
+    createdAt?: Date;
     
 }

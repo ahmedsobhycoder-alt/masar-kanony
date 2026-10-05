@@ -15,6 +15,10 @@ import courtTypeRouter from './presentation/routes/courtTypeRoute';
 import officeTypeRouter from './presentation/routes/officeTypeRoute';
 import authRouter from './presentation/routes/authRoute';
 import userRouter from './presentation/routes/userRoute';
+import paymentOptionRouter from './presentation/routes/paymentOptionRoute';
+import paymentRouter from './presentation/routes/paymentRoute';
+import appConfigRouter from './presentation/routes/appConfigRoute';
+import { createAdminRouter } from './presentation/admin/admin';
 import { globalError } from './presentation/middlewares/errorMiddleware';
 import ApiError from './shared/errors/apiError';
 
@@ -23,14 +27,22 @@ dotenv.config();
 
 const server = express();
 
+server.get('/admin-login.js', (_req, res) => {
+  res.sendFile(path.join(__dirname, '../public/admin-login.js'));
+});
+
+let adminRouter: ReturnType<typeof createAdminRouter>;
+server.use('/admin', (req, res, next) => {
+  adminRouter.then((router) => router(req, res, next)).catch(next);
+});
+
 // -----------------------------------------------------------------------------
 // Global middleware
 // -----------------------------------------------------------------------------
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 server.set('query parser', 'extended');
-server.use(express.static(path.join(__dirname, '../public/uploads')));
-
+server.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 // -----------------------------------------------------------------------------
 // Application routes
 // -----------------------------------------------------------------------------
@@ -46,6 +58,11 @@ server.use('/api/v1/courtypes/', courtTypeRouter);
 server.use('/api/v1/officeTypes/', officeTypeRouter);
 server.use('/api/v1/users/', userRouter);
 server.use('/api/v1/auth/', authRouter);
+server.use('/api/v1/payment/paymentOption/',paymentOptionRouter);
+server.use('/api/v1/payment/',paymentRouter);
+server.use('/api/v1/appConfig/',appConfigRouter);
+
+
 
 // Nested route for floors under a specific court.
 server.use('/api/v1/courts/:courtId/floors', floorRouter);
@@ -68,5 +85,10 @@ server.all(/.*/, (req, res, next) => {
 // Global error middleware
 // -----------------------------------------------------------------------------
 server.use(globalError);
+
+export const initializeAdmin = async () => {
+  adminRouter = createAdminRouter();
+  await adminRouter;
+};
 
 export default server;
