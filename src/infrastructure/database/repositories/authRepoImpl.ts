@@ -2,7 +2,6 @@ import UserModel
     from "../models/userModel";
 import AuthRepo from "../../../domain/repositories/authRepo";
 import UserEntity from "../../../domain/entities/userEntity";
-import QueryBuilder from "../../../shared/utils/queryBuilder";
 import { sendAuthEmail } from "../../services/emailService";
 import UserUtils from "../../../shared/utils/userUtils";
 import OtpModel from "../models/otpModel";

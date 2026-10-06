@@ -75,7 +75,7 @@ floorSchema.post("save", async function (doc, next) {
         next(); // Tell Mongoose the hook is successfully finished
     } catch (error) {
         console.error("Error in Floor post-save hook:", error);
-        next(error); // Pass the error safely to Express
+        next(error as mongoose.CallbackError);
     }
 });
 floorSchema.post("findOneAndDelete", async function (doc) {

@@ -58,7 +58,7 @@ async function isSubscripedBefore(req: Request, res: Response, next: NextFunctio
     const user = (req as any).user; // Assuming req.user is populated by authentication middleware
     const payment = await PaymnetModel.findOne({ user: user.id });
     if (payment && payment.status === PaymentStatus.PENDING) {
-        throw new ApiError(403, "You already have a pending payment. Please wait admin to approve it ");
+        throw new ApiError(403, req.t("You already have a pending payment. Please wait admin to approve it ", { ns: "errors" }));
     }
     next();
 

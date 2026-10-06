@@ -9,12 +9,12 @@ class AppConfigController {
     }
     getAppConfig = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const appConfig = await this.appConfigUseCases.getAppConfig();
-        res.status(200).json(formatJson({ data: appConfig, message: "App config fetched successfully", status: true }));    
+        res.status(200).json(formatJson({ data: appConfig, message: req.t("App config fetched successfully", { ns: "common" }), status: true }));    
     })
     createAppConfig = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const appConfigData = req.body;
         const createdAppConfig = await this.appConfigUseCases.createAppConfig(appConfigData);
-        res.status(201).json(formatJson({ data: createdAppConfig, message: "App config created successfully", status: true }));
+        res.status(201).json(formatJson({ data: createdAppConfig, message: req.t("App config created successfully", { ns: "common" }), status: true }));
     })
 
 
@@ -26,7 +26,7 @@ updateAppConfig = asyncHandler(
     res.status(200).json(
       formatJson({
         data: updatedAppConfig,
-        message: "App config updated successfully",
+        message: req.t("App config updated successfully", { ns: "common" }),
         status: true,
       })
     );

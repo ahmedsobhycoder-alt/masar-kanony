@@ -20,20 +20,20 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
   }
 
   if (!token) {
-    return next(new ApiError(401, "Unauthorized"));
+    return next(new ApiError(401, req.t("unauthorized", { ns: "errors" })));
   }
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayloadCustom;
 
   const currentUser = await UserModel.findById(decoded.id);
   if (!currentUser) {
-    return next(new ApiError(401, "Unauthorized, user not found"));
+    return next(new ApiError(401, req.t("user_not_found", { ns: "errors" })));
   }
 
   if (currentUser.passwordChangedAt) {
     const passChangedSeconds = Math.floor(currentUser.passwordChangedAt.getTime() / 1000);
     if (passChangedSeconds > decoded.iat) {
-      return next(new ApiError(401, "login again, password changed"));
+      return next(new ApiError(401, req.t("password_changed", { ns: "errors" })));
     }
   }
 
@@ -50,7 +50,7 @@ export const allowedTo = (roles: string[]) =>
     printBlue("req.user.role", user?.role);
 
     if (!user || !roles.includes(user.role)) {
-      return next(new ApiError(403, "Forbidden, you are not allowed"));
+      return next(new ApiError(403, req.t("forbidden", { ns: "errors" })));
     }
     next();
   });

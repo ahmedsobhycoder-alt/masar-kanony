@@ -18,9 +18,11 @@ import userRouter from './presentation/routes/userRoute';
 import paymentOptionRouter from './presentation/routes/paymentOptionRoute';
 import paymentRouter from './presentation/routes/paymentRoute';
 import appConfigRouter from './presentation/routes/appConfigRoute';
+import appPolicyRouter from './presentation/routes/appPolicyRoute';
 import { createAdminRouter } from './presentation/admin/admin';
 import { globalError } from './presentation/middlewares/errorMiddleware';
 import ApiError from './shared/errors/apiError';
+import i18nMiddleware from './presentation/middlewares/i18nMiddleware';
 
 // Load environment variables before anything else that depends on them.
 dotenv.config();
@@ -41,6 +43,7 @@ server.use('/admin', (req, res, next) => {
 // -----------------------------------------------------------------------------
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
+server.use(i18nMiddleware); // Use the i18n middleware to handle language detection and translation
 server.set('query parser', 'extended');
 server.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 // -----------------------------------------------------------------------------
@@ -61,6 +64,7 @@ server.use('/api/v1/auth/', authRouter);
 server.use('/api/v1/payment/paymentOption/',paymentOptionRouter);
 server.use('/api/v1/payment/',paymentRouter);
 server.use('/api/v1/appConfig/',appConfigRouter);
+server.use('/api/v1/appPolicies/', appPolicyRouter);
 
 
 
@@ -71,14 +75,14 @@ server.use('/api/v1/courts/:courtId/floors', floorRouter);
 // Health check / base route
 // -----------------------------------------------------------------------------
 server.get('/', (req: any, res: any) => {
-  res.send('Hello, World!');
+  res.send(req.t('hello_world', { ns: 'common' }));
 });
 
 // -----------------------------------------------------------------------------
 // Not-found handler
 // -----------------------------------------------------------------------------
 server.all(/.*/, (req, res, next) => {
-  next(new ApiError(404, `Route ${req.originalUrl} not found`));
+  next(new ApiError(404, req.t('route_not_found', { ns: 'errors', route: req.originalUrl })));
 });
 
 // -----------------------------------------------------------------------------

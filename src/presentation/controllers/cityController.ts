@@ -19,7 +19,7 @@ export class CityController {
       res.status(201).json(
         formatJson({
           data: createdCity,
-          message: "City created successfully",
+          message: req.t("City created successfully", { ns: "common" }),
           status: true
         }),
       );
@@ -36,7 +36,7 @@ export class CityController {
             list: data,
             paginationResult: pagination,
           },
-          message: "Cities fetched successfully",
+          message: req.t("Cities fetched successfully", { ns: "common" }),
           status: true,
         }),
       );
@@ -51,7 +51,7 @@ export class CityController {
       res.status(200).json(
         formatJson({
           data: city,
-          message: "City fetched successfully",
+          message: req.t("City fetched successfully", { ns: "common" }),
           status: true,
         }),
       );
@@ -66,7 +66,7 @@ export class CityController {
       res.status(200).json(
         formatJson({
           data: deletedCity,
-          message: "City deleted successfully",
+          message: req.t("City deleted successfully", { ns: "common" }),
           status: true,
         }),
       );

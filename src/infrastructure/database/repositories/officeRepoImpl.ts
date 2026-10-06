@@ -16,7 +16,6 @@ class OfficeRepoImpl implements OfficeRepo {
         const totalDocuments = await this.countDocuments();
         const queryBuilder = new QueryBuilder<any>(OfficesModel.find(), query)
             .filter()
-            .search(undefined, ["name", "locationDirection"])
             .paginate(totalDocuments)
             .sort()
             .limitFields();
@@ -27,7 +26,7 @@ class OfficeRepoImpl implements OfficeRepo {
         ]);
 
         return {
-            data: offices.map((office) => office.toJSON ? office.toJSON() : office),
+            data: offices.map((office: any) => office.toJSON ? office.toJSON() : office),
             pagination: queryBuilder.pagination,
         };
     }

@@ -17,7 +17,7 @@ export class OfficeTypeController {
     res.status(201).json(
       formatJson({
         data: createdOfficeType,
-        message: "Office type created successfully",
+        message: req.t("Office type created successfully", { ns: "common" }),
         status: true,
       })
     );
@@ -28,7 +28,7 @@ export class OfficeTypeController {
     res.status(200).json(
       formatJson({
         data: { list: data, paginationResult: pagination },
-        message: "Office types fetched successfully",
+        message: req.t("Office types fetched successfully", { ns: "common" }),
         status: true,
       })
     );
@@ -40,7 +40,7 @@ export class OfficeTypeController {
     res.status(200).json(
       formatJson({
         data: officeType,
-        message: "Office type fetched successfully",
+        message: req.t("Office type fetched successfully", { ns: "common" }),
         status: true,
       })
     );

@@ -24,7 +24,7 @@ class PaymentController {
         res.status(201).json(
             formatJson({
                 data: createdPayment,
-                message: "Payment created successfully",
+                message: req.t("Payment created successfully", { ns: "common" }),
                 status: true,
             })
         );
@@ -38,7 +38,7 @@ class PaymentController {
         res.status(200).json(
             formatJson({
                 data: { list: data, paginationResult: pagination },
-                message: "Payments fetched successfully",
+                message: req.t("Payments fetched successfully", { ns: "common" }),
                 status: true,
             })
         );
@@ -51,7 +51,7 @@ class PaymentController {
         res.status(200).json(
             formatJson({
                 data: payment,
-                message: "Payment fetched successfully",
+                message: req.t("Payment fetched successfully", { ns: "common" }),
                 status: true,
             })
         );
@@ -63,7 +63,7 @@ class PaymentController {
         res.status(200).json(
             formatJson({
                 data: approvedPayment,
-                message: "Payment approved successfully",
+                message: req.t("Payment approved successfully", { ns: "common" }),
                 status: true,
             })
         );
@@ -75,7 +75,7 @@ class PaymentController {
         res.status(200).json(
             formatJson({
                 data: declinedPayment,
-                message: "Payment declined successfully",
+                message: req.t("Payment declined successfully", { ns: "common" }),
                 status: true,
             })
         );
@@ -90,7 +90,7 @@ class PaymentController {
             res.status(200).json(
                 formatJson({
                     data: updatedPayment,
-                    message: "Payment status updated successfully",
+                    message: req.t("Payment status updated successfully", { ns: "common" }),
                     status: true,
                 })
             );
@@ -104,7 +104,7 @@ class PaymentController {
         res.status(200).json(
             formatJson({
                 data: deletedPayment,
-                message: "Payment deleted successfully",
+                message: req.t("Payment deleted successfully", { ns: "common" }),
                 status: true,
             })
         );

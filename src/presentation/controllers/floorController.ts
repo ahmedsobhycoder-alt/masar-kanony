@@ -20,7 +20,7 @@ export class FloorController {
         const createdFloor = await this.floorUseCases.createFloor(
             floorData
         );
-        res.status(201).json(formatJson({ data: createdFloor, message: "Floor created successfully", status: true }));
+        res.status(201).json(formatJson({ data: createdFloor, message: req.t("Floor created successfully", { ns: "common" }), status: true }));
     })
     getAllFloors = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 
@@ -29,7 +29,7 @@ export class FloorController {
             ...req.filter
         }
         const { data, pagination } = await this.floorUseCases.getFloors(query);
-        res.status(200).json(formatJson({ data: { list: data, paginationResult: pagination }, message: "Floors fetched successfully", status: true}));
+        res.status(200).json(formatJson({ data: { list: data, paginationResult: pagination }, message: req.t("Floors fetched successfully", { ns: "common" }), status: true}));
     })
 
 }

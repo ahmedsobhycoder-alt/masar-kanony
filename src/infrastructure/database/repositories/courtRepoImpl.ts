@@ -6,10 +6,6 @@ import { getMaxListeners } from "node:cluster";
 
 class CourtRepoImpl implements CourtRepo {
 
-    async countDocuments(): Promise<number> {
-        return await CourtModel.find().clone().countDocuments();
-    }
-
     async createCourt(courtData: CourtEntity) {
         return await CourtModel.create(courtData);
     }
@@ -18,7 +14,7 @@ async getCourts(
         query: Record<string, any> = {}
     ): Promise<{ data: CourtEntity[]; pagination?: QueryPagination }> {
         // 1. Build the base query with all modifiers except pagination
-        const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel.find(), query)
+        const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, query)
             .filter()
             .sort()
             .limitFields();
@@ -32,7 +28,6 @@ async getCourts(
         // 4. Execute the query
         const courts = await queryBuilder.mongooseQuery.populate({
             path: "floors",
-            ref: "Floors", // Unnecessary if defined in your Schema 
             select: "-court-_id",
             populate: [
                 { path: "offices",  select: "officeType roomNumber locationDirection startingWorkingHours endWorkingHours services" },

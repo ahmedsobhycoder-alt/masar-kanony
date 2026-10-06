@@ -27,7 +27,7 @@ export class ServiceHandler<T> {
       res.status(201).json(
         formatJson({
           data: addedItem,
-          message: `${this.modelName} created successfully`,
+          message: req.t("created_successfully", { ns: "common", entity: this.modelName }),
           status: true,
         }),
       );
@@ -39,9 +39,9 @@ export class ServiceHandler<T> {
       const filterObject = { ...(req.filterObject || {}), ...(req.query || {}) };
       const queryBuilder = new QueryBuilder<T>(this.collection.find(filterObject as any), req.query || {})
         .filter()
-        .search(undefined, this.searchFields);
+        .search(this.searchFields);
 
-      const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
+      const totalDocuments = await this.collection.countDocuments(filterObject);
       queryBuilder.paginate(totalDocuments).sort().limitFields();
 
       if (populateOptions) {
@@ -61,7 +61,7 @@ export class ServiceHandler<T> {
             paginationResult: queryBuilder.pagination,
             list: documents,
           },
-          message: `${this.modelName} fetched successfully`,
+          message: req.t("fetched_successfully", { ns: "common", entity: this.modelName }),
           status: true,
         }),
       );
@@ -86,7 +86,7 @@ export class ServiceHandler<T> {
       res.status(200).json(
         formatJson({
           data: deletedItem,
-          message: `${this.modelName} deleted successfully`,
+          message: req.t("deleted_successfully", { ns: "common", entity: this.modelName }),
           status: true,
         }),
       );
@@ -108,7 +108,7 @@ export class ServiceHandler<T> {
       res.status(200).json(
         formatJson({
           data: updatedItem,
-          message: `${this.modelName} updated successfully`,
+          message: req.t("updated_successfully", { ns: "common", entity: this.modelName }),
           status: true,
         }),
       );
@@ -133,7 +133,7 @@ export class ServiceHandler<T> {
       res.status(200).json(
         formatJson({
           data: item,
-          message: `${this.modelName} fetched successfully`,
+          message: req.t("fetched_successfully", { ns: "common", entity: this.modelName }),
           status: true,
         }),
       );

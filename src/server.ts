@@ -1,5 +1,5 @@
 import server, { initializeAdmin } from './app';
-import { connectToDatabase } from './config/database';
+import { connectToDatabase } from './infrastructure/config/database';
 
 const startServer = async () => {
   await connectToDatabase();

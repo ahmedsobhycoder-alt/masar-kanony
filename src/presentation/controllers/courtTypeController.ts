@@ -17,7 +17,7 @@ export class CourtTypeController {
     res.status(201).json(
       formatJson({
         data: createdCourtType,
-        message: "Court type created successfully",
+        message: req.t("Court type created successfully", { ns: "common" }),
         status: true,
       })
     );
@@ -28,7 +28,7 @@ export class CourtTypeController {
     res.status(200).json(
       formatJson({
         data: { list: data, paginationResult: pagination },
-        message: "Court types fetched successfully",
+        message: req.t("Court types fetched successfully", { ns: "common" }),
         status: true,
       })
     );
@@ -40,7 +40,7 @@ export class CourtTypeController {
     res.status(200).json(
       formatJson({
         data: courtType,
-        message: "Court type fetched successfully",
+        message: req.t("Court type fetched successfully", { ns: "common" }),
         status: true,
       })
     );

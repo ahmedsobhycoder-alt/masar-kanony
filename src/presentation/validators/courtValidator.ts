@@ -61,6 +61,15 @@ export const createCourtValidator = [
 
     validatorMiddleware
 ];
+export const getCourtsValidator = [
+    check('name').optional().isString().withMessage('Court name must be a string'),
+    check('address').optional().isString().withMessage('Court address must be a string'),
+    check('courtType').optional().isString().withMessage('Court type must be a valid String'),
+    check('governorate').optional().isString().withMessage('Governorate must be a valid String'),
+    check('limit').optional().isInt({ min: 1 }).withMessage('Limit must be a positive integer'),
+    check('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+    validatorMiddleware
+]
 export const getCourtByIdValidator = [
     check('id').isMongoId().withMessage('Court ID must be a valid Mongo ID').custom(async (id, { req }) => {
         const isCourtExisted = await CourtModel.exists({

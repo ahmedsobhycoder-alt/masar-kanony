@@ -19,7 +19,7 @@ export class GovernorateController {
             res.status(201).json(
                 formatJson({
                     data: createdGovernorate,
-                    message: "Governorate created successfully",
+                    message: req.t("Governorate created successfully", { ns: "common" }),
                     status:true,
                 }),
             );
@@ -37,7 +37,7 @@ export class GovernorateController {
                         list: data,
                         paginationResult: pagination,
                     },
-                    message: "Governorates fetched successfully",
+                    message: req.t("Governorates fetched successfully", { ns: "common" }),
                     status: true,
                 }),
             );
@@ -52,7 +52,7 @@ export class GovernorateController {
             res.status(200).json(
                 formatJson({
                     data: governorate,
-                    message: "Governorate fetched successfully",
+                    message: req.t("Governorate fetched successfully", { ns: "common" }),
                     status: true,
                 }),
             );

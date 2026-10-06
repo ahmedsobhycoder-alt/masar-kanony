@@ -21,7 +21,7 @@ export class HomeController {
           "courts": homeData.courts,
           "mostSeenCourts": homeData.mostSeenCourts
         },
-        message: "Home data fetched successfully",
+        message: req.t("Home data fetched successfully", { ns: "common" }),
         status: true,
       })
     );

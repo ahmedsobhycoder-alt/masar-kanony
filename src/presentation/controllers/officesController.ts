@@ -13,11 +13,11 @@ export default class OfficesController {
     createOffice = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const officeData = req.body;
         const createdOffice = await this.officeUseCases.createOffice(officeData);
-        res.status(201).json(formatJson({ data: createdOffice, message: "Office created successfully", status: true }));
+        res.status(201).json(formatJson({ data: createdOffice, message: req.t("Office created successfully", { ns: "common" }), status: true }));
     })
 
     getOffices = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { data, pagination } = await this.officeUseCases.getOffices(req.query as Record<string, any>);
-        res.status(200).json(formatJson({ data: { list: data, paginationResult: pagination }, message: "Offices fetched successfully", status: true }));
+        res.status(200).json(formatJson({ data: { list: data, paginationResult: pagination }, message: req.t("Offices fetched successfully", { ns: "common" }), status: true }));
     })
 }

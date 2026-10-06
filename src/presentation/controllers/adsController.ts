@@ -17,7 +17,7 @@ export class AdsController {
     res.status(201).json(
       formatJson({
         data: createdAd,
-        message: "Ad created successfully",
+        message: req.t("Ad created successfully", { ns: "common" }),
         status: true,
       })
     );
@@ -28,7 +28,7 @@ export class AdsController {
     res.status(200).json(
       formatJson({
         data: { list: data, paginationResult: pagination },
-        message: "Ads fetched successfully",
+        message: req.t("Ads fetched successfully", { ns: "common" }),
         status: true,
       })
     );
@@ -40,7 +40,7 @@ export class AdsController {
     res.status(200).json(
       formatJson({
         data: ad,
-        message: "Ad fetched successfully",
+        message: req.t("Ad fetched successfully", { ns: "common" }),
         status: true,
       })
     );
@@ -51,7 +51,7 @@ export class AdsController {
     res.status(200).json(
       formatJson({
         data: deletedAd,
-        message: "Ad deleted successfully",
+        message: req.t("Ad deleted successfully", { ns: "common" }),
         status: true,
       })
     );

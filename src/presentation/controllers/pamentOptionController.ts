@@ -23,13 +23,13 @@ createPaymentOption = asyncHandler(async (req: Request, res: Response, next: Nex
     // Add return here
      res.status(201).json(formatJson({ 
         data: createdPaymentOption, 
-        message: "Payment option created successfully", 
+        message: req.t("Payment option created successfully", { ns: "common" }), 
         status: true 
     }));
 });
     getPaymentOptions = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { data, pagination } = await this.paymentOptionUseCases.getPaymentOptions(req.query as Record<string, any>);
-        res.status(200).json(formatJson({ data: { list: data, paginationResult: pagination }, message: "Payment options fetched successfully", status: true }));
+        res.status(200).json(formatJson({ data: { list: data, paginationResult: pagination }, message: req.t("Payment options fetched successfully", { ns: "common" }), status: true }));
     });
 
 }
