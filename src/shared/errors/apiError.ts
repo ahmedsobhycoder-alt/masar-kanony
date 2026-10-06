@@ -16,7 +16,7 @@ export default class ApiError extends Error {
     getErrorJson() {
         if (process.env.NODE_ENV === "production") {
             return {
-                status: this.status,
+                status: false,
                 message: this.message,
             };
         }

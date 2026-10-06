@@ -21,7 +21,19 @@ const adsSchema = new Schema<AdsEntity>({
     required: [true, "Ad link is required"],
   },
 },{ timestamps: true , versionKey: false });
+adsSchema.post("init", function (doc) {
+  formatImageUrl(doc);
+})
+adsSchema.post("save", function (doc) {
+  formatImageUrl(doc);
+});
+const formatImageUrl = (doc: AdsEntity) => {
+    if (doc.image) {
+        doc.image = `${process.env.BASE_URL}/ads/${doc.image}`;
 
+    }
+
+}
 const AdsModel = mongoose.model<AdsEntity>("Ads", adsSchema);
 
 export default AdsModel;

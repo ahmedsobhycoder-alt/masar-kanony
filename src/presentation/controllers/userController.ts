@@ -16,8 +16,8 @@ export class UserController {
         res.status(200).json(
             formatJson({
                 data: { list: data, paginationResult: pagination },
-                message: "Users fetched successfully",
-                status: "success",
+                message: req.t("Users fetched successfully", { ns: "common" }),
+                status: true,
             })
         );
     });
@@ -29,8 +29,8 @@ export class UserController {
         res.status(200).json(
             formatJson({
                 data: user,
-                message: "User fetched successfully",
-                status: "success",
+                message: req.t("User fetched successfully", { ns: "common" }),
+                status: true,
             })
         );
     });
@@ -42,8 +42,8 @@ export class UserController {
         res.status(200).json(
             formatJson({
                 data: deletedUser,
-                message: "User deleted successfully",
-                status: "success",
+                message: req.t("User deleted successfully", { ns: "common" }),
+                status: true,
             })
         );
     });

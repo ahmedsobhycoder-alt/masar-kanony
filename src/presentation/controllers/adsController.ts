@@ -17,8 +17,8 @@ export class AdsController {
     res.status(201).json(
       formatJson({
         data: createdAd,
-        message: "Ad created successfully",
-        status: "success",
+        message: req.t("Ad created successfully", { ns: "common" }),
+        status: true,
       })
     );
   });
@@ -28,8 +28,8 @@ export class AdsController {
     res.status(200).json(
       formatJson({
         data: { list: data, paginationResult: pagination },
-        message: "Ads fetched successfully",
-        status: "success",
+        message: req.t("Ads fetched successfully", { ns: "common" }),
+        status: true,
       })
     );
   });
@@ -40,8 +40,19 @@ export class AdsController {
     res.status(200).json(
       formatJson({
         data: ad,
-        message: "Ad fetched successfully",
-        status: "success",
+        message: req.t("Ad fetched successfully", { ns: "common" }),
+        status: true,
+      })
+    );
+  });
+  deleteAdById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const adId = req.params.id as string;
+    const deletedAd = await this.adsUseCases.deleteAdById(adId);
+    res.status(200).json(
+      formatJson({
+        data: deletedAd,
+        message: req.t("Ad deleted successfully", { ns: "common" }),
+        status: true,
       })
     );
   });

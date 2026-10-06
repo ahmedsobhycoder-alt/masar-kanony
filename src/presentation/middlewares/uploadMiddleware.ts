@@ -12,7 +12,7 @@ export const singleFileUpload = (fieldName: string) => {
             cb(null, true);
         } else {
             // Adjust arguments based on how your ApiError class is constructed
-            cb(new ApiError(400, "Only image files are allowed!"));
+            cb(new ApiError(400, req.t("Only image files are allowed!", { ns: "errors" })));
         }
     };
     // This code initializes the Multer middleware instance and configures exactly how it should handle incoming file uploads before passing them to your route handlers.Here is a breakdown of what each property does:
@@ -47,7 +47,7 @@ export const multibleFileUpload = (fields: multer.Field[]) => {
         if (file?.mimetype?.startsWith("image")) {
             cb(null, true);
         } else {
-            cb(new ApiError(400, "Only image files are allowed!"));
+            cb(new ApiError(400, req.t("Only image files are allowed!", { ns: "errors" })));
         }
     };
 

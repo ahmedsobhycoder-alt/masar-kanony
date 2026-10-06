@@ -2,9 +2,8 @@ import UserModel
     from "../models/userModel";
 import AuthRepo from "../../../domain/repositories/authRepo";
 import UserEntity from "../../../domain/entities/userEntity";
-import QueryBuilder from "../../../shared/utils/queryBuilder";
 import { sendAuthEmail } from "../../services/emailService";
-import userUtils from "../../../shared/utils/userUtils";
+import UserUtils from "../../../shared/utils/userUtils";
 import OtpModel from "../models/otpModel";
 import { printGreen, printYellow } from "../../../shared/utils/printColors";
 import ApiError from "../../../shared/errors/apiError";
@@ -13,7 +12,7 @@ class AuthRepoImpl implements AuthRepo {
 
     async signup(userData: UserEntity): Promise<void> {
         // 2. Generate the OTP
-        const otp = userUtils.generateOTP();
+        const otp = UserUtils.generateOTP();
 
         // 3. Save to a temporary OTP collection (with a 10-minute TTL index)
         // We do NOT call UserModel.create() here.
@@ -51,7 +50,7 @@ class AuthRepoImpl implements AuthRepo {
         await OtpModel.deleteOne({ _id: otpRecord._id });
 
         // 6. Generate the authentication token
-        const token = userUtils.createToken({
+        const token = UserUtils.createToken({
             id: newUser._id,
             role: newUser.role
         });
@@ -68,13 +67,16 @@ class AuthRepoImpl implements AuthRepo {
     }> {
         const user = await UserModel.findOne({ email });
         if (!user) {
-            throw new ApiError(400, "Invalid email or password");
+            throw new ApiError(400, "Invalid email");
         }
-        const isPasswordCorrect = await userUtils.comparePassword(password, user.password);
+        printGreen("email",`User found: ${user.email}, ID: ${user._id}`);
+        printGreen("hased password",`Password provided: ${user.password}`);
+        const isPasswordCorrect = await UserUtils.comparePassword(
+            password, user.password);
         if (!isPasswordCorrect) {
-            throw new ApiError(400, "Invalid email or password");
+            throw new ApiError(400, "Invalid  password");
         }
-        const token = userUtils.createToken({
+        const token = UserUtils.createToken({
             id: user._id,
             role: user.role
         })
@@ -90,7 +92,7 @@ class AuthRepoImpl implements AuthRepo {
         if (!user) {
             throw new ApiError(400, "User not found");
         }
-        const otp = userUtils.generateOTP();
+        const otp = UserUtils.generateOTP();
         user.resetCode = otp;
         user.resetCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
         user.resetCodeVerified = false;
@@ -123,7 +125,7 @@ class AuthRepoImpl implements AuthRepo {
         }
 
         // 2. Hash the new password and update the user
-        user.password = await userUtils.hashPassword(newPassword);
+        user.password = await UserUtils.hashPassword(newPassword);
         user.passwordChangedAt = new Date();
 
         // 3. Clean up the reset fields so they can't be reused

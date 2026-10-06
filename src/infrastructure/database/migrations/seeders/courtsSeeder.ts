@@ -41,22 +41,15 @@ export const seedCourts = async () => {
     try {
         await connectDB();
 
-        const governorates = await GovernorateModel.find().lean();
-        const courtTypes = await CourtTypeModel.find().lean();
-
-        const mappedCourts = jsonCourts.map((court: any, index: number) => ({
-            ...court,
-            governorate: governorates[index % governorates.length]?._id,
-            courtType: courtTypes[index % courtTypes.length]?._id,
-        }));
-
-        await CourtModel.insertMany(mappedCourts);
+  
+        await CourtModel.insertMany(jsonCourts);
         console.log('Courts seeded successfully'.bgGreen);
         process.exit();
     } catch (error) {
         console.log('Error seeding courts:'.red, error);
         process.exit(1);
     }
+    
 };
 
 if (process.argv[2] === '-d') {

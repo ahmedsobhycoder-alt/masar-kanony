@@ -16,9 +16,13 @@ export class HomeController {
 
     res.status(200).json(
       formatJson({
-        data: homeData,
-        message: "Home data fetched successfully",
-        status: "success",
+        data: {
+          "ads": homeData.ads,
+          "courts": homeData.courts,
+          "mostSeenCourts": homeData.mostSeenCourts
+        },
+        message: req.t("Home data fetched successfully", { ns: "common" }),
+        status: true,
       })
     );
   });

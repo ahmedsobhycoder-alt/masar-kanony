@@ -4,46 +4,54 @@ import CourtModel from "../../infrastructure/database/models/courtModel";
 import ApiError from "../../shared/errors/apiError";
 import FloorModel from "../../infrastructure/database/models/floorModel";
 import FloorNameModel from "../../infrastructure/database/models/floorNameModel";
-import { printBlue } from "../../shared/utils/printColors";
+import { printBlue, printGreen } from "../../shared/utils/printColors";
+
 export const createFloorValidator = [
     check("court")
         .notEmpty()
         .withMessage("Court ID is required")
         .isMongoId()
         .withMessage("Court ID must be a valid Mongo ID")
-        .custom(async (court, { req }) => {
-            const isCourtExisted = await CourtModel.exists({
-                _id: court,
-            });
-
+        .custom(async (court) => {
+            const isCourtExisted = await CourtModel.exists({ _id: court });
+            
             if (!isCourtExisted) {
-                throw new ApiError(400, "Court does not exist");
+                // express-validator will catch this and use the string as the error message
+                throw new Error("Court does not exist"); 
             }
+            return true;
         }),
+        
     check("floorName")
-        .isMongoId()
-        .withMessage("Floor number must be a valid Mongo ID")
         .notEmpty()
-        .withMessage("Floor Name Id must not be empty")
+        .withMessage("Floor Name ID is required")
+        .isMongoId()
+        .withMessage("Floor Name ID must be a valid Mongo ID")
         .custom(async (floorName, { req }) => {
-            const isFloorNameExisted = await FloorNameModel.exists({
-                _id: floorName,
+            // 1. Verify the floor name exists in the master list
+            const floorRecord = await FloorNameModel.findById(floorName);
+            if (!floorRecord) {
+                throw new Error("Floor does not exist");
+            }
+
+            // 2. Verify this specific floor isn't already assigned to this court
+            const isDuplicate = await FloorModel.exists({
+                floorName, 
+                court: req.body.court
             });
 
-            if (!isFloorNameExisted) {
-                throw new ApiError(400, "Floor does not exist");
+            if (isDuplicate) {
+                throw new Error("This floor already exists in the specified court");
             }
-        }).custom(async (floorName, { req }) => {
-            const isFloorNameExistedInFloor = await FloorModel.exists({
-                floorName, court: req.body.court
-            })
 
-            if (isFloorNameExistedInFloor) {
-                throw new ApiError(400, 'Floor Name already exists in Floor');
-            }
+            // 3. Attach to request for the controller (Pragmatic approach to save DB calls)
+            req.floorName = floorRecord.name;
+            printGreen("req.floorName", req.floorName);
+
+            return true;
         }),
+        check("image").notEmpty().withMessage("Image is required"),
 
-    check("images").optional().isArray().withMessage("Images must be an array"),
     validatorMiddleware,
 ];
 export const getFloorsValidator = [

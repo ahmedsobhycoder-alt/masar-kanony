@@ -17,6 +17,11 @@ const courtSchema = new Schema<CourtEntity>({
         required: false,
         default: 0
     },
+    nViews:{
+        type: Number,
+        required: false,
+        default: 0
+    },
     nOffices: {
         type: Number,
         required: false,
@@ -33,13 +38,11 @@ const courtSchema = new Schema<CourtEntity>({
         ref: "Floors"
     }],
     governorate : {
-        type: mongoose.Schema.Types.ObjectId,
-        ref : "Governorates",
+        type: String,
         required: [true, 'Governorate is required'],
     },
     courtType : {
-        type: mongoose.Schema.Types.ObjectId,
-        ref : "CourtTypes",
+        type: String,
         required: [true, 'Court type is required'],
     }
 }, { timestamps: true , versionKey: false });

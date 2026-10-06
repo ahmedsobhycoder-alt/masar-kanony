@@ -17,8 +17,8 @@ export class FloorNameController {
     res.status(201).json(
       formatJson({
         data: createdFloorName,
-        message: "Floor name created successfully",
-        status: "success",
+        message: req.t("Floor name created successfully", { ns: "common" }),
+        status: true,
       })
     );
   });
@@ -28,8 +28,8 @@ export class FloorNameController {
     res.status(200).json(
       formatJson({
         data: { list: data, paginationResult: pagination },
-        message: "Floor names fetched successfully",
-        status: "success",
+        message: req.t("Floor names fetched successfully", { ns: "common" }),
+        status: true,
       })
     );
   });
@@ -40,8 +40,8 @@ export class FloorNameController {
     res.status(200).json(
       formatJson({
         data: floorName,
-        message: "Floor name fetched successfully",
-        status: "success",
+        message: req.t("Floor name fetched successfully", { ns: "common" }),
+        status: true,
       })
     );
   });

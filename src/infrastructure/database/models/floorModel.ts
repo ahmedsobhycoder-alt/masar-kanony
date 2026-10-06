@@ -2,6 +2,7 @@ import { FloorEntity } from "../../../domain/entities/floorEntity";
 import mongoose, { model, Schema } from "mongoose";
 import CourtModel from "./courtModel";
 import { printRed, printBlue, printGreen } from "../../../shared/utils/printColors";
+import { stringify } from "node:querystring";
 
 interface FloorModelStatic extends mongoose.Model<FloorEntity> {
     calculateNumberOfFloorsPerCourt: (court: mongoose.Schema.Types.ObjectId, method: string) => Promise<void>;
@@ -14,8 +15,7 @@ export const floorSchema = new Schema<FloorEntity, FloorModelStatic>({
         required: [true, "Court ID is required"],
     },
     floorName: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "FloorNames",
+        type: String,
         unique: [true, "Floor Name must be unique for court"],
         required: [true, "Floor Name is required"],
     },
@@ -28,11 +28,12 @@ export const floorSchema = new Schema<FloorEntity, FloorModelStatic>({
         type: String,
         required: [true, "Floor images is required"],
     },
-    offices: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "Offices",
-        default: [],
-    },
+    offices: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Offices",
+        },
+    ],
 });
 
 floorSchema.statics.calculateNumberOfFloorsPerCourt = async function (
@@ -62,19 +63,19 @@ floorSchema.post("init", function (doc) {
 floorSchema.post("save", async function (doc, next) {
     try {
         // Use doc.constructor to avoid the initialization crash
-        const FloorModelStatic = doc.constructor as any; 
-        
+        const FloorModelStatic = doc.constructor as any;
+
         await FloorModelStatic.calculateNumberOfFloorsPerCourt(doc.court, "create");
-        
+
         // $addToSet is perfect here. It's safer than $push because it prevents duplicates.
-        await CourtModel.findByIdAndUpdate(doc.court, { 
-            $addToSet: { floors: doc._id } 
+        await CourtModel.findByIdAndUpdate(doc.court, {
+            $addToSet: { floors: doc._id }
         });
 
         next(); // Tell Mongoose the hook is successfully finished
     } catch (error) {
         console.error("Error in Floor post-save hook:", error);
-        next(error); // Pass the error safely to Express
+        next(error as mongoose.CallbackError);
     }
 });
 floorSchema.post("findOneAndDelete", async function (doc) {

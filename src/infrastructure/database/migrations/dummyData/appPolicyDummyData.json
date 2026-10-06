@@ -1,0 +1,34 @@
+[
+  {
+    "type": "termsAndConditions",
+    "intro": "Replace this sample text with your approved terms and conditions before using it in production.",
+    "sections": [
+      {
+        "order": 1,
+        "sectionTitle": "Acceptance of terms",
+        "sectionContent": "Use of this application is subject to the terms and conditions published by its operator. Replace this sample section with your approved terms."
+      },
+      {
+        "order": 2,
+        "sectionTitle": "Use of the application",
+        "sectionContent": "Users are responsible for providing accurate information and using the application lawfully. Replace this sample section with terms reviewed for your service."
+      }
+    ]
+  },
+  {
+    "type": "privacyPolicy",
+    "intro": "Replace this sample text with your approved privacy policy before using it in production.",
+    "sections": [
+      {
+        "order": 1,
+        "sectionTitle": "Information collected",
+        "sectionContent": "The application may process information provided by users to deliver its services. Replace this sample section with a complete and accurate description of your data practices."
+      },
+      {
+        "order": 2,
+        "sectionTitle": "Use and protection of information",
+        "sectionContent": "Information should be used and protected according to the operator's documented practices and applicable law. Replace this sample section with your approved privacy terms."
+      }
+    ]
+  }
+]
