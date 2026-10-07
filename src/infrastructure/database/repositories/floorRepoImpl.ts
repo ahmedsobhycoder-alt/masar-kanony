@@ -13,34 +13,38 @@ class FloorRepoImpl implements FloorRepo {
         return await floor.populate(["offices"]);
     }
 
-    async getFloors(query: Record<string, any> = {}): Promise<{ data: FloorEntity[]; pagination?: QueryPagination }> {
-        
-        const queryBuilder = new QueryBuilder<FloorEntity>(FloorModel.find(), query)
+    async getFloors(
+        query: Record<string, any> = {}
+    ): Promise<{ data: FloorEntity[]; pagination?: QueryPagination }> {
+        // 1. Build the base query with filters, sorting, and field limiting
+        const queryBuilder = new QueryBuilder<FloorEntity>(FloorModel, query)
             .filter()
-            const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
-            queryBuilder.paginate(totalDocuments).limitFields();
+            .sort()
+            .limitFields();
 
-        const floors = await queryBuilder.mongooseQuery.populate(
-            ["offices", { path: "court" }]);
+        // 2. Clone and count documents matching the applied filters
+        const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
+
+        // 3. Apply pagination using the filtered count
+        queryBuilder.paginate(totalDocuments);
+
+        // 4. Execute query with population and .lean() for performance
+        const floors = await queryBuilder.mongooseQuery
+            .populate(["offices", { path: "court" }])
+            .lean<FloorEntity[]>();
 
         return {
-            data: floors.map((floor) => {
-                if (floor && typeof (floor as any).toJSON === "function") {
-                    return (floor as any).toJSON() as FloorEntity;
-                }
-                return floor as FloorEntity;
-            }),
+            data: floors || [],
             pagination: queryBuilder.pagination,
         };
     }
-
     async getFloorById(id: string): Promise<FloorEntity | null> {
         const floor = await FloorModel.findById(id);
         return floor ? (floor.toJSON() as FloorEntity) : null;
     }
 
     async getFloorsByCourtId(court: string): Promise<FloorEntity[] | null> {
-        const floors = await FloorModel.find({ where : { court } });
+        const floors = await FloorModel.find({ where: { court } });
         return floors.length ? floors.map((floor) => floor.toJSON() as FloorEntity) : null;
     }
 

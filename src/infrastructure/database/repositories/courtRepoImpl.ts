@@ -11,34 +11,39 @@ class CourtRepoImpl implements CourtRepo {
     }
 
 async getCourts(
-        query: Record<string, any> = {}
-    ): Promise<{ data: CourtEntity[]; pagination?: QueryPagination }> {
-        // 1. Build the base query with all modifiers except pagination
-        const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, query)
-            .filter()
-            .sort()
-            .limitFields();
+  query: Record<string, any> = {}
+): Promise<{ data: CourtEntity[]; pagination?: QueryPagination }> {
+  // 1. Build the base query
+  const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, query)
+    .filter()
+    .sort()
+    .limitFields();
 
-        // 2. Clone and count based on the filtered query
-        const totalCourts = await queryBuilder.mongooseQuery.clone().countDocuments();
+  // 2. Count total documents matching the filters
+  const totalCourts = await queryBuilder.mongooseQuery.clone().countDocuments();
 
-        // 3. Apply pagination using the total count
-        queryBuilder.paginate(totalCourts);
+  // 3. Apply pagination
+  queryBuilder.paginate(totalCourts);
 
-        // 4. Execute the query
-        const courts = await queryBuilder.mongooseQuery.populate({
-            path: "floors",
-            select: "-court-_id",
-            populate: [
-                { path: "offices",  select: "officeType roomNumber locationDirection startingWorkingHours endWorkingHours services" },
-            ],
-        });
+  // 4. Execute query with population and .lean()
+  const courts = await queryBuilder.mongooseQuery
+    .populate({
+      path: "floors",
+      select: "-court -_id",
+      populate: [
+        {
+          path: "offices",
+          select: "officeType roomNumber locationDirection startingWorkingHours endWorkingHours services",
+        },
+      ],
+    })
+    .lean<CourtEntity[]>();
 
-        return {
-            data: courts,
-            pagination: queryBuilder.pagination,
-        };
-    }
+  return {
+    data: courts || [],
+    pagination: queryBuilder.pagination,
+  };
+}
     async getCourtById(id: string) {
         return await CourtModel.findByIdAndUpdate(id, {
             $inc: { nViews: 1 },

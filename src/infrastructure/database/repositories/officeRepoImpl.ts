@@ -1,6 +1,7 @@
 import OfficeRepo from "../../../domain/repositories/officeRepo";
 import OfficesModel from "../models/officeModel";
 import { QueryBuilder, QueryPagination } from "../../../shared/utils/queryBuilder";
+import OfficeEntity from "../../../domain/entities/officeEntity";
 
 class OfficeRepoImpl implements OfficeRepo {
     async countDocuments(): Promise<number> {
@@ -12,21 +13,31 @@ class OfficeRepoImpl implements OfficeRepo {
         return office;
     }
 
-    async getOffices(query: Record<string, any> = {}): Promise<{ data: any[]; pagination?: QueryPagination }> {
-        const totalDocuments = await this.countDocuments();
-        const queryBuilder = new QueryBuilder<any>(OfficesModel.find(), query)
+    async getOffices(
+        query: Record<string, any> = {}
+    ): Promise<{ data: OfficeEntity[]; pagination?: QueryPagination }> {
+        // 1. Build the base query with filters, sorting, and field limiting
+        const queryBuilder = new QueryBuilder<OfficeEntity>(OfficesModel, query)
             .filter()
-            .paginate(totalDocuments)
             .sort()
             .limitFields();
 
-        const offices = await queryBuilder.mongooseQuery.populate([
-            { path: "floorId", select: "floorNumber" },
-            { path: "courtId", select: "name" },
-        ]);
+        // 2. Clone and count documents matching the applied filters
+        const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
+
+        // 3. Apply pagination using the filtered count
+        queryBuilder.paginate(totalDocuments);
+
+        // 4. Execute query with population and .lean() for performance
+        const offices = await queryBuilder.mongooseQuery
+            .populate([
+                { path: "floorId", select: "floorNumber" },
+                { path: "courtId", select: "name" },
+            ])
+            .lean<OfficeEntity[]>();
 
         return {
-            data: offices.map((office: any) => office.toJSON ? office.toJSON() : office),
+            data: offices || [],
             pagination: queryBuilder.pagination,
         };
     }

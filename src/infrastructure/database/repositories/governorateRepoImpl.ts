@@ -10,9 +10,6 @@ class GovernorateRepoImpl extends BaseRepository<GovernorateEntity> implements G
         // Pass the GovernorateModel up to the BaseRepository
         super(GovernorateModel);
     }
-    async countDocuments(): Promise<number> {
-        return await GovernorateModel.find().clone().countDocuments();
-    }
 
     async createGovernorate(
         governorateData: GovernorateEntity,
@@ -20,10 +17,31 @@ class GovernorateRepoImpl extends BaseRepository<GovernorateEntity> implements G
         return await GovernorateModel.create(governorateData);
     }
 
-    async getGovernorates(query: ParsedQs): Promise<{ data: GovernorateEntity[], pagination?: QueryPagination }> {
 
-        return this.getAllPaginated(query);
+    async getGovernorates(
+        query: ParsedQs
+    ): Promise<{ data: GovernorateEntity[]; pagination?: QueryPagination }> {
+        // 1. Build base query with filter, sort, and field limits
+        const queryBuilder = new QueryBuilder<GovernorateEntity>(GovernorateModel, query)
+            .filter()
+            .sort()
+            .limitFields();
+
+        // 2. Clone and count documents matching the applied filters
+        const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
+
+        // 3. Apply pagination using the filtered count
+        queryBuilder.paginate(totalDocuments);
+
+        // 4. Execute query with .lean() for performance
+        const governorates = await queryBuilder.mongooseQuery.lean<GovernorateEntity[]>();
+
+        return {
+            data: governorates || [],
+            pagination: queryBuilder.pagination,
+        };
     }
+
 
     async getGovernorateById(id: string): Promise<GovernorateEntity | null> {
         const governorate = await GovernorateModel.findById(id).lean();

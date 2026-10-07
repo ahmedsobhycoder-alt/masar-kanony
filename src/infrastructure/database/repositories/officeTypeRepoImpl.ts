@@ -4,35 +4,34 @@ import OfficeTypeModel from "../models/officeTypeModel";
 import { QueryBuilder, QueryPagination } from "../../../shared/utils/queryBuilder";
 
 class OfficeTypeRepoImpl implements OfficeTypeRepo {
-  async countDocuments(): Promise<number> {
-    return await OfficeTypeModel.find().clone().countDocuments();
-  }
 
   async createOfficeType(officeTypeData: OfficeTypeEntity): Promise<OfficeTypeEntity> {
     return await OfficeTypeModel.create(officeTypeData);
   }
 
-  async getOfficeTypes(query: Record<string, any> = {}): Promise<{ data: OfficeTypeEntity[]; pagination?: QueryPagination }> {
-    const queryBuilder = new QueryBuilder<OfficeTypeEntity>(OfficeTypeModel.find(), query)
-    const countDocuements =await queryBuilder.mongooseQuery.clone().countDocuments();
-      queryBuilder.filter()
-      .search(undefined, ["name"])
-      .paginate(countDocuements)
-      .sort()
-      .limitFields();
+async getOfficeTypes(
+  query: Record<string, any> = {}
+): Promise<{ data: OfficeTypeEntity[]; pagination?: QueryPagination }> {
+  // 1. Build base query with filter, search, sort, and field limits
+  const queryBuilder = new QueryBuilder<OfficeTypeEntity>(OfficeTypeModel, query)
+    .filter()
+    .sort()
+    .limitFields();
 
-    const officeTypes = await queryBuilder.mongooseQuery;
+  // 2. Clone and count documents matching the filtered/searched criteria
+  const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
 
-    return {
-      data: officeTypes.map((officeType) => {
-        if (officeType && typeof (officeType as any).toJSON === "function") {
-          return (officeType as any).toJSON() as OfficeTypeEntity;
-        }
-        return officeType as OfficeTypeEntity;
-      }),
-      pagination: queryBuilder.pagination,
-    };
-  }
+  // 3. Apply pagination using the filtered count
+  queryBuilder.paginate(totalDocuments);
+
+  // 4. Execute query with .lean() for performance and plain objects
+  const officeTypes = await queryBuilder.mongooseQuery.lean<OfficeTypeEntity[]>();
+
+  return {
+    data: officeTypes||[],
+    pagination: queryBuilder.pagination,
+  };
+}
 
   async getOfficeTypeById(id: string): Promise<OfficeTypeEntity | null> {
     const officeType = await OfficeTypeModel.findById(id);

@@ -7,7 +7,6 @@ interface CityRepo {
   getCities(query: ParsedQs): Promise<{ data: CityEntity[]; pagination?: QueryPagination }>;
   getCityById(id: string): Promise<CityEntity | null>;
   deleteCityById(id: string): Promise<CityEntity | null>;
-  countDocuments(): Promise<number>;
 }
 
 export default CityRepo;

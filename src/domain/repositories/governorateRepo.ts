@@ -6,7 +6,6 @@ interface GovernorateRepo {
   getGovernorates(query:ParsedQs): Promise<{data:GovernorateEntity[], pagination?: QueryPagination}>;
   getGovernorateById(id: string): Promise<GovernorateEntity | null>;
   deleteGovernorateById(id: string): Promise<GovernorateEntity | null>;
-  countDocuments(): Promise<number>;
 }
 
 export default GovernorateRepo;

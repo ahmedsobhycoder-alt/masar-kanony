@@ -15,16 +15,16 @@ class HomeRepoImpl implements HomeRepo {
   );
  async getHomeData(): Promise<HomeEntity> {
     // 1. Instantiate FRESH queries locally (Do NOT use 'this.queryBuilder')
-    const courtsQueryBuilder = new QueryBuilder(CourtModel.find(), {})
+    const courtsQueryBuilder = new QueryBuilder(CourtModel, {})
         .populate(["governorate", "courtType", "floors"])
         .limitFields()
         .sort();
         
-    const adsQueryBuilder = new QueryBuilder(AdsModel.find(), {})
+    const adsQueryBuilder = new QueryBuilder(AdsModel, {})
         .limitFields()
         .sort();
 
-    const mostSeenQueryBuilder = new QueryBuilder(CourtModel.find(), {})
+    const mostSeenQueryBuilder = new QueryBuilder(CourtModel, {})
         .populate(["governorate", "courtType", "floors"])
         .limitFields();
 
