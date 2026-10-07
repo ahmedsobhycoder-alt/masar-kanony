@@ -13,7 +13,7 @@ class AdsRepoImpl implements AdsRepo {
   }
 
   async getAds(query: Record<string, any> = {}): Promise<{ data: AdsEntity[]; pagination?: QueryPagination }> {
-    const queryBuilder = new QueryBuilder<AdsEntity>(AdsModel.find(), query)
+    const queryBuilder = new QueryBuilder<AdsEntity>(AdsModel, query)
       .filter()
     const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
     queryBuilder
@@ -21,10 +21,10 @@ class AdsRepoImpl implements AdsRepo {
       .sort()
       .limitFields();
 
-    const ads = await queryBuilder.mongooseQuery;
+    const ads = await queryBuilder.mongooseQuery.lean<AdsEntity[]>();
 
     return {
-      data: ads,
+      data: ads || [],
       pagination: queryBuilder.pagination,
     };
   }

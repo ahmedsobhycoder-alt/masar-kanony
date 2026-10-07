@@ -21,5 +21,4 @@ export class OfficeTypeUseCases {
   deleteOfficeTypeById = async (id: string): Promise<OfficeTypeEntity | null> =>
     this.officeTypeRepo.deleteOfficeTypeById(id);
 
-  countDocuments = async (): Promise<number> => this.officeTypeRepo.countDocuments();
 }

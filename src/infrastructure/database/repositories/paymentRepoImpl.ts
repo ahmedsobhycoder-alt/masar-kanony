@@ -79,17 +79,17 @@ class PaymentRepoImpl implements PaymentRepo {
     async getPayments(
         query: Record<string, any> = {}
     ): Promise<{ data: PaymentEntity[]; pagination?: QueryPagination }> {
-        const queryBuilder = new QueryBuilder<PaymentEntity>(PaymentModel.find(), query).filter();
+        const queryBuilder = new QueryBuilder<PaymentEntity>(PaymentModel, query).filter();
         const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
         queryBuilder
             .paginate(totalDocuments)
             .sort()
             .limitFields();
 
-        const payments = await queryBuilder.mongooseQuery;
+        const payments = await queryBuilder.mongooseQuery.lean<PaymentEntity[]>();
 
         return {
-            data: payments,
+            data: payments || [],
             pagination: queryBuilder.pagination,
         };
     }

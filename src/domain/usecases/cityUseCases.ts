@@ -21,5 +21,4 @@ export class CityUseCases {
   deleteCityById = async (id: string): Promise<CityEntity | null> =>
     this.cityRepo.deleteCityById(id);
 
-  countDocuments = async (): Promise<number> => this.cityRepo.countDocuments();
 }

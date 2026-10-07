@@ -19,5 +19,5 @@ export class GovernorateUseCases {
 
   deleteGovernorateById = async (id: string): Promise<GovernorateEntity | null> =>
     this.governorateRepo.deleteGovernorateById(id);
-  countDocuments = async (): Promise<number> => this.governorateRepo.countDocuments();
+
 }

@@ -25,7 +25,6 @@ class OfficeUseCases {
         return this.officeRepo.deleteOfficeById(id);
     }
 
-    countDocuments = async (): Promise<number> => this.officeRepo.countDocuments();
 }
 
 export default OfficeUseCases

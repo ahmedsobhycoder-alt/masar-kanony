@@ -9,7 +9,7 @@ class UserRepoImpl implements UserRepo {
     }
 
     async getUsers(query: Record<string, any> = {}): Promise<{ data: UserEntity[]; pagination?: QueryPagination }> {
-        const queryBuilder = new QueryBuilder<UserEntity>(UserModel.find().select("-password"), query)
+        const queryBuilder = new QueryBuilder<UserEntity>(UserModel, query)
             .filter();
 
         const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
@@ -19,10 +19,10 @@ class UserRepoImpl implements UserRepo {
             .sort()
             .limitFields();
 
-        const users = await queryBuilder.mongooseQuery.lean();
+        const users = await queryBuilder.mongooseQuery.lean<UserEntity[]>();
 
         return {
-            data: users as UserEntity[],
+            data: users || [],
             pagination: queryBuilder.pagination,
         };
     }
