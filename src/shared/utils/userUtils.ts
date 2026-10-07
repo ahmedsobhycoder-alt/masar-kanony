@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import jsonWebToken , { SignOptions } from "jsonwebtoken";
+import jsonWebToken, { SignOptions } from "jsonwebtoken";
 import crypto from 'crypto';
 
 class UserUtils {
@@ -15,18 +15,18 @@ class UserUtils {
     };
 
 
-static createToken = (payload: object): string => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    throw new Error("JWT_SECRET is not defined in environment variables");
-  }
+    static createToken = (payload: object): string => {
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            throw new Error("JWT_SECRET is not defined in environment variables");
+        }
 
-  const options: SignOptions = {
-    expiresIn: (process.env.JWT_EXPIRES_IN || "90d") as any,
-  };
+        const options: SignOptions = {
+            expiresIn: (process.env.JWT_EXPIRES_IN || "90d") as any,
+        };
 
-  return jsonWebToken.sign(payload, secret, options);
-};
+        return jsonWebToken.sign(payload, secret, options);
+    };
 
     static generateOTP = (): string => {
         // Generates a number between 1000 and 9999
