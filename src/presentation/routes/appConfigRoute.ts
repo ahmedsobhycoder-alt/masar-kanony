@@ -10,6 +10,6 @@ const appConfigController = new AppConfigController(
     new AppConfigUseCases({ appConfigRepository: appConfigRepoImpl })
 );
 appConfigRouter.post("/",protect, allowedTo([UserRole.ADMIN]), createAppConfigValidator, appConfigController.createAppConfig);
-appConfigRouter.get("/", appConfigController.getAppConfig);
+appConfigRouter.get("/",protect, appConfigController.getAppConfig);
 appConfigRouter.put("/",protect, allowedTo([UserRole.ADMIN]), updateAppConfigValidator, appConfigController.updateAppConfig);
 export default appConfigRouter;

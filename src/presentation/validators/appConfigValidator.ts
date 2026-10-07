@@ -6,6 +6,7 @@ export const createAppConfigValidator = [
     .trim()
     .notEmpty()
     .withMessage("App name is required"),
+  check("appVersion").trim().notEmpty().withMessage("App version is required"),
 
   check("description")
     .trim()
@@ -52,7 +53,11 @@ export const updateAppConfigValidator = [
     .withMessage("App name cannot be empty")
     .isLength({ min: 2, max: 50 })
     .withMessage("App name must be between 2 and 50 characters"),
-
+  check("appVersion")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("App version cannot be empty"),
   check("description")
     .optional()
     .trim()
@@ -67,12 +72,21 @@ export const updateAppConfigValidator = [
   check("contactInfo.whatsappNumber")
     .optional()
     .trim()
+    .isString()
+    .withMessage("WhatsApp number must be a string")
     .matches(/^01[0125][0-9]{8}$/)
     .withMessage("WhatsApp number must be an 11-digit Egyptian phone number"),
-
+  check("contactInfo.workingHours")
+    .optional()
+    .trim()
+    .isString()
+    .withMessage("Working hours must be a string")
+    .notEmpty()
+    .withMessage("Working hours cannot be empty"),
   check("contactInfo.email")
     .optional()
     .trim()
+    .isString().withMessage("Email must be a string")
     .isEmail()
     .withMessage("Please enter a valid email address")
     .normalizeEmail(),

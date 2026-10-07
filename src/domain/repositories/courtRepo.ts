@@ -7,5 +7,7 @@ export interface CourtRepo {
     getCourtById(id: string): Promise<CourtEntity | null>;
     deleteCourtById(id: string): Promise<CourtEntity | null>;
     getMostSeenCourts( query : Record<string, any>): Promise<CourtEntity[]>
+    saveCourt(id:string) : Promise<CourtEntity>
+    cancelSave(id:string):Promise<CourtEntity>
 
 }

@@ -1,10 +1,13 @@
 interface AppConfigEntity {
     id: string;
     appName: string;
+    appVersion :String;
     description: string;
+    
     contactInfo: {
         whatsappNumber: string;
         email: string;
+        workingHours: string;
 
     }
     stats: {

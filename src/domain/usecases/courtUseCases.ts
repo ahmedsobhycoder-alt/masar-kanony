@@ -23,6 +23,12 @@ export class CourtUseCases {
     async getMostSeenCourts(query: Record<string, any> = {}): Promise<CourtEntity[]> {
         return await this.courtRepo.getMostSeenCourts(query);
     }
+    async saveCourt(id: string): Promise<CourtEntity> {
+        return await this.courtRepo.saveCourt(id);
+    }
+    async cancelSave(id: string): Promise<CourtEntity> {
+        return await this.courtRepo.cancelSave(id);
+    }
 
 
 }

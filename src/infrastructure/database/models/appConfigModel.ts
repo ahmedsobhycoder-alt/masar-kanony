@@ -21,9 +21,14 @@ const contactInfoSchema = new Schema(
             type: String,
             required: true,
             trim: true,
-      lowercase: true,
-      match: [/^\S+@\S+\.\S+$/, "Please provide a valid email address"],
+            lowercase: true,
+            match: [/^\S+@\S+\.\S+$/, "Please provide a valid email address"],
         },
+         workingHours: {
+            type: String,
+            required: true,
+            trim: true,
+        }
     },
     { _id: false }
 );
@@ -70,13 +75,18 @@ const appConfigSchema = new Schema<AppConfigEntity>(
             required: true,
             trim: true,
         },
+        appVersion: {
+            type: String,
+            required: true,
+            trim: true,
+        },
         description: {
             type: String,
             required: true,
             trim: true,
         },
-      
-       
+
+
         contactInfo: {
             type: contactInfoSchema,
             required: true,
@@ -112,16 +122,16 @@ const appConfigSchema = new Schema<AppConfigEntity>(
         },
     }
 );
-appConfigSchema.pre("save",async function () {
+appConfigSchema.pre("save", async function () {
     const courtsCount = await CourtModel.countDocuments();
-   const uniqueGovernorates = await CourtModel.distinct("governorate", {
-  governorate: { $exists: true, $ne: null },
-});
+    const uniqueGovernorates = await CourtModel.distinct("governorate", {
+        governorate: { $exists: true, $ne: null },
+    });
     this.stats.courtsCount = courtsCount;
     this.stats.governoratesCount = uniqueGovernorates.length;
     this.stats.lastDataUpdate = CourtModel.schema.path("updatedAt") ? new Date() : new Date();
-   
-    
+
+
 });
 
 

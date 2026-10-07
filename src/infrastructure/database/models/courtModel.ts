@@ -1,6 +1,6 @@
-import mongoose,{ model,Schema } from "mongoose";  
-import  CourtEntity  from "../../../domain/entities/courtEntity";
-const courtSchema = new Schema<CourtEntity>({   
+import mongoose, { model, Schema } from "mongoose";
+import CourtEntity from "../../../domain/entities/courtEntity";
+const courtSchema = new Schema<CourtEntity>({
     name: {
         type: String,
         required: [true, 'Court name is required'],
@@ -8,16 +8,16 @@ const courtSchema = new Schema<CourtEntity>({
         trim: true,
 
     },
-    address : {
+    address: {
         type: String,
         required: [true, 'Court address is required'],
     },
-    nFloors : {
+    nFloors: {
         type: Number,
         required: false,
         default: 0
     },
-    nViews:{
+    nViews: {
         type: Number,
         required: false,
         default: 0
@@ -28,24 +28,36 @@ const courtSchema = new Schema<CourtEntity>({
         default: 0
     },// The two new time fields
 
-    startingWorkingHours: { type: String, required:false,
+    startingWorkingHours: {
+        type: String, required: false,
         default: '10:00',
-     },
-    endWorkingHours: { type: String, required: false ,default: '18:00'},
+    },
+    endWorkingHours: { type: String, required: false, default: '18:00' },
 
-    floors : [{
+    floors: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Floors"
     }],
-    governorate : {
+    governorate: {
         type: String,
         required: [true, 'Governorate is required'],
     },
-    courtType : {
+    courtType: {
         type: String,
         required: [true, 'Court type is required'],
+    },
+    savedBy: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Users"
+        }
+    ],
+    isSaved: {
+        type: Boolean,
+        required: false,
+        default: false
     }
-}, { timestamps: true , versionKey: false });
+}, { timestamps: true, versionKey: false });
 
-const  CourtModel = model<CourtEntity>('Courts', courtSchema,);
+const CourtModel = model<CourtEntity>('Courts', courtSchema,);
 export default CourtModel;

@@ -11,9 +11,11 @@ export default interface CourtEntity {
     startingWorkingHours: string; // e.g., "09:00"
     endWorkingHours: string;
     governorate: string;
-    courtType: String;
+    courtType: string;
     nViews: number;
     updatedAt?: Date;
     createdAt?: Date;
+    savedBy : mongoose.Types.ObjectId[]
+    isSaved : Boolean
     
 }

@@ -19,6 +19,7 @@ import paymentOptionRouter from './presentation/routes/paymentOptionRoute';
 import paymentRouter from './presentation/routes/paymentRoute';
 import appConfigRouter from './presentation/routes/appConfigRoute';
 import appPolicyRouter from './presentation/routes/appPolicyRoute';
+import subscriptionPlanRouter from './presentation/routes/subscriptionPlanRoute';
 import { createAdminRouter } from './presentation/admin/admin';
 import { globalError } from './presentation/middlewares/errorMiddleware';
 import ApiError from './shared/errors/apiError';
@@ -63,6 +64,7 @@ server.use('/api/v1/users/', userRouter);
 server.use('/api/v1/auth/', authRouter);
 server.use('/api/v1/payment/paymentOption/',paymentOptionRouter);
 server.use('/api/v1/payment/',paymentRouter);
+server.use('/api/v1/subscriptionPlan/', subscriptionPlanRouter);
 server.use('/api/v1/appConfig/',appConfigRouter);
 server.use('/api/v1/appPolicies/', appPolicyRouter);
 
