@@ -6,9 +6,11 @@ import { QueryBuilder, QueryPagination } from "../../../shared/utils/queryBuilde
 class SubscriptionPlanRepoImpl implements SubscriptionPlanRepo {
     async getSubscriptionPlans(query: Record<string, any> = {}): Promise<SubscriptionPlanEntity|null> {
         const queryBuilder = new QueryBuilder<SubscriptionPlanEntity>(SubscriptionPlanModel, query)
-        const subscriptionPlan = await queryBuilder.mongooseQuery.lean<SubscriptionPlanEntity>();
-        return subscriptionPlan;
+        const subscriptionPlans = await queryBuilder.mongooseQuery.lean<SubscriptionPlanEntity[]>();
+        return subscriptionPlans?.length ?
+         subscriptionPlans![0] : null;
     }
+
 
     getSubscriptionPlanById(id: string): Promise<SubscriptionPlanEntity | null> {
         return SubscriptionPlanModel.findById(id).lean<SubscriptionPlanEntity | null>();

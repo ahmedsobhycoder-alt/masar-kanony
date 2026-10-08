@@ -9,7 +9,7 @@ class SubscriptionPlanUseCases {
         this.subscriptionPlanRepo = subscriptionPlanRepo;
     }
 
-    getSubscriptionPlans = (query: Record<string, any> = {}): Promise<SubscriptionPlanEntity|null> =>
+    getSubscriptionPlans = (query: Record<string, any> = {}): Promise<SubscriptionPlanEntity | null> =>
         this.subscriptionPlanRepo.getSubscriptionPlans(query);
 
     getSubscriptionPlanById = (id: string): Promise<SubscriptionPlanEntity | null> =>
