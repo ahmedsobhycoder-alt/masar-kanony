@@ -1,5 +1,6 @@
 import mongoose, { model, Schema } from "mongoose";
 import CourtEntity from "../../../domain/entities/courtEntity";
+import { ref } from "node:process";
 const courtSchema = new Schema<CourtEntity>({
     name: {
         type: String,
@@ -49,15 +50,17 @@ const courtSchema = new Schema<CourtEntity>({
     savedBy: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Users"
+            ref: "User"
         }
     ],
+
     isSaved: {
         type: Boolean,
         required: false,
-        default: false
+        default: false,
+        virtual: true
     }
-}, { timestamps: true, versionKey: false });
+}, { timestamps: true, versionKey: false  });
 
 const CourtModel = model<CourtEntity>('Courts', courtSchema,);
 export default CourtModel;

@@ -2,6 +2,8 @@ import { mongo } from "mongoose";
 import { FloorEntity } from "./floorEntity";
 import mongoose from "mongoose";
 export default interface CourtEntity {
+    id: string;
+    _id: mongoose.Types.ObjectId;
     name: string;
     type: mongoose.Types.ObjectId;
     address: string;

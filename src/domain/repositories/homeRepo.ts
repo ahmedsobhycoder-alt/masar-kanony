@@ -1,7 +1,7 @@
 import HomeEntity from "../entities/homeEntity";
 
 interface HomeRepo {
-  getHomeData(): Promise<HomeEntity>;
+  getHomeData(userId:string|null): Promise<HomeEntity>;
 }
 
 export default HomeRepo;

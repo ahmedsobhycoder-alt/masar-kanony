@@ -12,7 +12,7 @@ export class HomeController {
   }
 
   getHomeData = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const homeData = await this.homeUseCases.getHomeData();
+    const homeData = await this.homeUseCases.getHomeData((req as any).user?._id?.toString());
 
     res.status(200).json(
       formatJson({

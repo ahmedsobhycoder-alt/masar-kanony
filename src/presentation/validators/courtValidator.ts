@@ -82,3 +82,38 @@ export const getCourtByIdValidator = [
     }),
     validatorMiddleware
 ]
+export const addToSavedListValidator = [
+    check('courtId').isMongoId().withMessage('Court ID must be a valid ID')
+        .custom(async (courtId, { req }) => {
+            const court =await  CourtModel.findById({
+                _id : courtId
+            }).lean();
+            if (!court) {
+                throw new ApiError(400, 'Court does not exist');
+            }
+            req.court = court;
+
+
+        }),
+    validatorMiddleware
+]
+export const removeFromSavedList = [
+    check('courtId').isMongoId().withMessage('Court ID must be a valid ID')
+        .custom(async (courtId, { req }) => {
+            const court = CourtModel.findById(courtId);
+            if (!court) {
+                throw new ApiError(400, 'Court does not exist');
+            }
+            req.court = court;
+        }),
+    validatorMiddleware
+]
+export const getAllMySavedCourts = [
+    check('limit').optional().isInt({ min: 1 }).withMessage('Limit must be a positive integer'),
+    check('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+    check('name').optional().isString().withMessage('Court name must be a string'),
+    check('address').optional().isString().withMessage('Court address must be a string'),
+    check('courtType').optional().isString().withMessage('Court type must be a valid String'),
+    check('governorate').optional().isString().withMessage('Governorate must be a valid String'),
+    validatorMiddleware
+]

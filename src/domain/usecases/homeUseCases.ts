@@ -8,5 +8,5 @@ export class HomeUseCases {
     this.homeRepo = homeRepo;
   }
 
-  getHomeData = async (): Promise<HomeEntity> => this.homeRepo.getHomeData();
+  getHomeData = async (userId: string | null): Promise<HomeEntity> => this.homeRepo.getHomeData(userId);
 }

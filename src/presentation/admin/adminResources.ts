@@ -16,44 +16,36 @@ import PaymentOptionModel from '../../infrastructure/database/models/paymentOpti
 import SubscriptionPlanModel from '../../infrastructure/database/models/subscriptionPlanModel';
 import UserModel from '../../infrastructure/database/models/userModel';
 
-const withNavigation = (
+const defaultIdProperty = {
+    _id: {
+        isVisible: { list: false, filter: true, show: true, edit: false },
+    },
+};
+
+const buildResource = (
     model: any,
     navigationName: string,
     icon = 'Folder',
-    options: Record<string, any> = {}
-) => {
-    const defaultProperties = {
-        _id: {
-            isVisible: { list: false, filter: true, show: true, edit: false },
+    overrideOptions: Record<string, any> = {}
+) => ({
+    resource: model,
+    options: {
+        navigation: { name: navigationName, icon },
+        ...overrideOptions,
+        properties: {
+            ...defaultIdProperty,
+            ...(overrideOptions.properties ?? {}),
         },
-    };
+    },
+});
 
-    return {
-        resource: model,
-        options: {
-            navigation: { name: navigationName, icon },
-            ...options,
-            properties: {
-                ...defaultProperties,
-                ...(options.properties ?? {}),
-            },
-        },
-    };
-};
-
-const userResource = withNavigation(UserModel, 'User Management', 'User', {
+const userResource = buildResource(UserModel, 'User Management', 'User', {
     listProperties: ['name', 'email', 'phone', 'role', 'createdAt'],
-    id : "User",
+    id: "User",
     properties: {
-        password: {
-            isVisible: false,
-        },
-        resetCode: {
-            isVisible: false,
-        },
-        resetCodeExpires: {
-            isVisible: false,
-        },
+        password: { isVisible: false },
+        resetCode: { isVisible: false },
+        resetCodeExpires: { isVisible: false },
         passwordChangedAt: {
             isVisible: { list: false, filter: true, show: true, edit: false },
         },
@@ -62,32 +54,30 @@ const userResource = withNavigation(UserModel, 'User Management', 'User', {
 
 const resources: Array<ResourceWithOptions | any> = [
     userResource,
-   // withNavigation(CourtModel, 'Courts', 'Building'),
-    withNavigation(AdsModel, 'Ads', 'Image'),
-    withNavigation(GovernorateModel, 'Governorates', 'Map'),
-    withNavigation(AppConfigModel, 'App Config', 'Settings'),
-   //  withNavigation(AppPolicyModel, 'App Policy', 'File'),
-    // withNavigation(CityModel, 'Cities', 'Map'),
-    // 
-    // withNavigation(CourtTypeModel, 'Court Types', 'Folder'),
-    // withNavigation(FloorModel, 'Floors', 'Layers'),
-    // withNavigation(FloorNameModel, 'Floor Names', 'List'),
-    // 
-//      withNavigation(OfficeModel, 'Offices', 'Building', {
-//          options: {
-//     properties: {
-//       services: {
-//         type: 'string',
-//         isArray: true,
-//       },
-//     },
-//   },
-//      }),
-    // withNavigation(OfficeTypeModel, 'Office Types', 'Folder'),
-     withNavigation(PaymentModel, 'Payments', 'Money',{
+    buildResource(AdsModel, 'Ads', 'Image'),
+    // buildResource(AppConfigModel, 'App Config', 'Settings'),
+    // buildResource(AppPolicyModel, 'App Policy', 'File'),
+    // buildResource(CityModel, 'Cities', 'Map'),
+    // buildResource(CourtModel, 'Courts', 'Building'),
+    // buildResource(CourtTypeModel, 'Court Types', 'Folder'),
+    // buildResource(FloorModel, 'Floors', 'Layers'),
+    // buildResource(FloorNameModel, 'Floor Names', 'List'),
+    buildResource(GovernorateModel, 'Governorates', 'Map'),
+    // buildResource(OfficeModel, 'Offices', 'Building'),
+     buildResource(OfficeTypeModel, 'Office Types', 'Folder'),
+    buildResource(PaymentModel, 'Payments', 'Money', {
         properties: {
-            rejectReason: {
-                isVisible: false,
+            currency: {
+                isVisible: false
+            },
+            currencySymbol: {
+                isVisible: false
+            },
+            reviewedByAdminId: {
+                isVisible: false
+            },
+            reviewedAt: {
+                isVisible: false
             },
             userWalletNumber: {
                 isVisible: { list: false, filter: true, show: true, edit: false },
@@ -95,14 +85,19 @@ const resources: Array<ResourceWithOptions | any> = [
             walletNumber: {
                 isVisible: { list: false, filter: true, show: true, edit: false },
             },
-           
             receiptImageUrl: {
                 isVisible: { list: false, filter: true, show: true, edit: false },
             },
+            rejectionReason: {
+                isVisible: false,
+            },
+            rejectionMessage: {
+                isVisible: false,
+            },
         },
-     }),
-    // withNavigation(PaymentOptionModel, 'Payment Options', 'CreditCard'),
-    // withNavigation(SubscriptionPlanModel, 'Subscription Plans', 'Book'),
+    }),
+    // buildResource(PaymentOptionModel, 'Payment Options', 'CreditCard'),
+    // buildResource(SubscriptionPlanModel, 'Subscription Plans', 'Book'),
 ];
 
 export default resources;
