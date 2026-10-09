@@ -12,20 +12,24 @@ const createPaymentValidator = [
         .notEmpty()
         .withMessage("Wallet number is required")
         .isString().withMessage("Wallet number must be a string")
-        .isLength({ min: 10, max: 20 }).withMessage("Wallet number must be between 10 and 20 characters")
+        .isLength({ min: 11, max: 11 }).withMessage("Wallet number must be 11 digits characters")
         .trim().custom(async (walletNumber) => {
             const isWalletExisted = await PaymentOptionModel.exists({ phone: walletNumber });
             if (!isWalletExisted) {
                 throw new ApiError(400, "wallet number is not exist");
             }
         }),
+        check("userWalletNumber") .notEmpty()
+        .withMessage("Wallet number is required")
+        .isString().withMessage("your Wallet number must be a string")
+        .isLength({ min: 11, max: 11 }).withMessage("your Wallet number must be 11 digits"),
 
 
     check("amount")
         .notEmpty()
         .withMessage("Amount is required")
         .trim()
-        .matches(/^\d+\.\d+$/)
+        .isFloat({ gt: 0 })
         .withMessage("Amount must be a decimal/float number")
         .custom((value) => {
             if (parseFloat(value) <= 0) {
@@ -33,19 +37,51 @@ const createPaymentValidator = [
             }
             return true;
         }),
-    check("transactionId")
-        .notEmpty()
-        .withMessage("Transaction ID is required")
+
+    check("receiptImageUrl")
         .trim()
-        .custom(async (transactionId) => {
-            const isTransactionExisted = await PaymentModel.exists({ transactionId });
-            if (isTransactionExisted) {
-                throw new ApiError(400, "Transaction ID already exists");
+        .notEmpty()
+        .withMessage("Payment receipt image is required")
+        .isURL()
+        .withMessage("Receipt image must be a valid URL"),
+
+
+
+    // --- Currency Validation ---
+    check("currency")
+        .notEmpty()
+        .withMessage("Currency is required")
+        .isString()
+        .withMessage("Currency must be a string")
+        .trim()
+        .toUpperCase()
+        .isLength({ min: 3, max: 3 })
+        .withMessage("Currency must be exactly 3 characters (e.g., EGP, USD)"),
+
+    // --- Currency Symbol Validation ---
+    check("currencySymbol")
+        .notEmpty()
+        .withMessage("Currency symbol is required")
+        .isString()
+        .withMessage("Currency symbol must be a string")
+        .trim()
+        .isLength({ min: 1, max: 5 })
+        .withMessage("Currency symbol must be between 1 and 5 characters"),
+
+    check("walletType")
+        .notEmpty()
+        .withMessage("Wallet Type is required")
+        .isString()
+        .withMessage("Wallet Type must be a string")
+        .trim().isLength({ min: 2, max: 10 })
+        .withMessage("Wallet Type must be between 2 and 10 characters")
+        .custom(async (walletType) => {
+            const isWalletExisted = await PaymentOptionModel.exists({ paymentType: walletType });
+            if (!isWalletExisted) {
+                throw new ApiError(400, "wallet number is not exist");
             }
-        }),
-
-
-
+        })
+    ,
     validatorMiddleware,
 ];
 const getPaymentsValidator = [

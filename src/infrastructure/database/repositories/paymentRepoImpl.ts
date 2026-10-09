@@ -18,7 +18,7 @@ class PaymentRepoImpl implements PaymentRepo {
                 throw new ApiError(404, "Payment not found");
             }
 
-            if (payment.status === PaymentStatus.PAID) {
+            if (payment.paymentStatus === PaymentStatus.APPROVED) {
                 throw new ApiError(400, "Payment is already approved");
             }
 
@@ -30,7 +30,7 @@ class PaymentRepoImpl implements PaymentRepo {
             user.isSubscribed = true;
             await user.save({ session });
 
-            payment.status = PaymentStatus.PAID;
+            payment.paymentStatus = PaymentStatus.APPROVED;
             await payment.save({ session });
 
             await session.commitTransaction();
@@ -52,7 +52,7 @@ class PaymentRepoImpl implements PaymentRepo {
                 throw new ApiError(404, "Payment not found");
             }
 
-            if (payment.status === PaymentStatus.CANCELED) {
+            if (payment.paymentStatus === PaymentStatus.REJECTED) {
                 throw new ApiError(400, "Payment is already declined");
             }
 
@@ -64,7 +64,7 @@ class PaymentRepoImpl implements PaymentRepo {
             user.isSubscribed = false;
             await user.save({ session });
 
-            payment.status = PaymentStatus.CANCELED;
+            payment.paymentStatus = PaymentStatus.REJECTED;
             await payment.save({ session });
 
             await session.commitTransaction();
@@ -105,6 +105,14 @@ class PaymentRepoImpl implements PaymentRepo {
     getPaymentByTransactionId(transactionId: string): Promise<PaymentEntity | null> {
         return PaymentModel.findOne({ transactionId });
     }
+
+    async getPaymentStatus(id: string): Promise<PaymentEntity | null> {
+        const payment = await PaymentModel.findOne(
+           { user : id  }
+        ).select("-reviewedByAdminId").lean<PaymentEntity>();
+        return payment;
+    }
+
 
     updatePaymentStatus(id: string, status: string): Promise<PaymentEntity | null> {
         return PaymentModel.findByIdAndUpdate(

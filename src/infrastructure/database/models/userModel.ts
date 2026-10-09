@@ -3,6 +3,7 @@ import UserEntity from "../../../domain/entities/userEntity";
 import UserUtils from "../../../shared/utils/userUtils";
 import { printGreen } from "../../../shared/utils/printColors";
 import UserRole from "../../../shared/constants/user-roles.enum";
+import { SubscriptionStatus, SubscriptionStatusValues } from "../../../shared/constants/payment-status.enums";
 const userSchema = new Schema<UserEntity>({
     name: {
         type: String,
@@ -35,7 +36,8 @@ const userSchema = new Schema<UserEntity>({
     resetCode: String,
     resetCodeExpires: Date,
 
-    resetCodeVerified: Boolean, active: {
+    resetCodeVerified: Boolean,
+    active: {
         type: Boolean,
         default: true,
     },
@@ -54,17 +56,46 @@ const userSchema = new Schema<UserEntity>({
     isSubscribed: {
         type: Boolean,
         default: false
-    }
+    },
+    currentsubscriptionStatus: {
+        type: String,
+        enum: SubscriptionStatusValues,
+        default: null
+    },
+    currentSubscriptionId: {
+        type: String,
+        default: null
+    },
 
 
-});
+
+},
+    {
+        timestamps: true,
+        toJSON: {
+            versionKey: false,
+            transform: function (doc, ret) {
+                ret.id = ret._id.toString();
+                delete ret.password;
+                return ret;
+            }
+        },
+        toObject: {
+            versionKey: false,
+            transform: function (doc, ret) {
+                ret.id = ret._id.toString();
+                delete ret.password;
+                return ret;
+            }
+        },
+    });
 userSchema.pre("save", async function () {
-  // Only hash the password if it has actually been modified (or is new)
-  printGreen("password",`Password before hashing: ${this.password}`);
-  if (!this.isModified("password")) return;
-  printGreen("password",`Password after hashing: ${this.password}`);
+    // Only hash the password if it has actually been modified (or is new)
+    printGreen("password", `Password before hashing: ${this.password}`);
+    if (!this.isModified("password")) return;
+    printGreen("password", `Password after hashing: ${this.password}`);
 
-  this.password = await UserUtils.hashPassword(this.password);
+    this.password = await UserUtils.hashPassword(this.password!);
 });
 
 const UserModel = mongoose.model<UserEntity>("users", userSchema);

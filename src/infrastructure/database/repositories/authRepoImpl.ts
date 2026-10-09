@@ -69,6 +69,9 @@ class AuthRepoImpl implements AuthRepo {
         if (!user) {
             throw new ApiError(400, "Invalid email");
         }
+        if (!user.password) {
+            throw new ApiError(400, "User account password is not set");
+        }
         printGreen("email",`User found: ${user.email}, ID: ${user._id}`);
         printGreen("hased password",`Password provided: ${user.password}`);
         const isPasswordCorrect = await UserUtils.comparePassword(

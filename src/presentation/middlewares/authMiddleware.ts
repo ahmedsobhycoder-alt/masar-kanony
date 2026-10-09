@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import ApiError from "../../shared/errors/apiError";
 import UserModel from "../../infrastructure/database/models/userModel";
 import { printBlue } from "../../shared/utils/printColors";
+import UserEntity from "../../domain/entities/userEntity";
 
 interface JwtPayloadCustom {
   id: string;
@@ -38,7 +39,7 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
   }
 
   // Attach currentUser to req.user
-  (req as any).user = currentUser;
+  (req as any).user = currentUser as UserEntity;
   printBlue("req.user", (req as any).user);
   next();
 });

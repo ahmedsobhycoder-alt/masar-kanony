@@ -1,8 +1,10 @@
 interface UserEntity {
+    id: string;
+
     name: string;
     phone: string;
     email: string;
-    password: string;
+    password?: string;
     profileImage: string;
     role: string;
     active: Boolean;
@@ -12,6 +14,9 @@ interface UserEntity {
     otp: String,
     resetCodeVerified?: Boolean,
     verified: Boolean,
-    isSubscribed: Boolean
+    isSubscribed: Boolean,
+    currentsubscriptionStatus: String
+    currentSubscriptionId: string;
+
 }
 export default UserEntity;

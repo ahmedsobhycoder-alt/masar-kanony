@@ -3,7 +3,6 @@ import asyncHandler from "express-async-handler";
 import PaymentUseCases from "../../domain/usecases/paymentUseCases";
 import { formatJson } from "../../shared/utils/formatJson";
 import { printBlue } from "../../shared/utils/printColors";
-import PaymentEntity from "../../domain/entities/paymentEntity";
 import PaymentStatus from "../../shared/constants/payment-status.enums";
 
 class PaymentController {
@@ -17,14 +16,13 @@ class PaymentController {
         printBlue("req.body", JSON.stringify(req.body));
         const paymentData = req.body;
         printBlue("req.user", (req as any).user.id);
-        paymentData.user = (req as any).user?.id as any; // Assuming req.user is populated by authentication middleware
-        paymentData.status =PaymentStatus.PENDING; // Set default status to PENDING
+        paymentData.user = (req as any).user.id ; // Assuming req.user is populated by authentication middleware
+        paymentData.paymentStatus =PaymentStatus.PENDING; // Set default status to PENDING
         const createdPayment = await this.paymentUseCases.createPayment(paymentData);
 
         res.status(201).json(
             formatJson({
-                data: createdPayment,
-                message: req.t("Payment created successfully", { ns: "common" }),
+                message: req.t("Payment is created successfully, please wait for approval", { ns: "common" }),
                 status: true,
             })
         );
@@ -105,6 +103,18 @@ class PaymentController {
             formatJson({
                 data: deletedPayment,
                 message: req.t("Payment deleted successfully", { ns: "common" }),
+                status: true,
+            })
+        );
+    });
+    getPaymentStatus = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const userId = (req as any).user.id;
+        const payment = await this.paymentUseCases.getPaymentStatus(userId);
+
+        res.status(200).json(
+            formatJson({
+                data: payment,
+                message: req.t("Payment status fetched successfully", { ns: "common" }),
                 status: true,
             })
         );

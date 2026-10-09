@@ -28,6 +28,7 @@ class PaymentUseCases {
     this.paymentRepo.deletePaymentById(id);
     approvePayment=(id: string): Promise<PaymentEntity >=> this.paymentRepo.approvePayment(id);
     declinePayment=(id: string): Promise<PaymentEntity >=> this.paymentRepo.declinePayment(id);
+    getPaymentStatus=(id: string): Promise<PaymentEntity | null> => this.paymentRepo.getPaymentStatus(id);
 }
 
 export default PaymentUseCases;

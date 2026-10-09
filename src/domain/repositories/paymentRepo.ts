@@ -9,6 +9,7 @@ interface PaymentRepo {
   deletePaymentById(id: string): Promise<PaymentEntity | null>;
   approvePayment(id: string,): Promise<PaymentEntity >;
   declinePayment(id: string): Promise<PaymentEntity >;
+  getPaymentStatus(id: string): Promise<PaymentEntity | null>;
 }
 
 export default PaymentRepo;

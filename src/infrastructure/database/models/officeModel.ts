@@ -8,7 +8,6 @@ interface OfficeModelStatic extends mongoose.Model<OfficeEntity> {
     calculateNumberOfFOfficesPerFloor: (floor: mongoose.Types.ObjectId, method: string) => Promise<void>;
     calculateNumberOfFOfficesPerCourt: (court: mongoose.Types.ObjectId, method: string) => Promise<void>;
 }
-
 const officeSchema = new mongoose.Schema<OfficeEntity, OfficeModelStatic>({
     floor: {
         type: mongoose.Schema.Types.ObjectId,
@@ -25,8 +24,6 @@ const officeSchema = new mongoose.Schema<OfficeEntity, OfficeModelStatic>({
         ref: "OfficeTypes",
         required: [true, "Office type ID is required"],
     },
-
-
     roomNumber: { type: String, required: [true, "Room number is required"] }, 
     description: { type: String, required: false },
     locationDirection: { type: String, required: [true, "Location direction is required"] },
@@ -38,7 +35,8 @@ const officeSchema = new mongoose.Schema<OfficeEntity, OfficeModelStatic>({
         type: String, required: false,
         default: "20:00"
     },
-    services: { type: [String], required: [true, "Services are required"] },
+    // Fix: Write either [String] directly or [{ type: String }]
+    services: [{ type: String }],
     mapUrl: { type: String },
 }, { timestamps: true, versionKey: false });
 officeSchema.statics.calculateNumberOfFOfficesPerFloor = async function (floor: mongoose.Types.ObjectId, method: string) {
