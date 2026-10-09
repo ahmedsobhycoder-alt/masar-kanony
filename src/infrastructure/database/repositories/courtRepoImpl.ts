@@ -67,23 +67,40 @@ console.log({
       pagination: queryBuilder.pagination,
     };
   }
-  async getCourtById(id: string): Promise<CourtEntity | null> {
-
-    return await CourtModel.findByIdAndUpdate(id, {
+  async getCourtById(id: string, userId?: string): Promise<CourtEntity | null> {
+    const court = await CourtModel.findByIdAndUpdate(id, {
       $inc: { nViews: 1 },
-    }, { new: true }).populate({
-      path: "floors",
-      populate: [
-        {
-          path: "offices", populate: [
-            {
-              path: "officeType",
-              select: "name description-floor-court"
-            }
-          ],
-        },
-      ],
-    });
+    }, { new: true })
+      .populate({
+        path: "floors",
+        populate: [
+          {
+            path: "offices",
+            populate: [
+              {
+                path: "officeType",
+                select: "name description-floor-court",
+              },
+            ],
+          },
+        ],
+      })
+      .lean<CourtEntity | null>();
+
+    if (!court) {
+      return null;
+    }
+
+    const isSaved = userId
+      ? Boolean((court.savedBy ?? []).some((savedUserId: any) => savedUserId?.toString() === userId))
+      : false;
+
+    delete (court as Partial<CourtEntity>).savedBy;
+
+    return {
+      ...court,
+      isSaved,
+    } as CourtEntity;
   }
 
 

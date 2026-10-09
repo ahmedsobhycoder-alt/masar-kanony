@@ -18,8 +18,8 @@ export class CourtUseCases {
         return await this.courtRepo.getCourts(userId,query);
     }
 
-    async getCourtById(id: string): Promise<CourtEntity | null> {
-        return await this.courtRepo.getCourtById(id);
+    async getCourtById(id: string, userId?: string): Promise<CourtEntity | null> {
+        return await this.courtRepo.getCourtById(id, userId);
     }
     async getMostSeenCourts(query: Record<string, any> = {}): Promise<CourtEntity[]> {
         return await this.courtRepo.getMostSeenCourts(query);

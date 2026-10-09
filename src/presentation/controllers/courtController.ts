@@ -23,9 +23,9 @@ export class CourtController {
         res.status(200).json(formatJson({ data: { list: data, paginationResult: pagination }, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }));
     })
     getCourtById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const
-         courtId = req.params.id as string;
-        const court = await this.courtUseCases.getCourtById(courtId);
+        const courtId = req.params.id as string;
+        const userId = (req as any).user?._id?.toString();
+        const court = await this.courtUseCases.getCourtById(courtId, userId);
         res.status(200).json(formatJson({ data: court, message: req.t("Court fetched successfully", { ns: "common" }), status: true }));
     })
     getMostSeenCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {

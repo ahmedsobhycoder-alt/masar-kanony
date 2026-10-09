@@ -47,7 +47,7 @@ export const updateAppPolicyValidator = [
         .custom(async (type, { req }) => {
             const appPolicy = await AppPolicyModel.findOne({ type });
             if (!appPolicy) {
-                throw new ApiError(400, `${type} not found`);
+                throw new ApiError(400, "App policy type not found");
             }
             return true;
         }),

@@ -14,29 +14,26 @@ export const createFloorValidator = [
         .withMessage("Court ID must be a valid Mongo ID")
         .custom(async (court) => {
             const isCourtExisted = await CourtModel.exists({ _id: court });
-            
+
             if (!isCourtExisted) {
-                // express-validator will catch this and use the string as the error message
-                throw new Error("Court does not exist"); 
+                throw new Error("Court does not exist");
             }
             return true;
         }),
-        
+
     check("floorName")
         .notEmpty()
         .withMessage("Floor Name ID is required")
         .isMongoId()
         .withMessage("Floor Name ID must be a valid Mongo ID")
         .custom(async (floorName, { req }) => {
-            // 1. Verify the floor name exists in the master list
             const floorRecord = await FloorNameModel.findById(floorName);
             if (!floorRecord) {
                 throw new Error("Floor does not exist");
             }
 
-            // 2. Verify this specific floor isn't already assigned to this court
             const isDuplicate = await FloorModel.exists({
-                floorName, 
+                floorName,
                 court: req.body.court
             });
 
@@ -44,13 +41,12 @@ export const createFloorValidator = [
                 throw new Error("This floor already exists in the specified court");
             }
 
-            // 3. Attach to request for the controller (Pragmatic approach to save DB calls)
             req.floorName = floorRecord.name;
             printGreen("req.floorName", req.floorName);
 
             return true;
         }),
-        check("image").notEmpty().withMessage("Image is required"),
+    check("image").notEmpty().withMessage("Image is required"),
 
     validatorMiddleware,
 ];
@@ -68,7 +64,7 @@ export const getFloorsValidator = [
             if (!isCourtExisted) {
                 throw new ApiError(400, "Court does not exist");
             }
-            req.filter ={
+            req.filter = {
                 court: courtId
             };
         }),
