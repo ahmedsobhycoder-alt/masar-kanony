@@ -4,6 +4,7 @@ import { formatJson } from "../../shared/utils/formatJson";
 import asyncHandler from "express-async-handler"
 import { printRed } from "../../shared/utils/printColors";
 import CourtEntity from "../../domain/entities/courtEntity";
+import listType from "../../shared/constants/types";
 
 export class CourtController {
     private readonly courtUseCases: CourtUseCases;
@@ -48,8 +49,11 @@ export class CourtController {
         res.status(200).json(formatJson({ data: removedCourt, message: req.t("Court removed from saved successfully", { ns: "common" }), status: true }));
     })
     getSavedCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const courts = await this.courtUseCases.getSavedCourts(req.query as Record<string, any>,(req as any).user._id);
-        res.status(200).json(formatJson({ data: courts, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }));
+        const list :listType<CourtEntity> = await this.courtUseCases.getSavedCourts(req.query as Record<string, any>,(req as any).user._id);
+        res.status(200).json(formatJson({ data: {
+            list: list.data
+            , paginationResult: list.pagination
+        }, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }));
     })
     
 }

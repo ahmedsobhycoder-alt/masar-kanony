@@ -25,6 +25,7 @@ export class AuthUseCases {
     verifyResetCode = async (email: string, resetCode: string) =>
         this.userRepo.verifyResetCode(email, resetCode);
     resetPassword = async (email: string, newPassword: string) => this.userRepo.resetPassword(email, newPassword);
+    logout = async (token: string): Promise<void> => this.userRepo.logout(token);
 
     // getAllUsers = async (query: Record<string, any> = {}): Promise<UserEntity[]> =>
     //     this.userRepo.getAllUsers(query);

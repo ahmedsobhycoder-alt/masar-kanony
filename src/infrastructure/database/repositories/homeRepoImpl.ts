@@ -43,6 +43,20 @@ class HomeRepoImpl implements HomeRepo {
       const isSaved = userId
         ? Boolean(court.savedBy?.some((id: any) => id.toString() === userId))
         : false;
+        
+
+
+      // Delete savedBy so it's not exposed to the client
+      delete (court as Partial<CourtEntity>).savedBy;
+      court.isSaved = isSaved;
+      return court
+    });
+        const formattedMostSeenCourts   = (mostSeenCourts || []).map((court:any) => {
+      const isSaved = userId
+        ? Boolean(court.savedBy?.some((id: any) => id.toString() === userId))
+        : false;
+        
+
 
       // Delete savedBy so it's not exposed to the client
       delete (court as Partial<CourtEntity>).savedBy;
@@ -50,8 +64,9 @@ class HomeRepoImpl implements HomeRepo {
       return court
     });
     courts=formattedCourts
+    mostSeenCourts=formattedMostSeenCourts
     // 3. Return the results
-    return { courts, ads, mostSeenCourts };
+    return { courts, ads, mostSeenCourts};
 }
 }
 export default HomeRepoImpl;

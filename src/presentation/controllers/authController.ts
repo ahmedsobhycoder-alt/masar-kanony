@@ -26,6 +26,11 @@ class AuthController {
         const userAndToken=await this.userUseCases.login(email, password);
             res.status(200).json(formatJson({ message: req.t("logged in successfully", { ns: "common" }), status: true, data: userAndToken }));
     };
+    logout = async (req: any, res: any) => {
+        const token = req.headers.authorization.split(" ")[1];
+        await this.userUseCases.logout(token);
+        res.status(200).json(formatJson({ message: req.t("logged out successfully", { ns: "common" }), status: true }));
+    };
     forgetPassword = async (req: any, res: any) => {
         const email = req.body.email;
         await this.userUseCases.forgetPassword(email);

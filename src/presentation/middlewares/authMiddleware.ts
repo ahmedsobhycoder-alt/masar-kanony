@@ -6,6 +6,8 @@ import ApiError from "../../shared/errors/apiError";
 import UserModel from "../../infrastructure/database/models/userModel";
 import { printBlue } from "../../shared/utils/printColors";
 import UserEntity from "../../domain/entities/userEntity";
+import RevokedTokenModel from "../../infrastructure/database/models/revokedTokenModel";
+import UserUtils from "../../shared/utils/userUtils";
 
 interface JwtPayloadCustom {
   id: string;
@@ -25,6 +27,11 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
   }
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayloadCustom;
+
+  const isTokenRevoked = await RevokedTokenModel.exists({ tokenHash: UserUtils.hashToken(token) });
+  if (isTokenRevoked) {
+    return next(new ApiError(401, req.t("unauthorized", { ns: "errors" })));
+  }
 
   const currentUser = await UserModel.findById(decoded.id).lean();
   if (!currentUser) {
@@ -60,6 +67,13 @@ export const optionalProtect = asyncHandler(async (req: Request, res: Response, 
   try {
     // 2. Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayloadCustom;
+
+    const isTokenRevoked = await RevokedTokenModel.exists({ tokenHash: UserUtils.hashToken(token) });
+    if (isTokenRevoked) {
+      (req as any).user = null;
+      (req as any).userId = null;
+      return next();
+    }
 
     // 3. Find user in DB
     const currentUser = await UserModel.findById(decoded.id).lean();

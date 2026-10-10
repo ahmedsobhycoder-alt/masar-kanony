@@ -47,13 +47,6 @@ class CourtRepoImpl implements CourtRepo {
       const isSaved = userId
         ? Boolean(court.savedBy?.some((id: any) => id.toString() === userId))
         : false;
-console.log({
-  receivedUserId: userId,
-  userIdType: typeof userId,
-  savedByArray: court.savedBy,
-  firstElement: court.savedBy?.[0],
-  firstElementType: typeof court.savedBy?.[0]
-});
       // Delete savedBy so it's not exposed to the client
       delete (court as Partial<CourtEntity>).savedBy;
       return {
@@ -130,8 +123,9 @@ console.log({
     // Convert to plain object so custom runtime properties like `isSaved` persist in JSON
     const result = updatedCourt.toObject();
     result.isSaved = true;
+    const { savedBy, ...savedCourt } = result;
 
-    return result as CourtEntity;
+    return savedCourt as CourtEntity;
   }
 
   async removeFromSaved(court: CourtEntity, userId: string): Promise<CourtEntity | null> {
@@ -143,8 +137,11 @@ console.log({
     if (!updatedCourt) {
       return null;
     }
-    updatedCourt.isSaved = false;
-    return updatedCourt;
+    const result = updatedCourt.toObject();
+    result.isSaved = true;
+    const { savedBy, ...removedCourt } = result;
+
+    return removedCourt as CourtEntity;
   }
   async getSavedCourts(query: Record<string, any>, userId: string): Promise<listType<CourtEntity>> {
     const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, {

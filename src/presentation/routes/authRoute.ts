@@ -4,12 +4,14 @@ import {
     signUpValidator,
     verifyValidator,
     loginValidator,
+    logoutValidator,
     forgetPasswordValidator,
     verifyResetCodeValidator,
     resetPasswordValidator,
 } from "../validators/authValidaor";
 import { AuthUseCases } from "../../domain/usecases/authUseCases";
 import authRepoImpl from "../../infrastructure/database/repositories/authRepoImpl";
+import { protect } from "../middlewares/authMiddleware";
 
 const authRouter = Router();
 const authController = new AuthController(new AuthUseCases({ userRepo: authRepoImpl }));
@@ -18,6 +20,7 @@ authRouter
     .post("/signup", signUpValidator, authController.signup)
     .post("/verify", verifyValidator, authController.verify)
     .post("/login", loginValidator, authController.login)
+    .post("/logout", logoutValidator, protect, authController.logout)
     .post("/forgetPassword", forgetPasswordValidator, authController.forgetPassword)
     .post("/verifyResetCode", verifyResetCodeValidator, authController.verifyResetCode)
     .post("/resetPassword", resetPasswordValidator, authController.resetPassword);

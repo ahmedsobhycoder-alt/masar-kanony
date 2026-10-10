@@ -32,5 +32,8 @@ class UserUtils {
         // Generates a number between 1000 and 9999
         return crypto.randomInt(1000, 10000).toString();
     };
+
+    static hashToken = (token: string): string =>
+        crypto.createHash("sha256").update(token).digest("hex");
 }
 export default UserUtils; 

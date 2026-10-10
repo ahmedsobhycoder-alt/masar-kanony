@@ -7,6 +7,8 @@ import UserUtils from "../../../shared/utils/userUtils";
 import OtpModel from "../models/otpModel";
 import { printGreen, printYellow } from "../../../shared/utils/printColors";
 import ApiError from "../../../shared/errors/apiError";
+import RevokedTokenModel from "../models/revokedTokenModel";
+import jwt from "jsonwebtoken";
 class AuthRepoImpl implements AuthRepo {
    
 
@@ -137,6 +139,17 @@ class AuthRepoImpl implements AuthRepo {
         user.resetCodeVerified = undefined;
 
         await user.save();
+    }
+    async logout(token: string): Promise<void> {
+        const decoded = jwt.decode(token);
+        if (!decoded || typeof decoded === "string" || !decoded.exp) {
+            throw new ApiError(400, "Invalid token");
+        }
+
+        await RevokedTokenModel.create({
+            tokenHash: UserUtils.hashToken(token),
+            expiresAt: new Date(decoded.exp * 1000),
+        });
     }
 }
 

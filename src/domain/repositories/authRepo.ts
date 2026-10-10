@@ -13,6 +13,7 @@ interface AuthRepo {
     forgetPassword(email:string): Promise<void>;
     verifyResetCode(email: string, resetCode: string): Promise<void>
     resetPassword(email: string, newPassword: string) : Promise<void>
+    logout(token: string): Promise<void>
 
     // getAllUsers(query:any): Promise<UserEntity[]>;
     // getUserById(id:string):Promise<UserEntity>;

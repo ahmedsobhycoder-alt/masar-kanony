@@ -17,7 +17,7 @@ export default interface CourtEntity {
     nViews: number;
     updatedAt?: Date;
     createdAt?: Date;
-    savedBy : mongoose.Types.ObjectId[]
+    savedBy? : mongoose.Types.ObjectId[]
     isSaved : Boolean
     
 }

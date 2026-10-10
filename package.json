@@ -4,6 +4,17 @@
   "description": "",
   "type": "commonjs",
   "main": "dist/server.js",
+  "exports": {
+  ".": {
+    "require": "./bundle.js",
+    "import": "./bundle.js"
+  },
+  "./styled-components": {
+    "require": "./build/utils/styled.js",
+    "import": "./build/utils/styled.js",
+    "types": "./types/src/utils/styled.d.ts"
+  }
+},
   "scripts": {
     "build": "tsc --project tsconfig.json && node scripts/copy-locales.cjs",
     "start": "node dist/server.js",
@@ -30,7 +41,6 @@
     "destroy:payments": "tsx src/infrastructure/database/migrations/seeders/paymentsSeeder.ts -d",
     "seed:appPolicy": "tsx src/infrastructure/database/migrations/seeders/appPolicySeeder.ts -i",
     "destroy:appPolicy": "tsx src/infrastructure/database/migrations/seeders/appPolicySeeder.ts -d",
-
     "admin:bundle": "adminjs bundle"
   },
   "keywords": [],
@@ -74,6 +84,7 @@
     "@types/uuid": "^10.0.0",
     "colors": "^1.4.0",
     "nodemon": "^3.1.14",
+    "patch-package": "^8.0.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2"
