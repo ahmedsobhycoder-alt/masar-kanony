@@ -11,6 +11,7 @@ interface PaymentEntity {
     currencySymbol: string;
     amount: number;
     paymentStatus: string;
+    requestNumber: string
 
 
     rejectionReason: string;      // Shown on screen when REJECTED (e.g., "صورة الإيصال غير واضحة")

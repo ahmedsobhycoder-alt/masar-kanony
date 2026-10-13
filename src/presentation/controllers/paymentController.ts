@@ -4,6 +4,7 @@ import PaymentUseCases from "../../domain/usecases/paymentUseCases";
 import { formatJson } from "../../shared/utils/formatJson";
 import { printBlue } from "../../shared/utils/printColors";
 import PaymentStatus from "../../shared/constants/payment-status.enums";
+import PaymentEntity from "src/domain/entities/paymentEntity";
 
 class PaymentController {
     readonly paymentUseCases: PaymentUseCases;
@@ -14,7 +15,7 @@ class PaymentController {
 
     createPayment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         printBlue("req.body", JSON.stringify(req.body));
-        const paymentData = req.body;
+        const paymentData = req.body as PaymentEntity;
         printBlue("req.user", (req as any).user._id);
         paymentData.user = (req as any).user._id ; // Assuming req.user is populated by authentication middleware
         paymentData.paymentStatus =PaymentStatus.PENDING; // Set default status to PENDING
@@ -22,6 +23,7 @@ class PaymentController {
 
         res.status(201).json(
             formatJson({
+                data: createdPayment,
                 message: req.t("Payment is created successfully, please wait for approval", { ns: "common" }),
                 status: true,
             })

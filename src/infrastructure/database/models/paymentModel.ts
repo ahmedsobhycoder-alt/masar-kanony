@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { CallbackError, Schema } from "mongoose";
 import PaymentEntity from "../../../domain/entities/paymentEntity";
 import { AdsEntity } from "../../../domain/entities/adsEntity";
 import PaymentStatus, { PaymentStatusValues } from "../../../shared/constants/payment-status.enums";
@@ -70,6 +70,12 @@ const paymentSchema = new Schema<PaymentEntity>(
       type: String,
       default: null
     },
+ requestNumber: {
+  type: String,
+  trim: true,
+  unique: true,
+  sparse: true, // Prevents duplicate key errors if a document doesn't have a requestNumber yet
+},
     walletType: {
       type: String,
       required: [true, "Wallet Type is required"],
@@ -81,12 +87,48 @@ const paymentSchema = new Schema<PaymentEntity>(
     toJSON: { versionKey: false },
   }
 );
+import crypto from "crypto";
+
+paymentSchema.pre("save", async function () {
+  if (this.isNew && !this.requestNumber) {
+    let candidateNumber = `#SUB-${this._id.toString().slice(-6).toUpperCase()}`;
+    
+    // Check if another document already took this candidate number
+    const PaymentModel = this.constructor as any;
+    let exists = await PaymentModel.exists({ requestNumber: candidateNumber });
+
+    // In the rare event of a collision, generate random 6-hex bytes until unique
+    while (exists) {
+      const randomHex = crypto.randomBytes(3).toString("hex").toUpperCase();
+      candidateNumber = `#SUB-${randomHex}`;
+      exists = await PaymentModel.exists({ requestNumber: candidateNumber });
+    }
+
+    this.requestNumber = candidateNumber;
+  }
+});
 paymentSchema.post("init", function (doc) {
   formatImageUrl(doc);
 })
+// 1. Success hook: formats image URL when save succeeds
 paymentSchema.post("save", function (doc) {
-  formatImageUrl(doc);
+  if (doc) {
+    formatImageUrl(doc);
+  }
 });
+
+// 2. Error-handling hook: intercepts MongoDB duplicate key errors
+paymentSchema.post(
+  "save",
+  function (error: any, doc: any, next: (err?: CallbackError) => void) {
+    if (error.name === "MongoServerError" && error.code === 11000) {
+      if (error.keyPattern?.requestNumber) {
+        return next(new Error("Request number must be unique"));
+      }
+    }
+    next(error);
+  }
+);
 const formatImageUrl = (doc: PaymentEntity) => {
   if (doc.receiptImageUrl) {
     if (process.env.NODE_ENV === "production") {
