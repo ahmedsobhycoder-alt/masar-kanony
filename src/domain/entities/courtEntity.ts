@@ -18,6 +18,12 @@ export default interface CourtEntity {
     updatedAt?: Date;
     createdAt?: Date;
     savedBy? : mongoose.Types.ObjectId[]
-    isSaved : Boolean
+    isSaved : Boolean,
+    lastVisits? : [
+        {
+            user: mongoose.Types.ObjectId,
+            date: Date
+        }
+    ]
     
 }

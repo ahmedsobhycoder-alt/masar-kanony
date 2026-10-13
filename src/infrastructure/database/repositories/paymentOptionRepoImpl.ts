@@ -12,6 +12,7 @@ class PaymentOptionRepoImpl implements PaymentOptionRepo {
             .paginate(totalDocuments)
             .sort()
             .limitFields();
+        
         const paymentOptions = await queryBuilder.mongooseQuery;
         return {
             data: paymentOptions,

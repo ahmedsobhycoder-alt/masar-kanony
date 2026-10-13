@@ -15,8 +15,8 @@ class PaymentController {
     createPayment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         printBlue("req.body", JSON.stringify(req.body));
         const paymentData = req.body;
-        printBlue("req.user", (req as any).user.id);
-        paymentData.user = (req as any).user.id ; // Assuming req.user is populated by authentication middleware
+        printBlue("req.user", (req as any).user._id);
+        paymentData.user = (req as any).user._id ; // Assuming req.user is populated by authentication middleware
         paymentData.paymentStatus =PaymentStatus.PENDING; // Set default status to PENDING
         const createdPayment = await this.paymentUseCases.createPayment(paymentData);
 

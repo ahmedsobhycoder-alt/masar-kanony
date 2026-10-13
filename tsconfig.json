@@ -7,8 +7,15 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "rootDir": "./src",
-    "outDir": "./dist"
-   
+    "outDir": "./dist",
+    "paths": {
+      "*": ["./*"],
+      "styled-components": [
+        "./node_modules/styled-components"
+      ],
+    },
   },
-  "exclude": ["tests"]
+  "exclude": [
+    "tests"
+  ]
 }
