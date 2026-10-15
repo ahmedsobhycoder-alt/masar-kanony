@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import AdsEntity from "../../../domain/entities/adsEntity";
+import { printGreen } from "src/shared/utils/printColors";
 
 const adsSchema = new Schema<AdsEntity>({
   title: {
@@ -20,18 +21,23 @@ const adsSchema = new Schema<AdsEntity>({
     type: String,
     required: [true, "Ad link is required"],
   },
-},{ timestamps: true , versionKey: false });
+}, { timestamps: true, versionKey: false });
 adsSchema.post("init", function (doc) {
+    printGreen("image", doc.image);
   formatImageUrl(doc);
 })
 adsSchema.post("save", function (doc) {
   formatImageUrl(doc);
 });
-const formatImageUrl = (doc: AdsEntity) => {
-    if (doc.image) {
-        doc.image = `${process.env.BASE_URL}/uploads/ads/${doc.image}`;
 
-    }
+const formatImageUrl = (doc: AdsEntity) => {
+  printGreen("image", doc.image);
+  if (process.env.NODE_ENV === "production") {
+    doc.image = `${process.env.BASE_URL}/uploads/ads/${doc.image}`;
+  } else {
+    doc.image = `${process.env.BASE_URL}:${process.env.PORT}/uploads/ads/${doc.image}`;
+  }
+  printGreen("image", doc.image);
 
 }
 const AdsModel = mongoose.model<AdsEntity>("Ads", adsSchema);

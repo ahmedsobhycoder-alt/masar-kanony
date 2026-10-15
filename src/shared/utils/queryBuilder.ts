@@ -194,7 +194,6 @@ export class QueryBuilder<T = any> {
                 .clone()
                 .skip(skip)
                 .limit(this.limit)
-                .lean()
                 .exec() as Promise<unknown> as Promise<T[]>,
         ]);
 
