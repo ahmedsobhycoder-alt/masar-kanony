@@ -134,14 +134,12 @@ class CourtRepoImpl implements CourtRepo {
       ...query,
       savedBy: userId, // ✅ Matches userId inside the savedBy array
     })
-    .filter(otherQueries)
+    const courts= await queryBuilder.filter(otherQueries)
       .sort()
-      .limitFields()
-      .paginate();
-
-    queryBuilder.mongooseQuery.select("-__v -savedBy");
-    const courts = await queryBuilder.execute();
-    courts.data = courts.data.map((court) => ({ ...court, isSaved: true }));
+      .limitFields("-__v -savedBy")
+      .paginate()
+      .execute();
+      courts.data = this.checkUserSavedCourts(courts.data, userId);
     return courts;
   }
   checkUserSavedCourts = (courts: CourtEntity[], userId: string) =>
