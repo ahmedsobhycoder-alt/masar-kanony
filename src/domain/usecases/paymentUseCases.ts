@@ -1,6 +1,6 @@
 import PaymentRepo from "../repositories/paymentRepo";
 import  PaymentEntity  from "../entities/paymentEntity";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
 
 class PaymentUseCases {
   readonly paymentRepo: PaymentRepo;
@@ -14,7 +14,7 @@ class PaymentUseCases {
 
   getPayments = (
     query: Record<string, any>
-  ): Promise<{ data: PaymentEntity[]; pagination?: QueryPagination }> =>
+  ): Promise<listType<PaymentEntity>> =>
     this.paymentRepo.getPayments(query);
 
   getPaymentById = (id: string): Promise<PaymentEntity | null> =>

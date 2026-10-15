@@ -20,7 +20,6 @@ class PaymentController {
         paymentData.user = (req as any).user._id ; // Assuming req.user is populated by authentication middleware
         paymentData.paymentStatus =PaymentStatus.PENDING; // Set default status to PENDING
         const createdPayment = await this.paymentUseCases.createPayment(paymentData);
-
         res.status(201).json(
             formatJson({
                 data: createdPayment,

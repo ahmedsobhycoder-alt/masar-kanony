@@ -1,7 +1,8 @@
 import { FloorRepo } from "../../../domain/repositories/floorRepo";
 import { FloorEntity } from "../../../domain/entities/floorEntity";
 import FloorModel from "../models/floorModel";
-import { QueryBuilder, QueryPagination } from "../../../shared/utils/queryBuilder";
+import { QueryBuilder } from "../../../shared/utils/queryBuilder";
+import listType from "../../../shared/constants/types";
 
 class FloorRepoImpl implements FloorRepo {
     async countDocuments(): Promise<number> {
@@ -15,37 +16,24 @@ class FloorRepoImpl implements FloorRepo {
 
     async getFloors(
         query: Record<string, any> = {}
-    ): Promise<{ data: FloorEntity[]; pagination?: QueryPagination }> {
-        // 1. Build the base query with filters, sorting, and field limiting
-        const queryBuilder = new QueryBuilder<FloorEntity>(FloorModel, query)
+    ): Promise<listType<FloorEntity>> {
+        return await new QueryBuilder<FloorEntity>(FloorModel, query)
             .filter()
             .sort()
-            .limitFields();
-
-        // 2. Clone and count documents matching the applied filters
-        const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
-
-        // 3. Apply pagination using the filtered count
-        queryBuilder.paginate(totalDocuments);
-
-        // 4. Execute query with population and .lean() for performance
-        const floors = await queryBuilder.mongooseQuery
-            .populate(["offices", { path: "court" }])
-            .lean<FloorEntity[]>();
-
-        return {
-            data: floors || [],
-            pagination: queryBuilder.pagination,
-        };
+            .limitFields()
+            .populate([{ path: "offices" }, { path: "court" }])
+            .paginate()
+            .execute();
     }
     async getFloorById(id: string): Promise<FloorEntity | null> {
         const floor = await FloorModel.findById(id);
         return floor ? (floor.toJSON() as FloorEntity) : null;
     }
 
-    async getFloorsByCourtId(court: string): Promise<FloorEntity[] | null> {
-        const floors = await FloorModel.find({ where: { court } });
-        return floors.length ? floors.map((floor) => floor.toJSON() as FloorEntity) : null;
+    async getFloorsByCourtId(court: string): Promise<listType<FloorEntity>> {
+        return await new QueryBuilder<FloorEntity>(FloorModel, { court })
+            .filter()
+            .execute();
     }
 
     async deleteFloorById(id: string): Promise<FloorEntity | null> {

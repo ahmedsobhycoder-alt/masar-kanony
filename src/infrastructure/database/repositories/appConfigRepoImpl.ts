@@ -1,6 +1,6 @@
 import AppConfigEntity from "../../../domain/entities/appConfigEntity";
 import AppConfigRepository from "../../../domain/repositories/appConfigRepo";
-import ApiError from "../../../shared/errors/apiError";
+import { throwError } from "../../../shared/utils/helpers";
 import AppConfigModel from "../models/appConfigModel";
 import CourtModel from "../models/courtModel";
 
@@ -42,7 +42,7 @@ class AppConfigRepositoryImpl implements AppConfigRepository {
     const config = await AppConfigModel.findOne().lean();
 
     if (!config) {
-      throw new ApiError(404, "App config not found");
+      return throwError(404, "App config not found");
     }
 
     const liveStats = await this.computeLiveStats(config.updatedAt);
@@ -88,7 +88,7 @@ class AppConfigRepositoryImpl implements AppConfigRepository {
     ).lean();
 
     if (!updated) {
-      throw new ApiError(404, "App config not found");
+      return throwError(404, "App config not found");
     }
 
     // Return with live computed statistics

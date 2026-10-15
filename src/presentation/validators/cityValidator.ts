@@ -1,7 +1,7 @@
 import { check } from "express-validator";
 import validatorMiddleware from "../middlewares/validatorMiddleWare";
 import GovernorateModel from "../../infrastructure/database/models/governorateModel";
-import ApiError from "../../shared/errors/apiError";
+import { throwError } from "../../shared/utils/helpers";
 
 export const createCityValidator = [
   check("name")
@@ -18,7 +18,7 @@ export const createCityValidator = [
       const governorateRecord = await GovernorateModel.findById(governorate);
 
       if (!governorateRecord) {
-        throw new ApiError(400, "Governorate does not exist");
+        return throwError(400, "Governorate does not exist");
       }
 
       return true;

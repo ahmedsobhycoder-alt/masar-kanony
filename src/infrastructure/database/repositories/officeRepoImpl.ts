@@ -1,6 +1,7 @@
 import OfficeRepo from "../../../domain/repositories/officeRepo";
 import OfficesModel from "../models/officeModel";
-import { QueryBuilder, QueryPagination } from "../../../shared/utils/queryBuilder";
+import { QueryBuilder } from "../../../shared/utils/queryBuilder";
+import listType from "../../../shared/constants/types";
 import OfficeEntity from "../../../domain/entities/officeEntity";
 
 class OfficeRepoImpl implements OfficeRepo {
@@ -15,31 +16,17 @@ class OfficeRepoImpl implements OfficeRepo {
 
     async getOffices(
         query: Record<string, any> = {}
-    ): Promise<{ data: OfficeEntity[]; pagination?: QueryPagination }> {
-        // 1. Build the base query with filters, sorting, and field limiting
-        const queryBuilder = new QueryBuilder<OfficeEntity>(OfficesModel, query)
+    ): Promise<listType<OfficeEntity>> {
+        return await new QueryBuilder<OfficeEntity>(OfficesModel, query)
             .filter()
             .sort()
-            .limitFields();
-
-        // 2. Clone and count documents matching the applied filters
-        const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
-
-        // 3. Apply pagination using the filtered count
-        queryBuilder.paginate(totalDocuments);
-
-        // 4. Execute query with population and .lean() for performance
-        const offices = await queryBuilder.mongooseQuery
+            .limitFields()
             .populate([
                 { path: "floorId", select: "floorNumber" },
                 { path: "courtId", select: "name" },
             ])
-            .lean<OfficeEntity[]>();
-
-        return {
-            data: offices || [],
-            pagination: queryBuilder.pagination,
-        };
+            .paginate()
+            .execute();
     }
 
     async getOfficeById(id: string): Promise<any> {

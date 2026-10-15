@@ -1,9 +1,9 @@
 import FloorNameEntity from "../entities/floorNameEntity";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
 
 interface FloorNameRepo {
   createFloorName(floorNameData: FloorNameEntity): Promise<FloorNameEntity>;
-  getFloorNames(query?: Record<string, any>): Promise<{ data: FloorNameEntity[]; pagination?: QueryPagination }>;
+  getFloorNames(query?: Record<string, any>): Promise<listType<FloorNameEntity>>;
   getFloorNameById(id: string): Promise<FloorNameEntity | null>;
   deleteFloorNameById(id: string): Promise<FloorNameEntity | null>;
   countDocuments(): Promise<number>;

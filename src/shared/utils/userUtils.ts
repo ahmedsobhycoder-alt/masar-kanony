@@ -32,7 +32,9 @@ class UserUtils {
         // Generates a number between 1000 and 9999
         return crypto.randomInt(1000, 10000).toString();
     };
-
+    static hashOtp= (otp:string):string=>
+    crypto.createHash("sha256").update(otp).digest("hex");
+    static getHasedOtp = (otp: string): string => crypto.createHash("sha256").update(String(otp)).digest("hex")
     static hashToken = (token: string): string =>
         crypto.createHash("sha256").update(token).digest("hex");
 }

@@ -33,7 +33,7 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
     return next(new ApiError(401, req.t("unauthorized", { ns: "errors" })));
   }
 
-  const currentUser = await UserModel.findById(decoded.id).lean();
+  const currentUser = await UserModel.findById(decoded.id);
   if (!currentUser) {
     return next(new ApiError(401, req.t("user_not_found", { ns: "errors" })));
   }
@@ -76,7 +76,7 @@ export const optionalProtect = asyncHandler(async (req: Request, res: Response, 
     }
 
     // 3. Find user in DB
-    const currentUser = await UserModel.findById(decoded.id).lean();
+    const currentUser = await UserModel.findById(decoded.id);
     if (!currentUser) {
       (req as any).user = null;
       (req as any).userId = null;

@@ -1,7 +1,7 @@
 import UserModel from "../../infrastructure/database/models/userModel";
 import { check, header } from "express-validator";
 import validatorMiddleware from "../middlewares/validatorMiddleWare";
-import ApiError from "../../shared/errors/apiError";
+import { throwError } from "../../shared/utils/helpers";
 
 import OtpModel from "../../infrastructure/database/models/otpModel";
 export const signUpValidator = [
@@ -9,14 +9,14 @@ export const signUpValidator = [
     check("email").isEmail().withMessage("User email is required").trim().custom(async (email) => {
         const isEmailExisted = await UserModel.exists({ email });
         if (isEmailExisted) {
-            throw new ApiError(400, "Email already exists");
+            return throwError(400, "Email already exists");
         }
     }),
     check("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters").trim(),
     check("phone").isLength({ min: 11 }).withMessage("Phone number must be 11 digits").trim().custom(async (phone) => {
         const isPhoneExisted = await UserModel.exists({ phone });
         if (isPhoneExisted) {
-            throw new ApiError(400, "Phone number already exists");
+            return throwError(400, "Phone number already exists");
         }
     }),
 
@@ -43,7 +43,7 @@ export const forgetPasswordValidator = [
     check("email").isEmail().withMessage("User email is required").trim().custom(async (email) => {
         const userExists = await UserModel.exists({ email });
         if (!userExists) {
-            throw new ApiError(400, "User not found");
+            return throwError(400, "User not found");
         }
     }),
     validatorMiddleware,

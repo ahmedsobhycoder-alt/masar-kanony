@@ -1,6 +1,6 @@
 import { check } from "express-validator";
 import validatorMiddleware from "../middlewares/validatorMiddleWare";
-import ApiError from "../../shared/errors/apiError";
+import { throwError } from "../../shared/utils/helpers";
 import { policyTypeValues } from "../../infrastructure/database/models/appPolicyModel";
 import AppPolicyModel from "../../infrastructure/database/models/appPolicyModel";
 
@@ -24,7 +24,7 @@ export const createAppPolicyValidator = [
             const orders = sections.map((section: any) => section.order);
             const uniqueOrders = new Set(orders);
             if (orders.length !== uniqueOrders.size) {
-                throw new ApiError(400, "Section orders must be unique");
+                return throwError(400, "Section orders must be unique");
             }
             return true;
         }),
@@ -47,7 +47,7 @@ export const updateAppPolicyValidator = [
         .custom(async (type, { req }) => {
             const appPolicy = await AppPolicyModel.findOne({ type });
             if (!appPolicy) {
-                throw new ApiError(400, "App policy type not found");
+                return throwError(400, "App policy type not found");
             }
             return true;
         }),
@@ -65,7 +65,7 @@ export const updateAppPolicyValidator = [
             const orders = sections.map((section: any) => section.order);
             const uniqueOrders = new Set(orders);
             if (orders.length !== uniqueOrders.size) {
-                throw new ApiError(400, "Section orders must be unique");
+                return throwError(400, "Section orders must be unique");
             }
             return true;
         }),

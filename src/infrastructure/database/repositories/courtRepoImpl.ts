@@ -1,8 +1,7 @@
 import CourtEntity from "../../../domain/entities/courtEntity";
 import { CourtRepo } from "../../../domain/repositories/courtRepo";
 import CourtModel from "../models/courtModel";
-import { QueryBuilder, QueryPagination } from "../../../shared/utils/queryBuilder";
-import { getMaxListeners } from "node:cluster";
+import { QueryBuilder } from "../../../shared/utils/queryBuilder";
 import listType from "../../../shared/constants/types";
 
 class CourtRepoImpl implements CourtRepo {
@@ -13,23 +12,15 @@ class CourtRepoImpl implements CourtRepo {
 
   async getCourts(
     userId?: string,
-    query: Record<string, any> = {}
-  ): Promise<{ data: CourtEntity[]; pagination?: QueryPagination }> {
+    query: Record<string, any> = {},
+    otherQueries: Record<string, any>={}
+  ): Promise<listType<CourtEntity>> {
     // 1. Build base query
-    const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, query)
-      .filter()
+    const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, query);
+
+    const courts = await queryBuilder.filter(otherQueries)
       .sort()
-      .limitFields();
-
-    // 2. Count total documents
-    const totalCourts = await queryBuilder.mongooseQuery.clone().countDocuments();
-
-    // 3. Apply pagination
-    queryBuilder.paginate(totalCourts);
-
-    // 4. Fetch documents (keep savedBy temporarily to check isSaved)
-    const courts = await queryBuilder.mongooseQuery
-      .select("-__v")
+      .limitFields()
       .populate({
         path: "floors",
         select: "-court -_id",
@@ -40,25 +31,10 @@ class CourtRepoImpl implements CourtRepo {
           },
         ],
       })
-      .lean<CourtEntity[]>();
-
-    // 5. Map results and calculate isSaved safely
-    const formattedCourts = (courts || []).map((court) => {
-      const isSaved = userId
-        ? Boolean(court.savedBy?.some((id: any) => id.toString() === userId))
-        : false;
-      // Delete savedBy so it's not exposed to the client
-      delete (court as Partial<CourtEntity>).savedBy;
-      return {
-        ...court,
-        isSaved,
-      };
-    });
-
-    return {
-      data: formattedCourts,
-      pagination: queryBuilder.pagination,
-    };
+      .paginate().execute();
+    if (userId)
+      courts.data = this.checkUserSavedCourts(courts.data, userId);
+    return courts;
   }
   async getCourtById(id: string, userId?: string): Promise<CourtEntity | null> {
     const court = await CourtModel.findByIdAndUpdate(id, {
@@ -100,13 +76,19 @@ class CourtRepoImpl implements CourtRepo {
   async deleteCourtById(id: string) {
     return await CourtModel.findByIdAndDelete(id);
   }
-  async getMostSeenCourts(query: Record<string, any> = {}): Promise<CourtEntity[]> {
-    const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel.find())
-      .filter();
-    const totalCourts = await queryBuilder.mongooseQuery.clone().countDocuments();
+  async getMostSeenCourts(
+    userId?: string,
+    query: Record<string, any> = {},
+    otherQueries: Record<string, any> = {}
+  ): Promise<listType<CourtEntity>> {
+    const courts= await new QueryBuilder<CourtEntity>(CourtModel, query)
+      .filter(otherQueries)
+      .sort({ nViews: -1 })
+      .limitFields()
+      .execute();
+          if (userId)
+      courts.data = this.checkUserSavedCourts(courts.data, userId);
 
-    queryBuilder.paginate(totalCourts).sort({ nViews: -1 }).limitFields();
-    const courts = await queryBuilder.mongooseQuery;
     return courts;
   }
   async addToSaved(court: CourtEntity, userId: string): Promise<CourtEntity | null> {
@@ -143,42 +125,34 @@ class CourtRepoImpl implements CourtRepo {
 
     return removedCourt as CourtEntity;
   }
-  async getSavedCourts(query: Record<string, any>, userId: string): Promise<listType<CourtEntity>> {
+  async getSavedCourts(
+    query: Record<string, any>,
+    userId: string,
+    otherQueries: Record<string, any> = {}
+  ): Promise<listType<CourtEntity>> {
     const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, {
       ...query,
       savedBy: userId, // ✅ Matches userId inside the savedBy array
     })
-      .filter()
+    .filter(otherQueries)
       .sort()
-      .limitFields();
+      .limitFields()
+      .paginate();
 
-    const countDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
-
-    queryBuilder.paginate(countDocuments);
-
-    // ✅ Space separated projection + .lean() for attaching isSaved safely
-    const courts = await queryBuilder.mongooseQuery
-      .select("-__v -savedBy")
-      .lean<CourtEntity[]>();
-    if (!courts) {
-      return {
-        data: [],
-        pagination: queryBuilder.pagination,
-      };
-    } else {
-      const formattedCourts = courts.map((court: any) => ({
-        ...court,
-        isSaved: true,
-      }));
-      return {
-        data: formattedCourts,
-        pagination: queryBuilder.pagination,
-      };
-    }
-
-
-
+    queryBuilder.mongooseQuery.select("-__v -savedBy");
+    const courts = await queryBuilder.execute();
+    courts.data = courts.data.map((court) => ({ ...court, isSaved: true }));
+    return courts;
   }
+  checkUserSavedCourts = (courts: CourtEntity[], userId: string) =>
+    (courts || []).map((court) => {
+      const isSaved = Boolean(court.savedBy?.some((id: any) => id.toString() === userId.toString));
+      // Delete savedBy so it's not exposed to the client
+      delete court.savedBy;
+      court.isSaved = isSaved;
+      return court;
+    });
+
 }
 
 

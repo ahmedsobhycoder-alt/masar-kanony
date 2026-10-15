@@ -12,7 +12,7 @@ import paymentRepoImpl from "../../infrastructure/database/repositories/paymentR
 import { Request, Response, NextFunction } from "express";
 import { protect, allowedTo } from "../middlewares/authMiddleware";
 import { uploadSingleImageAndDoIMageProcessing } from "../middlewares/imageProcessingMiddleware";
-import ApiError from "../../shared/errors/apiError";
+import { throwError } from "../../shared/utils/helpers";
 import { printRed } from "../../shared/utils/printColors";
 import PaymentStatus from "../../shared/constants/payment-status.enums";
 import UserRole from "../../shared/constants/user-roles.enum";
@@ -63,11 +63,11 @@ paymentRouter.post(
 async function isSubscripedOrHasPendingBefore(req: Request, res: Response, next: NextFunction) {
     const user = (req as any).user as UserEntity; // Assuming req.user is populated by authentication middleware
     if (user.isSubscribed) {
-        throw new ApiError(403, req.t("You already have an active subscription. ", { ns: "errors" }));
+        return throwError(403, req.t("You already have an active subscription. ", { ns: "errors" }));
     } else {
         const payment = await PaymnetModel.findOne({ user: user.id, paymentStatus: PaymentStatus.PENDING });
         if (payment) {
-            throw new ApiError(403, req.t("You already have a pending payment. Please wait admin to approve it ", { ns: "errors" }));
+            return throwError(403, req.t("You already have a pending payment. Please wait admin to approve it ", { ns: "errors" }));
         }
     }
     next();

@@ -41,14 +41,13 @@ export class ServiceHandler<T> {
         .filter()
         .search(this.searchFields);
 
-      const totalDocuments = await this.collection.countDocuments(filterObject);
-      queryBuilder.paginate(totalDocuments).sort().limitFields();
+      queryBuilder.sort().limitFields().paginate();
 
       if (populateOptions) {
         queryBuilder.populate(populateOptions);
       }
 
-      const documents = await queryBuilder.mongooseQuery;
+      const { data: documents, pagination } = await queryBuilder.execute();
 
       if (!documents) {
         return next(new ApiError(404, `${this.modelName} not found`));
@@ -57,8 +56,8 @@ export class ServiceHandler<T> {
       res.status(200).json(
         formatJson({
           data: {
-            count: totalDocuments,
-            paginationResult: queryBuilder.pagination,
+            count: pagination?.totalDocuments ?? documents.length,
+            paginationResult: pagination,
             list: documents,
           },
           message: req.t("fetched_successfully", { ns: "common", entity: this.modelName }),

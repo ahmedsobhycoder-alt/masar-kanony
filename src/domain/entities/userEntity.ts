@@ -1,6 +1,6 @@
 interface UserEntity {
     id: string;
-
+    _id: string;
     name: string;
     phone: string;
     email: string;
@@ -11,12 +11,16 @@ interface UserEntity {
     passwordChangedAt?: Date,
     resetCode?: String,
     resetCodeExpires?: Date,
-    otp: String,
+    otp: string,
     resetCodeVerified?: Boolean,
     verified: Boolean,
     isSubscribed: Boolean,
     currentsubscriptionStatus: String
     currentSubscriptionId: string;
+    pendingEmail?: string,
+    emailChangeOtp?: string, // Stored as a hashed string
+    emailChangeOtpExpires?:  Date,
+
 
 }
 export default UserEntity;

@@ -1,6 +1,6 @@
 import AdsEntity from "../entities/adsEntity";
 import AdsRepo from "../repositories/adsRepo";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
 
 export class AdsUseCases {
   private readonly adsRepo: AdsRepo;
@@ -12,7 +12,7 @@ export class AdsUseCases {
   createAd = async (adData: AdsEntity): Promise<AdsEntity> =>
     this.adsRepo.createAd(adData);
 
-  getAds = async (query: Record<string, any> = {}): Promise<{ data: AdsEntity[]; pagination?: QueryPagination }> =>
+  getAds = async (query: Record<string, any> = {}): Promise<listType<AdsEntity>> =>
     this.adsRepo.getAds(query);
 
   getAdById = async (id: string): Promise<AdsEntity | null> =>

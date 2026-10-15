@@ -1,7 +1,7 @@
 import { check } from "express-validator";
 import validatorMiddleware from "../middlewares/validatorMiddleWare";
 import CourtModel from "../../infrastructure/database/models/courtModel";
-import ApiError from "../../shared/errors/apiError";
+import { throwError } from "../../shared/utils/helpers";
 import FloorModel from "../../infrastructure/database/models/floorModel";
 import FloorNameModel from "../../infrastructure/database/models/floorNameModel";
 import { printBlue, printGreen } from "../../shared/utils/printColors";
@@ -62,7 +62,7 @@ export const getFloorsValidator = [
             });
 
             if (!isCourtExisted) {
-                throw new ApiError(400, "Court does not exist");
+                return throwError(400, "Court does not exist");
             }
             req.filter = {
                 court: courtId

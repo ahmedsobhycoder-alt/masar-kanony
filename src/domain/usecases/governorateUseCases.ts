@@ -1,6 +1,6 @@
 import GovernorateEntity from "../entities/governorateEntity";
 import GovernorateRepo from "../repositories/governorateRepo";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
 export class GovernorateUseCases {
   private readonly governorateRepo: GovernorateRepo;
 
@@ -11,7 +11,7 @@ export class GovernorateUseCases {
   createGovernorate = async (governorateData: GovernorateEntity): Promise<GovernorateEntity> =>
     this.governorateRepo.createGovernorate(governorateData);
 
-  getGovernorates = async (query:{}): Promise<{data:GovernorateEntity[], pagination?: QueryPagination}> =>
+  getGovernorates = async (query: {}): Promise<listType<GovernorateEntity>> =>
     this.governorateRepo.getGovernorates(query);
 
   getGovernorateById = async (id: string): Promise<GovernorateEntity | null> =>

@@ -1,30 +1,60 @@
 import UserEntity from "../../../domain/entities/userEntity";
 import UserRepo from "../../../domain/repositories/userRepo";
 import UserModel from "../models/userModel";
-import { QueryBuilder, QueryPagination } from "../../../shared/utils/queryBuilder";
+import { QueryBuilder } from "../../../shared/utils/queryBuilder";
+import listType from "../../../shared/constants/types";
+import UserUtils from "src/shared/utils/userUtils";
+import { sendAuthEmail } from "src/infrastructure/services/emailService";
+import { HydratedDocument } from "mongoose";
+import { throwError } from "src/shared/utils/helpers";
 
 class UserRepoImpl implements UserRepo {
-    async countDocuments(): Promise<number> {
-        return await UserModel.find().clone().countDocuments();
+
+
+    async updateUser(user: HydratedDocument<UserEntity>, body: Record<string, any>): Promise<UserEntity | null> {
+
+        if (body.email) {
+            const otp = UserUtils.generateOTP();
+            const hashedOtp = UserUtils.hashOtp(otp);
+            user.pendingEmail = body.email;
+            user.emailChangeOtp = hashedOtp;
+            user.emailChangeOtpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+        }
+
+        const savedUser = await user.save({ validateModifiedOnly: true });
+        const plainUser = savedUser.toObject(); // Plain JS object, identical to what lean() produces
+        if (body.email) {
+            await sendAuthEmail({
+                toEmail: body.email,
+                subject: "Confirm your new email address",
+                text: `Your verification code is: ${user.emailChangeOtp}. It expires in 10 minutes.`,
+            });
+        }
+        return savedUser;
+    }
+    async verifyEmailChange(user: HydratedDocument<UserEntity>, otp: string): Promise<UserEntity | null> {
+
+        const conflict = await UserModel.findOne({ email: user.pendingEmail });
+        if (conflict) {
+            throwError(400, "This email was taken by another user during verification");
+        }
+
+        // 5. Transfer pendingEmail to real email and clear temporary fields
+        user.email = user.pendingEmail!;
+        user.pendingEmail = undefined;
+        user.emailChangeOtp = undefined;
+        user.emailChangeOtpExpires = undefined;
+       return await user.save();
     }
 
-    async getUsers(query: Record<string, any> = {}): Promise<{ data: UserEntity[]; pagination?: QueryPagination }> {
-        const queryBuilder = new QueryBuilder<UserEntity>(UserModel, query)
-            .filter();
-
-        const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
-
-        queryBuilder
-            .paginate(totalDocuments)
+    async getUsers(query: Record<string, any> = {}): Promise<listType<UserEntity>> {
+        return await new QueryBuilder<UserEntity>(UserModel, query)
+            .filter()
             .sort()
-            .limitFields();
-
-        const users = await queryBuilder.mongooseQuery.lean<UserEntity[]>();
-
-        return {
-            data: users || [],
-            pagination: queryBuilder.pagination,
-        };
+            .limitFields()
+            .paginate()
+            .execute();
     }
 
     async getUserById(id: string): Promise<UserEntity | null> {

@@ -1,7 +1,8 @@
 import AdsRepo from "../../../domain/repositories/adsRepo";
 import AdsEntity from "../../../domain/entities/adsEntity";
 import AdsModel from "../models/adsModel";
-import { QueryBuilder, QueryPagination } from "../../../shared/utils/queryBuilder";
+import { QueryBuilder } from "../../../shared/utils/queryBuilder";
+import listType from "../../../shared/constants/types";
 
 class AdsRepoImpl implements AdsRepo {
   async countDocuments(): Promise<number> {
@@ -12,21 +13,13 @@ class AdsRepoImpl implements AdsRepo {
     return await AdsModel.create(adData);
   }
 
-  async getAds(query: Record<string, any> = {}): Promise<{ data: AdsEntity[]; pagination?: QueryPagination }> {
+  async getAds(query: Record<string, any> = {}): Promise<listType<AdsEntity>> {
     const queryBuilder = new QueryBuilder<AdsEntity>(AdsModel, query)
       .filter()
-    const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
-    queryBuilder
-      .paginate(totalDocuments)
       .sort()
-      .limitFields();
-
-    const ads = await queryBuilder.mongooseQuery.lean<AdsEntity[]>();
-
-    return {
-      data: ads || [],
-      pagination: queryBuilder.pagination,
-    };
+      .limitFields()
+      .paginate();
+    return await queryBuilder.execute();
   }
 
   async getAdById(id: string): Promise<AdsEntity | null> {

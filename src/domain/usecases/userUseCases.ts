@@ -1,6 +1,7 @@
 import UserEntity from "../entities/userEntity";
 import UserRepo from "../repositories/userRepo";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
+import { HydratedDocument } from "mongoose";
 
 export class UserUseCases {
     private readonly userRepo: UserRepo;
@@ -9,7 +10,7 @@ export class UserUseCases {
         this.userRepo = userRepo;
     }
 
-    getUsers = async (query: Record<string, any> = {}): Promise<{ data: UserEntity[]; pagination?: QueryPagination }> =>
+    getUsers = async (query: Record<string, any> = {}): Promise<listType<UserEntity>> =>
         this.userRepo.getUsers(query);
 
     getUserById = async (id: string): Promise<UserEntity | null> =>
@@ -17,9 +18,10 @@ export class UserUseCases {
 
     deleteUserById = async (id: string): Promise<UserEntity | null> =>
         this.userRepo.deleteUserById(id);
+    updateUser = async (user: HydratedDocument<UserEntity>, body: Record<string, any>): Promise<UserEntity | null> =>
 
-    countDocuments = async (): Promise<number> =>
-        this.userRepo.countDocuments();
+        this.userRepo.updateUser(user, body);
+    verifyEmailChange = (user: HydratedDocument<UserEntity>, otp: string): Promise<UserEntity | null> => this.userRepo.verifyEmailChange(user, otp);
 }
 
 export default UserUseCases;

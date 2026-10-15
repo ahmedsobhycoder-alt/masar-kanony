@@ -1,10 +1,10 @@
 import CityEntity from "../entities/cityEntity";
 import { ParsedQs } from "qs";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
 
 interface CityRepo {
   createCity(cityData: CityEntity): Promise<CityEntity>;
-  getCities(query: ParsedQs): Promise<{ data: CityEntity[]; pagination?: QueryPagination }>;
+  getCities(query: ParsedQs): Promise<listType<CityEntity>>;
   getCityById(id: string): Promise<CityEntity | null>;
   deleteCityById(id: string): Promise<CityEntity | null>;
 }

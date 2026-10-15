@@ -1,7 +1,7 @@
 import { check } from "express-validator";
 import validatorMiddleware from "../middlewares/validatorMiddleWare";
 import SubscriptionPlanModel from "../../infrastructure/database/models/subscriptionPlanModel";
-import ApiError from "../../shared/errors/apiError";
+import { throwError } from "../../shared/utils/helpers";
 
 const billingPeriods = ["monthly", "quarterly", "yearly"];
 
@@ -10,7 +10,7 @@ const featureArrayValidator = check("features")
     .withMessage("At least one feature is required")
     .custom((features) => {
         if (!features.every((feature: unknown) => typeof feature === "string" && feature.trim().length > 0)) {
-            throw new ApiError(400, "Each feature must be a non-empty string");
+            return throwError(400, "Each feature must be a non-empty string");
         }
         return true;
     });
@@ -27,7 +27,7 @@ export const createSubscriptionPlanValidator = [
         .trim()
         .custom(async (title) => {
             if (await SubscriptionPlanModel.exists({ title })) {
-                throw new ApiError(400, "Subscription plan title already exists");
+                return throwError(400, "Subscription plan title already exists");
             }
             return true;
         }),
@@ -57,7 +57,7 @@ export const updateSubscriptionPlanValidator = [
 
             const existingPlan = await SubscriptionPlanModel.findOne({ title });
             if (existingPlan && existingPlan._id.toString() !== String(id)) {
-                throw new ApiError(400, "Subscription plan title already exists");
+                return throwError(400, "Subscription plan title already exists");
             }
             return true;
         }),

@@ -1,25 +1,17 @@
 import PaymentOptionEntity from "../../../domain/entities/paymentOption";
 import PaymentOptionRepo from "../../../domain/repositories/paymentOptionRepo";
 import PaymentOptionModel from "../models/paymentOptionModel";
-import { QueryBuilder, QueryPagination } from "../../../shared/utils/queryBuilder";
-import { printGreen } from "../../../shared/utils/printColors";
+import { QueryBuilder } from "../../../shared/utils/queryBuilder";
+import listType from "../../../shared/constants/types";
 
 class PaymentOptionRepoImpl implements PaymentOptionRepo {
-    async getPaymentOptions(query: Record<string, any> = {}): Promise<{ data: PaymentOptionEntity[]; pagination?: QueryPagination }> {
-        const queryBuilder = new QueryBuilder<PaymentOptionEntity>(PaymentOptionModel.find(), query).filter();
-        const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
-        queryBuilder
-            .paginate(totalDocuments)
+    async getPaymentOptions(query: Record<string, any> = {}): Promise<listType<PaymentOptionEntity>> {
+        return await new QueryBuilder<PaymentOptionEntity>(PaymentOptionModel.find(), query)
+            .filter()
             .sort()
-            .limitFields();
-        
-        const paymentOptions = await queryBuilder.mongooseQuery;
-        return {
-            data: paymentOptions,
-            pagination: queryBuilder.pagination,
-        };
-
-
+            .limitFields()
+            .paginate()
+            .execute();
 
     }
     getPaymentOptionById(id: string): Promise<PaymentOptionEntity | null> {

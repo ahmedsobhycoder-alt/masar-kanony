@@ -1,9 +1,9 @@
 import OfficeEntity from "../../domain/entities/officeEntity";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
 
 interface OfficeRepo {
     createOffice(officeData: OfficeEntity): Promise<OfficeEntity>;
-    getOffices(query?: Record<string, any>): Promise<{ data: OfficeEntity[]; pagination?: QueryPagination }>;
+    getOffices(query?: Record<string, any>): Promise<listType<OfficeEntity>>;
     getOfficeById(id: string): Promise<OfficeEntity | null>;
     deleteOfficeById(id: string): Promise<OfficeEntity | null>;
 }

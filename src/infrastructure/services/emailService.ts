@@ -4,10 +4,12 @@ import { printGreen } from '../../shared/utils/printColors';
 
 
 // 2. Create a reusable send function
-export const sendAuthEmail = async (toEmail: string, verificationCode: string) => {
-    printGreen("to", `Sending authentication email to ${toEmail}`);
-    printGreen("code", `Verification code: ${verificationCode}`);
-    printGreen("pass", `Email password: ${process.env.EMAIL_PASSWORD}`);
+export const sendAuthEmail = async ({toEmail, subject,  text}:{
+    toEmail: string,
+    subject: string,
+    text: string
+}) => {
+    
 
     try {
         // 1) Create transporter ( service that will send email like "gmail","Mailgun", "mialtrap", sendGrid)
@@ -24,11 +26,11 @@ export const sendAuthEmail = async (toEmail: string, verificationCode: string) =
 
             from: `"Masar-kanony Security" <${process.env.EMAIL_USER}>`,
             to: toEmail,
-            subject: 'Your Authentication Code',
+            subject: subject,
         html: `
         <div style="font-family: Arial, sans-serif; padding: 20px;">
-            <h2>Welcome to Dawar</h2>
-            <p>Your verification code is: <strong>${verificationCode}</strong></p>
+            <h2>Welcome to Masar-kanony</h2>
+            <p>${text}</p>
             <p style="color: #555; font-size: 12px;">This code will expire in 10 minutes. If you did not request this, please ignore this email.</p>
         </div>
     `,

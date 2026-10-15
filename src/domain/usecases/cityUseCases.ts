@@ -1,6 +1,6 @@
 import CityEntity from "../entities/cityEntity";
 import CityRepo from "../repositories/cityRepo";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
 
 export class CityUseCases {
   private readonly cityRepo: CityRepo;
@@ -12,7 +12,7 @@ export class CityUseCases {
   createCity = async (cityData: CityEntity): Promise<CityEntity> =>
     this.cityRepo.createCity(cityData);
 
-  getCities = async (query: Record<string, any> = {}): Promise<{ data: CityEntity[]; pagination?: QueryPagination }> =>
+  getCities = async (query: Record<string, any> = {}): Promise<listType<CityEntity>> =>
     this.cityRepo.getCities(query as any);
 
   getCityById = async (id: string): Promise<CityEntity | null> =>

@@ -1,11 +1,13 @@
 import UserEntity from "../entities/userEntity";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
+import { HydratedDocument } from "mongoose";
 
 export interface UserRepo {
-    getUsers(query?: Record<string, any>): Promise<{ data: UserEntity[]; pagination?: QueryPagination }>;
+    getUsers(query?: Record<string, any>): Promise<listType<UserEntity>>;
     getUserById(id: string): Promise<UserEntity | null>;
     deleteUserById(id: string): Promise<UserEntity | null>;
-    countDocuments(): Promise<number>;
+    updateUser(user:HydratedDocument<UserEntity>,body: Record<string, any>): Promise<UserEntity|null>;
+    verifyEmailChange(user:HydratedDocument<UserEntity>,otp: string): Promise<UserEntity|null>;
 }
 
 export default UserRepo;

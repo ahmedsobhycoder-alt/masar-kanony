@@ -47,6 +47,34 @@ export class UserController {
             })
         );
     });
+    updateUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const user = (req as any).user;
+        const updatedUser = await this.userUseCases.updateUser(user, req.body);
+        if (req.body.email) {
+            res.status(200).json({ status: "success", message: "OTP sent to your new email" });
+        } else {
+            res.status(200).json(
+                formatJson({
+                    data: updatedUser,
+                    message: req.t("User updated successfully", { ns: "common" }),
+                    status: true,
+                })
+            )
+        }
+
+
+    })
+    verifyEmailChange = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const user = (req as any).user;
+        const updatedUser = await this.userUseCases.verifyEmailChange(user, req.body.otp);
+        res.status(200).json(
+            formatJson({
+                data: updatedUser,
+                message: req.t("Email changed successfully", { ns: "common" }),
+                status: true,
+            })
+        )
+    })
 }
 
 export default UserController;

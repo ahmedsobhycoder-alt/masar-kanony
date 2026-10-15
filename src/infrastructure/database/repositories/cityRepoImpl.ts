@@ -1,7 +1,8 @@
 import CityRepo from "../../../domain/repositories/cityRepo";
 import CityEntity from "../../../domain/entities/cityEntity";
 import CityModel from "../models/cityModel";
-import { QueryBuilder, QueryPagination } from "../../../shared/utils/queryBuilder";
+import { QueryBuilder } from "../../../shared/utils/queryBuilder";
+import listType from "../../../shared/constants/types";
 import { ParsedQs } from "qs";
 import BaseRepository from "./baseRepository";
 
@@ -15,25 +16,13 @@ class CityRepoImpl extends BaseRepository<CityEntity> implements CityRepo {
     return await CityModel.create(cityData);
   }
 
-async getCities(query: ParsedQs): Promise<{ data: CityEntity[]; pagination?: QueryPagination }> {
-  const queryBuilder = new QueryBuilder<CityEntity>(CityModel, query)
+async getCities(query: ParsedQs): Promise<listType<CityEntity>> {
+  return await new QueryBuilder<CityEntity>(CityModel, query)
     .filter()
     .sort()
-    .limitFields();
-
-  // Clone to count documents matching the filtered criteria
-  const totalDocuments = await queryBuilder.mongooseQuery.clone().countDocuments();
-
-  // Apply skip & limit pagination logic
-  queryBuilder.paginate(totalDocuments);
-
-  // Execute query with lean for read performance
-  const cities = await queryBuilder.mongooseQuery.lean<CityEntity[]>();
-
-  return {
-    data: cities || [],
-    pagination: queryBuilder.pagination,
-  };
+    .limitFields()
+    .paginate()
+    .execute();
 }
 
   async getCityById(id: string): Promise<CityEntity | null> {

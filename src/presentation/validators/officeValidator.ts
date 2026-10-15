@@ -1,7 +1,7 @@
 import {check} from "express-validator";
 import validatorMiddleware from "../middlewares/validatorMiddleWare";
 import  OfficeModel  from "../../infrastructure/database/models/officeModel";
-import  ApiError  from "../../shared/errors/apiError";
+import { throwError } from "../../shared/utils/helpers";
 import  FloorModel  from "../../infrastructure/database/models/floorModel";
 import OfficeTypesModel from "../../infrastructure/database/models/officeTypeModel";
 export const createOfficeValidator = [
@@ -11,7 +11,7 @@ export const createOfficeValidator = [
         })
 
         if (!floor) {
-           throw new ApiError(400, 'Floor does not exist');
+           return throwError(400, 'Floor does not exist');
         }else{
             req.body.court=floor.court;
         }
@@ -22,7 +22,7 @@ export const createOfficeValidator = [
         })
 
         if (!isOfficeTypeExisted) {
-            throw new ApiError(400, 'Office type does not exist');
+            return throwError(400, 'Office type does not exist');
         }
     }),
     check('roomNumber').notEmpty().withMessage('Room number is required'),

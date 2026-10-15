@@ -1,6 +1,6 @@
 import FloorNameEntity from "../entities/floorNameEntity";
 import FloorNameRepo from "../repositories/floorNameRepo";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
 
 export class FloorNameUseCases {
   private readonly floorNameRepo: FloorNameRepo;
@@ -12,7 +12,7 @@ export class FloorNameUseCases {
   createFloorName = async (floorNameData: FloorNameEntity): Promise<FloorNameEntity> =>
     this.floorNameRepo.createFloorName(floorNameData);
 
-  getFloorNames = async (query: Record<string, any> = {}): Promise<{ data: FloorNameEntity[]; pagination?: QueryPagination }> =>
+  getFloorNames = async (query: Record<string, any> = {}): Promise<listType<FloorNameEntity>> =>
     this.floorNameRepo.getFloorNames(query);
 
   getFloorNameById = async (id: string): Promise<FloorNameEntity | null> =>

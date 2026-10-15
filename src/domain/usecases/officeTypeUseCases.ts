@@ -1,6 +1,6 @@
 import { OfficeTypeEntity } from "../entities/officeTypeEntity";
 import OfficeTypeRepo from "../repositories/officeTypeRepo";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
 
 export class OfficeTypeUseCases {
   private readonly officeTypeRepo: OfficeTypeRepo;
@@ -12,7 +12,7 @@ export class OfficeTypeUseCases {
   createOfficeType = async (officeTypeData: OfficeTypeEntity): Promise<OfficeTypeEntity> =>
     this.officeTypeRepo.createOfficeType(officeTypeData);
 
-  getOfficeTypes = async (query: Record<string, any> = {}): Promise<{ data: OfficeTypeEntity[]; pagination?: QueryPagination }> =>
+  getOfficeTypes = async (query: Record<string, any> = {}): Promise<listType<OfficeTypeEntity>> =>
     this.officeTypeRepo.getOfficeTypes(query);
 
   getOfficeTypeById = async (id: string): Promise<OfficeTypeEntity | null> =>

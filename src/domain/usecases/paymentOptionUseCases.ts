@@ -1,6 +1,6 @@
 import PaymentOptionRepo from "../repositories/paymentOptionRepo";
 import PaymentOptionEntity from "../entities/paymentOption";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
 
 class PaymentOptionUseCases {
     readonly paymentOptionRepo: PaymentOptionRepo;
@@ -10,7 +10,7 @@ class PaymentOptionUseCases {
     createPaymentOption = (paymentOptionData: PaymentOptionEntity): Promise<PaymentOptionEntity> => this.paymentOptionRepo.createPaymentOption(
         paymentOptionData
     );
-    getPaymentOptions=(query: Record<string, any>): Promise<{ data: PaymentOptionEntity[]; pagination?: QueryPagination }>=>this.paymentOptionRepo.getPaymentOptions(
+    getPaymentOptions=(query: Record<string, any>): Promise<listType<PaymentOptionEntity>>=>this.paymentOptionRepo.getPaymentOptions(
         query
     );
 }

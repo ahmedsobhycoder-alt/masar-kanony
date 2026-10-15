@@ -1,6 +1,6 @@
 import { check } from "express-validator";
 import validatorMiddleware from "../middlewares/validatorMiddleWare";
-import ApiError from "../../shared/errors/apiError";
+import { throwError } from "../../shared/utils/helpers";
 import PaymentModel from "../../infrastructure/database/models/paymentModel";
 import { printBlue } from "../../shared/utils/printColors";
 import PaymentOptionModel from "../../infrastructure/database/models/paymentOptionModel";
@@ -15,7 +15,7 @@ const createPaymentValidator = [
         .trim().custom(async (walletNumber) => {
             const isWalletExisted = await PaymentOptionModel.exists({ phone: walletNumber });
             if (!isWalletExisted) {
-                throw new ApiError(400, "wallet number is not exist");
+                return throwError(400, "wallet number is not exist");
             }
         }),
     check("userWalletNumber")
@@ -32,7 +32,7 @@ const createPaymentValidator = [
         .withMessage("Amount must be a decimal/float number")
         .custom((value) => {
             if (parseFloat(value) <= 0) {
-                throw new ApiError(400, "Amount must be greater than zero");
+                return throwError(400, "Amount must be greater than zero");
             }
             return true;
         }),
@@ -73,7 +73,7 @@ const createPaymentValidator = [
         .custom(async (walletType) => {
             const isWalletExisted = await PaymentOptionModel.exists({ paymentType: walletType });
             if (!isWalletExisted) {
-                throw new ApiError(400, "wallet number is not exist");
+                return throwError(400, "wallet number is not exist");
             }
         }),
     validatorMiddleware,

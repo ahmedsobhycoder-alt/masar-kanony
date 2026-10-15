@@ -66,6 +66,16 @@ const userSchema = new Schema<UserEntity>({
         type: String,
         default: null
     },
+  pendingEmail: {
+    type: String,
+    lowercase: true,
+  },
+  emailChangeOtp: {
+    type: String, // Stored as a hashed string
+  },
+  emailChangeOtpExpires: {
+    type: Date,
+  }
 
 
 

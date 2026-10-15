@@ -1,6 +1,6 @@
 import { CourtTypeEntity } from "../entities/courtTypeEntity";
 import CourtTypeRepo from "../repositories/courtTypeRepo";
-import { QueryPagination } from "../../shared/utils/queryBuilder";
+import listType from "../../shared/constants/types";
 
 export class CourtTypeUseCases {
   private readonly courtTypeRepo: CourtTypeRepo;
@@ -12,7 +12,7 @@ export class CourtTypeUseCases {
   createCourtType = async (courtTypeData: CourtTypeEntity): Promise<CourtTypeEntity> =>
     this.courtTypeRepo.createCourtType(courtTypeData);
 
-  getCourtTypes = async (query: Record<string, any> = {}): Promise<{ data: CourtTypeEntity[]; pagination?: QueryPagination }> =>
+  getCourtTypes = async (query: Record<string, any> = {}): Promise<listType<CourtTypeEntity>> =>
     this.courtTypeRepo.getCourtTypes(query);
 
   getCourtTypeById = async (id: string): Promise<CourtTypeEntity | null> =>
