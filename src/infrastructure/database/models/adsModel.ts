@@ -29,7 +29,7 @@ adsSchema.post("save", function (doc) {
 });
 const formatImageUrl = (doc: AdsEntity) => {
     if (doc.image) {
-        doc.image = `${process.env.BASE_URL}/ads/${doc.image}`;
+        doc.image = `${process.env.BASE_URL}/uploads/ads/${doc.image}`;
 
     }
 

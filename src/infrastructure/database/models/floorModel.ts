@@ -89,7 +89,7 @@ floorSchema.post("findOneAndDelete", async function (doc) {
 });
 const formatImageUrl = (doc: FloorEntity) => {
     if (doc.image) {
-        doc.image = `${process.env.BASE_URL}/floors/${doc.image}`;
+        doc.image = `${process.env.BASE_URL}/uploads/floors/${doc.image}`;
         printRed("image", doc.image);
 
     }

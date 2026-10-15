@@ -23,3 +23,11 @@ export const throwError = (code: number, message: string): never => {
         message,
     );
 }
+// export const formatImage = (image: string,path:string) =>{
+//     if (image) {
+//     if (process.env.NODE_ENV === "production") {
+//       image = `${process.env.BASE_URL}:/uploads/${path}/${image}`/$}`;
+//     } else {
+//       doc.receiptImageUrl = `${process.env.BASE_URL}:${process.env.PORT}/uploads/payments/${doc.receiptImageUrl}`;
+//     }
+// }
