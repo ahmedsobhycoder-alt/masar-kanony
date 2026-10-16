@@ -46,7 +46,7 @@ export class CourtController {
             otherQueries
         );
 
-        res.status(200).json(formatJson({ data: list, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }));
+        res.status(200).json(formatJson({ data: { list: list.data, paginationResult: list.pagination }, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }));
     })
     getSavedCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const otherQueries = getCourtOtherQueries(req);
@@ -75,7 +75,7 @@ export class CourtController {
             req.query as Record<string, any>,
             getCourtOtherQueries(req)
         );
-        res.status(200).json(formatJson({ data: list, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }));
+        res.status(200).json(formatJson({ data: { list: list.data, paginationResult: list.pagination }, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }))    ;
     })
     addToSaved = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const court = (req as any).court as CourtEntity;
