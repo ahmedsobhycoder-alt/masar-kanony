@@ -48,6 +48,21 @@ export class CourtController {
 
         res.status(200).json(formatJson({ data: list, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }));
     })
+    getSavedCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const otherQueries = getCourtOtherQueries(req);
+
+        const list: listType<CourtEntity> = await this.courtUseCases.getSavedCourts(
+            req.query as Record<string, any>,
+            (req as any).user._id,
+            otherQueries
+        );
+        res.status(200).json(formatJson({
+            data: {
+                list: list.data
+                , paginationResult: list.pagination
+            }, message: req.t("Courts fetched successfully", { ns: "common" }), status: true
+        }));
+    })
     getCourtById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const courtId = req.params.id as string;
         const userId = (req as any).user?._id?.toString();
@@ -77,18 +92,6 @@ export class CourtController {
         );
         res.status(200).json(formatJson({ data: removedCourt, message: req.t("Court removed from saved successfully", { ns: "common" }), status: true }));
     })
-    getSavedCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const list: listType<CourtEntity> = await this.courtUseCases.getSavedCourts(
-            req.query as Record<string, any>,
-            (req as any).user._id,
-            getCourtOtherQueries(req)
-        );
-        res.status(200).json(formatJson({
-            data: {
-                list: list.data
-                , paginationResult: list.pagination
-            }, message: req.t("Courts fetched successfully", { ns: "common" }), status: true
-        }));
-    })
+
 
 }

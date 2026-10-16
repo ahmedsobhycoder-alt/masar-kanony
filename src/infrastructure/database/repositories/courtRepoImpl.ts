@@ -36,6 +36,26 @@ class CourtRepoImpl implements CourtRepo {
       courts.data = this.checkUserSavedCourts(courts.data, userId);
     return courts;
   }
+   async getSavedCourts(
+    query: Record<string, any>,
+    userId: string,
+    otherQueries: Record<string, any> = {}
+  ): Promise<listType<CourtEntity>> {
+    const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, {
+      ...query,
+      savedBy: userId, // ✅ Matches userId inside the savedBy array
+    })
+    const courts= await queryBuilder.filter(otherQueries)
+      .sort()
+      .limitFields("-__v -savedBy")
+      .paginate()
+      .execute();
+      courts.data.forEach((court) => {
+        court.isSaved = true;
+        delete (court as Partial<CourtEntity>).savedBy;
+      });
+    return courts;
+  }
   async getCourtById(id: string, userId?: string): Promise<CourtEntity | null> {
     const court = await CourtModel.findByIdAndUpdate(id, {
       $inc: { nViews: 1 },
@@ -125,23 +145,7 @@ class CourtRepoImpl implements CourtRepo {
 
     return removedCourt as CourtEntity;
   }
-  async getSavedCourts(
-    query: Record<string, any>,
-    userId: string,
-    otherQueries: Record<string, any> = {}
-  ): Promise<listType<CourtEntity>> {
-    const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, {
-      ...query,
-      savedBy: userId, // ✅ Matches userId inside the savedBy array
-    })
-    const courts= await queryBuilder.filter(otherQueries)
-      .sort()
-      .limitFields("-__v -savedBy")
-      .paginate()
-      .execute();
-      courts.data = this.checkUserSavedCourts(courts.data, userId);
-    return courts;
-  }
+ 
   checkUserSavedCourts = (courts: CourtEntity[], userId: string) =>
     (courts || []).map((court) => {
       const isSaved = Boolean(court.savedBy?.some((id: any) => id.toString() === userId.toString));
