@@ -4,7 +4,6 @@ import {
     signUpValidator,
     verifyValidator,
     loginValidator,
-    logoutValidator,
     forgetPasswordValidator,
     verifyResetCodeValidator,
     resetPasswordValidator,
@@ -20,7 +19,7 @@ authRouter
     .post("/signup", signUpValidator, authController.signup)
     .post("/verify", verifyValidator, authController.verify)
     .post("/login", loginValidator, authController.login)
-    .post("/logout", logoutValidator, protect, authController.logout)
+    .post("/logout", protect, authController.logout)
     .post("/forgetPassword", forgetPasswordValidator, authController.forgetPassword)
     .post("/verifyResetCode", verifyResetCodeValidator, authController.verifyResetCode)
     .post("/resetPassword", resetPasswordValidator, authController.resetPassword);

@@ -34,10 +34,6 @@ export const loginValidator = [
     validatorMiddleware
 ]
 
-export const logoutValidator = [
-    header("authorization").matches(/^Bearer\s+\S+$/i).withMessage("A bearer token is required"),
-    validatorMiddleware,
-];
 
 export const forgetPasswordValidator = [
     check("email").isEmail().withMessage("User email is required").trim().custom(async (email) => {

@@ -17,8 +17,8 @@ class PaymentController {
         printBlue("req.body", JSON.stringify(req.body));
         const paymentData = req.body as PaymentEntity;
         printBlue("req.user", (req as any).user._id);
-        paymentData.user = (req as any).user._id ; // Assuming req.user is populated by authentication middleware
-        paymentData.paymentStatus =PaymentStatus.PENDING; // Set default status to PENDING
+        paymentData.user = (req as any).user._id; // Assuming req.user is populated by authentication middleware
+        paymentData.paymentStatus = PaymentStatus.PENDING; // Set default status to PENDING
         const createdPayment = await this.paymentUseCases.createPayment(paymentData);
         res.status(201).json(
             formatJson({
@@ -109,16 +109,27 @@ class PaymentController {
         );
     });
     getPaymentStatus = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const userId = (req as any).user.id;
+        const userId = (req as any).user._id;
         const payment = await this.paymentUseCases.getPaymentStatus(userId);
+        if (payment) {
+            res.status(200).json(
+                formatJson({
+                    data: payment,
+                    message: req.t("user does not have any payment pending", { ns: "common" }),
+                    status: true,
+                })
+            );
+        } else {
+            res.status(200).json(
+                formatJson({
+                    data: payment,
+                    message: req.t("Payment status fetched successfully", { ns: "common" }),
+                    status: true,
+                })
+            );
+        }
 
-        res.status(200).json(
-            formatJson({
-                data: payment,
-                message: req.t("Payment status fetched successfully", { ns: "common" }),
-                status: true,
-            })
-        );
+
     });
 }
 

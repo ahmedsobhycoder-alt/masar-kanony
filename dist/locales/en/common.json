@@ -69,5 +69,18 @@
 	"entity_Office type": "Office type",
 	"entity_Payment": "Payment",
 	"entity_Payment option": "Payment option",
-	"entity_User": "User"
+	"entity_User": "User",
+	"Court added to saved successfully": "Court added to saved items successfully",
+	"Court removed from saved successfully": "Court removed from saved items successfully",
+	"Email changed successfully": "Email changed successfully",
+	"logged out successfully": "Logged out successfully",
+	"Payment is created successfully, please wait for approval": "Payment created successfully. Please wait for approval.",
+	"Payment status fetched successfully": "Payment status fetched successfully",
+	"Subscription plan created successfully": "Subscription plan created successfully",
+	"Subscription plan deleted successfully": "Subscription plan deleted successfully",
+	"Subscription plan fetched successfully": "Subscription plan fetched successfully",
+	"Subscription plan not found": "Subscription plan not found",
+	"Subscription plan updated successfully": "Subscription plan updated successfully",
+	"Subscription plans fetched successfully": "Subscription plans fetched successfully",
+	"User updated successfully": "User updated successfully"
 }

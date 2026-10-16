@@ -19,6 +19,7 @@ export class HomeController {
         data: {
           "ads": homeData.ads,
           "courts": homeData.courts,
+          "payment": homeData.payment,
           "mostSeenCourts": homeData.mostSeenCourts
         },
         message: req.t("Home data fetched successfully", { ns: "common" }),

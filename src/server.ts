@@ -7,7 +7,7 @@ const startServer = async () => {
  // await initializeAdmin();
   server.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
-    console.log(`Server is running on http://localhost:${process.env.PORT}`);
+    console.log(`Server is running on ${process.env.BASE_URL}:${process.env.PORT}`);
   });
 };
 

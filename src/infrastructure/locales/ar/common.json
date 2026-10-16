@@ -69,5 +69,18 @@
 	"entity_Office type": "نوع المكتب",
 	"entity_Payment": "عملية الدفع",
 	"entity_Payment option": "وسيلة الدفع",
-	"entity_User": "المستخدم"
+	"entity_User": "المستخدم",
+	"Court added to saved successfully": "تمت إضافة المحكمة إلى المحفوظات بنجاح",
+	"Court removed from saved successfully": "تمت إزالة المحكمة من المحفوظات بنجاح",
+	"Email changed successfully": "تم تغيير البريد الإلكتروني بنجاح",
+	"logged out successfully": "تم تسجيل الخروج بنجاح",
+	"Payment is created successfully, please wait for approval": "تم إنشاء عملية الدفع بنجاح، يرجى انتظار الموافقة",
+	"Payment status fetched successfully": "تم جلب حالة الدفع بنجاح",
+	"Subscription plan created successfully": "تم إنشاء خطة الاشتراك بنجاح",
+	"Subscription plan deleted successfully": "تم حذف خطة الاشتراك بنجاح",
+	"Subscription plan fetched successfully": "تم جلب خطة الاشتراك بنجاح",
+	"Subscription plan not found": "لم يتم العثور على خطة الاشتراك",
+	"Subscription plan updated successfully": "تم تحديث خطة الاشتراك بنجاح",
+	"Subscription plans fetched successfully": "تم جلب خطط الاشتراك بنجاح",
+	"User updated successfully": "تم تحديث المستخدم بنجاح"
 }
