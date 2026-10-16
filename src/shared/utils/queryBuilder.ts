@@ -60,9 +60,7 @@ export class QueryBuilder<T = any> {
 
 
     filter(customQuery:  Record<string, any> = {}) {
-        printYellow("customQuery=", customQuery['governorate']);
         const queryObj = { ...this.query, ...customQuery };
-        printYellow("queryObj=",JSON.stringify(queryObj));
 
         const excludedFields = ["page", "sort", "limit", "fields", "search"];
         excludedFields.forEach((field) => delete queryObj[field]);
@@ -108,16 +106,22 @@ export class QueryBuilder<T = any> {
         this.mongooseQuery = this.mongooseQuery.find(parsedQuery as any);
         return this;
     }
-    sort(defaultSort: Record<string, any> | string = { createdAt: -1 }) {
-        if (this.query.sort) {
-            const sortBy = (this.query.sort as string).split(",").join(" ");
-            this.mongooseQuery = this.mongooseQuery.sort(sortBy);
-        } else {
-            this.mongooseQuery = this.mongooseQuery.sort(defaultSort);
+sort(defaultSort: Record<string, any> | string = { createdAt: -1, _id: 1 }) {
+    if (this.query.sort) {
+        // Appends _id to custom user sorts as well to prevent tie collisions
+        const sortBy = (this.query.sort as string).split(",").join(" ") + " _id";
+        this.mongooseQuery = this.mongooseQuery.sort(sortBy);
+    } else {
+        // Ensures default sort always includes _id
+        if (typeof defaultSort === "object" && !defaultSort._id) {
+            defaultSort = { ...defaultSort, _id: 1 };
+        } else if (typeof defaultSort === "string" && !defaultSort.includes("_id")) {
+            defaultSort = `${defaultSort} _id`;
         }
-        return this;
+        this.mongooseQuery = this.mongooseQuery.sort(defaultSort);
     }
-
+    return this;
+}
     limitFields(defaultFields = "-__v") {
         const fields = this.query.fields
             ? (this.query.fields as string).split(",").join(" ")
@@ -144,8 +148,10 @@ export class QueryBuilder<T = any> {
 
     // Synchronous: Just sets the parameters, executes in execute()
     paginate() {
+   
         this.isPaginationEnabled = true;
         this.page = this.query.page ? Math.max(1, Number(this.query.page)) : 1;
+
         this.limit = this.query.limit ? Math.max(1, Number(this.query.limit)) : 10;
         return this;
     }
@@ -177,41 +183,49 @@ export class QueryBuilder<T = any> {
 
         return tokens.join(".*?");
     }
-
-    // Runs everything and computes pagination concurrently
-    async execute(): Promise<listType<T>> {
-        if (!this.isPaginationEnabled) {
-            const data = (await this.mongooseQuery.lean().exec()) as unknown as T[];
-            return { data };
-        }
-
-        const skip = (this.page - 1) * this.limit;
-
-        // Clone before applying skip & limit, and use .exec() to return native promises
-        const [totalDocuments, data] = await Promise.all([
-            this.mongooseQuery.clone().countDocuments(),
-            this.mongooseQuery
-                .clone()
-                .skip(skip)
-                .limit(this.limit)
-                .exec() as Promise<unknown> as Promise<T[]>,
-        ]);
-
-        const pagination: QueryPagination = {
-            page: this.page,
-            limit: this.limit,
-            totalDocuments,
-            numberOfPages: Math.ceil(totalDocuments / this.limit) || 1,
-        };
-
-        if (this.page * this.limit < totalDocuments) {
-            pagination.next = { page: this.page + 1, limit: this.limit };
-        }
-
-        if (skip > 0) {
-            pagination.prev = { page: this.page - 1, limit: this.limit };
-        }
-
-        return { data, pagination };
+async execute(): Promise<listType<T>> {
+    if (!this.isPaginationEnabled) {
+        const data = (await this.mongooseQuery.lean().exec()) as unknown as T[];
+        return { data };
     }
+
+    // Force strict integers to prevent any string coercion bugs
+    const page = Math.max(1, parseInt(String(this.page), 10) || 1);
+    const limit = Math.max(1, parseInt(String(this.limit), 10) || 10);
+    const skip = (page - 1) * limit;
+
+    // Ensure deterministic sort if not already provided on the query
+    if (!this.mongooseQuery.getOptions().sort) {
+        this.mongooseQuery.sort({ _id: 1 });
+    }
+
+    const [totalDocuments, data] = await Promise.all([
+        this.mongooseQuery.clone().countDocuments().exec(),
+        this.mongooseQuery
+            .clone()
+            .skip(skip)
+            .limit(limit)
+            .lean() // Recommended for read performance
+            .exec() as unknown as Promise<T[]>,
+    ]);
+
+    const numberOfPages = Math.ceil(totalDocuments / limit) || 1;
+
+    const pagination: QueryPagination = {
+        page,
+        limit,
+        totalDocuments,
+        numberOfPages,
+    };
+
+    if (page < numberOfPages) {
+        pagination.next = { page: page + 1, limit };
+    }
+
+    if (page > 1) {
+        pagination.prev = { page: page - 1, limit };
+    }
+
+    return { data, pagination };
+}
 }

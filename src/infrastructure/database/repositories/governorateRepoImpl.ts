@@ -24,7 +24,7 @@ class GovernorateRepoImpl extends BaseRepository<GovernorateEntity> implements G
     ): Promise<listType<GovernorateEntity>> {
         return await new QueryBuilder<GovernorateEntity>(GovernorateModel, query)
             .filter()
-            .sort()
+            .sort({createdAt:1})
             .limitFields()
             .paginate()
             .execute();
