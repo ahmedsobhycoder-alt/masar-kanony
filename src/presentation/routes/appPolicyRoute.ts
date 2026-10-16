@@ -9,9 +9,9 @@ import { createAppPolicyValidator, updateAppPolicyValidator} from "../validators
 const appPolicyRouter = Router({ mergeParams: true });
 const appPolicyController = new AppPolicyController(new AppPolicyUseCases({ appPolicyRepo: appPolicyRepoImpl }));
 
-appPolicyRouter.get("/", protect, appPolicyController.getAppPolicy);
+appPolicyRouter.get("/",  appPolicyController.getAppPolicy);
 appPolicyRouter.post("/:type", protect, allowedTo([UserRole.ADMIN]), createAppPolicyValidator, appPolicyController.createAppPolicy);
-appPolicyRouter.get("/:type", protect, appPolicyController.getAppPolicy);
+appPolicyRouter.get("/:type",  appPolicyController.getAppPolicy);
 appPolicyRouter.put("/:type", protect, allowedTo([UserRole.ADMIN]), updateAppPolicyValidator, appPolicyController.updateAppPolicy);
 // appPolicyRouter.delete("/:type", protect, allowedTo([UserRole.ADMIN]), appPolicyController.deleteAppPolicy);
 
