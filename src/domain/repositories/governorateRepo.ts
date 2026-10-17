@@ -5,6 +5,7 @@ interface GovernorateRepo {
   createGovernorate(governorateData: GovernorateEntity): Promise<GovernorateEntity>;
   getGovernorates(query:ParsedQs): Promise<listType<GovernorateEntity>>;
   getGovernorateById(id: string): Promise<GovernorateEntity | null>;
+  updateGovernorateById(id: string, data: Partial<GovernorateEntity>): Promise<GovernorateEntity | null>;
   deleteGovernorateById(id: string): Promise<GovernorateEntity | null>;
 }
 

@@ -3,6 +3,8 @@ import { Request, Response, NextFunction } from "express";
 
 import { CourtTypeUseCases } from "../../domain/usecases/courtTypeUseCases";
 import { formatJson } from "../../shared/utils/formatJson";
+import ApiError from "../../shared/errors/apiError";
+import pickAllowedFields from "../../shared/utils/pickAllowedFields";
 
 export class CourtTypeController {
   private readonly courtTypeUseCases: CourtTypeUseCases;
@@ -21,6 +23,19 @@ export class CourtTypeController {
         status: true,
       })
     );
+  });
+
+  updateCourtType = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const updates = pickAllowedFields(req.body, ["name", "description"]);
+    const courtType = await this.courtTypeUseCases.updateCourtTypeById(req.params.id as string, updates as any);
+    if (!courtType) throw new ApiError(404, "Court type not found");
+    res.status(200).json(formatJson({ data: courtType, message: req.t("Court type updated successfully", { ns: "common" }), status: true }));
+  });
+
+  deleteCourtType = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const courtType = await this.courtTypeUseCases.deleteCourtTypeById(req.params.id as string);
+    if (!courtType) throw new ApiError(404, "Court type not found");
+    res.status(200).json(formatJson({ data: courtType, message: req.t("Court type deleted successfully", { ns: "common" }), status: true }));
   });
 
   getAllCourtTypes = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {

@@ -32,6 +32,12 @@ class AppPolicyRepoImpl implements AppPolicyRepo {
 
         return this.mapToEntity(updatedDoc);
     }
+
+    async deleteAppPolicy(type: string): Promise<AppPolicyEntity | null> {
+        const deletedDoc = await AppPolicyModel.findOneAndDelete({ type }).lean();
+        return deletedDoc ? this.mapToEntity(deletedDoc) : null;
+    }
+
     private mapToEntity(doc: any): AppPolicyEntity {
         const { _id, __v, ...rest } = doc;
         return {

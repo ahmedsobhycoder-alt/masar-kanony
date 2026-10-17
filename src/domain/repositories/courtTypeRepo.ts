@@ -5,6 +5,7 @@ interface CourtTypeRepo {
   createCourtType(courtTypeData: CourtTypeEntity): Promise<CourtTypeEntity>;
   getCourtTypes(query?: Record<string, any>): Promise<listType<CourtTypeEntity>>;
   getCourtTypeById(id: string): Promise<CourtTypeEntity | null>;
+  updateCourtTypeById(id: string, data: Partial<CourtTypeEntity>): Promise<CourtTypeEntity | null>;
   deleteCourtTypeById(id: string): Promise<CourtTypeEntity | null>;
   countDocuments(): Promise<number>;
 }

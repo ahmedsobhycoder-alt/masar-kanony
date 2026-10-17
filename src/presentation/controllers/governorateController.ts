@@ -3,6 +3,8 @@ import { Request, Response, NextFunction } from "express";
 
 import { GovernorateUseCases } from "../../domain/usecases/governorateUseCases";
 import { formatJson } from "../../shared/utils/formatJson";
+import ApiError from "../../shared/errors/apiError";
+import pickAllowedFields from "../../shared/utils/pickAllowedFields";
 export class GovernorateController {
     private readonly governorateUseCases: GovernorateUseCases;
 
@@ -58,4 +60,17 @@ export class GovernorateController {
             );
         },
     );
+
+    updateGovernorate = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const updates = pickAllowedFields(req.body, ["name"]);
+        const governorate = await this.governorateUseCases.updateGovernorateById(req.params.id as string, updates as any);
+        if (!governorate) throw new ApiError(404, "Governorate not found");
+        res.status(200).json(formatJson({ data: governorate, message: req.t("Governorate updated successfully", { ns: "common" }), status: true }));
+    });
+
+    deleteGovernorate = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const governorate = await this.governorateUseCases.deleteGovernorateById(req.params.id as string);
+        if (!governorate) throw new ApiError(404, "Governorate not found");
+        res.status(200).json(formatJson({ data: governorate, message: req.t("Governorate deleted successfully", { ns: "common" }), status: true }));
+    });
 }

@@ -1,6 +1,8 @@
 import CourtEntity from "../../../domain/entities/courtEntity";
 import { CourtRepo } from "../../../domain/repositories/courtRepo";
 import CourtModel from "../models/courtModel";
+import FloorModel from "../models/floorModel";
+import ApiError from "../../../shared/errors/apiError";
 import { QueryBuilder } from "../../../shared/utils/queryBuilder";
 import listType from "../../../shared/constants/types";
 
@@ -68,7 +70,7 @@ class CourtRepoImpl implements CourtRepo {
             populate: [
               {
                 path: "officeType",
-                select: "name description-floor-court",
+                select: "name description",
               },
             ],
           },
@@ -92,8 +94,18 @@ class CourtRepoImpl implements CourtRepo {
     } as CourtEntity;
   }
 
+  async updateCourtById(id: string, courtData: Partial<CourtEntity>): Promise<CourtEntity | null> {
+    return CourtModel.findByIdAndUpdate(id, { $set: courtData }, {
+      new: true,
+      runValidators: true,
+    }).lean<CourtEntity | null>();
+  }
+
 
   async deleteCourtById(id: string) {
+    if (await FloorModel.exists({ court: id } as any)) {
+      throw new ApiError(400, "Delete the court's floors before deleting the court");
+    }
     return await CourtModel.findByIdAndDelete(id);
   }
   async getMostSeenCourts(

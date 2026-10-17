@@ -3,5 +3,6 @@ interface AppConfigRepository {
     getAppConfig(): Promise<AppConfigEntity | null> ;
     createAppConfig(appConfig: AppConfigEntity): Promise<AppConfigEntity>;
     updateAppConfig(appConfig: AppConfigEntity): Promise<AppConfigEntity | null>;
+    deleteAppConfig(): Promise<AppConfigEntity | null>;
 }
 export default AppConfigRepository;

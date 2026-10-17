@@ -5,6 +5,7 @@ interface OfficeRepo {
     createOffice(officeData: OfficeEntity): Promise<OfficeEntity>;
     getOffices(query?: Record<string, any>): Promise<listType<OfficeEntity>>;
     getOfficeById(id: string): Promise<OfficeEntity | null>;
+    updateOfficeById(id: string, data: Partial<OfficeEntity>): Promise<OfficeEntity | null>;
     deleteOfficeById(id: string): Promise<OfficeEntity | null>;
 }
 

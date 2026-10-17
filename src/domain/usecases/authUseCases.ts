@@ -1,3 +1,4 @@
+import { HydratedDocument } from "mongoose";
 import UserEntity from "../entities/userEntity";
 import UserRepo from "../repositories/authRepo";
 
@@ -26,6 +27,7 @@ export class AuthUseCases {
         this.userRepo.verifyResetCode(email, resetCode);
     resetPassword = async (email: string, newPassword: string) => this.userRepo.resetPassword(email, newPassword);
     logout = async (token: string): Promise<void> => this.userRepo.logout(token);
+    changePassword = async (user:HydratedDocument<UserEntity>,newPassword:string): Promise<UserEntity|null> => this.userRepo.changePassword(user,newPassword);
 
     // getAllUsers = async (query: Record<string, any> = {}): Promise<UserEntity[]> =>
     //     this.userRepo.getAllUsers(query);

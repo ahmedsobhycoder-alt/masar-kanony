@@ -22,8 +22,9 @@ class OfficeRepoImpl implements OfficeRepo {
             .sort()
             .limitFields()
             .populate([
-                { path: "floorId", select: "floorNumber" },
-                { path: "courtId", select: "name" },
+                { path: "floor", select: "floorName" },
+                { path: "court", select: "name" },
+                { path: "officeType", select: "name" },
             ])
             .paginate()
             .execute();
@@ -32,6 +33,13 @@ class OfficeRepoImpl implements OfficeRepo {
     async getOfficeById(id: string): Promise<any> {
         const office = await OfficesModel.findById(id);
         return office;
+    }
+
+    async updateOfficeById(id: string, data: Partial<OfficeEntity>): Promise<OfficeEntity | null> {
+        return OfficesModel.findByIdAndUpdate(id, { $set: data }, {
+            new: true,
+            runValidators: true,
+        }).lean<OfficeEntity | null>();
     }
 
     async deleteOfficeById(id: string): Promise<any> {

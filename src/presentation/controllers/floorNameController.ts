@@ -3,6 +3,8 @@ import { Request, Response, NextFunction } from "express";
 
 import { FloorNameUseCases } from "../../domain/usecases/floorNameUseCases";
 import { formatJson } from "../../shared/utils/formatJson";
+import ApiError from "../../shared/errors/apiError";
+import pickAllowedFields from "../../shared/utils/pickAllowedFields";
 
 export class FloorNameController {
   private readonly floorNameUseCases: FloorNameUseCases;
@@ -44,5 +46,18 @@ export class FloorNameController {
         status: true,
       })
     );
+  });
+
+  updateFloorName = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const updates = pickAllowedFields(req.body, ["name"]);
+    const floorName = await this.floorNameUseCases.updateFloorNameById(req.params.id as string, updates as any);
+    if (!floorName) throw new ApiError(404, "Floor name not found");
+    res.status(200).json(formatJson({ data: floorName, message: req.t("Floor name updated successfully", { ns: "common" }), status: true }));
+  });
+
+  deleteFloorName = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const floorName = await this.floorNameUseCases.deleteFloorNameById(req.params.id as string);
+    if (!floorName) throw new ApiError(404, "Floor name not found");
+    res.status(200).json(formatJson({ data: floorName, message: req.t("Floor name deleted successfully", { ns: "common" }), status: true }));
   });
 }

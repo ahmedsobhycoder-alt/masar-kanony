@@ -1,6 +1,9 @@
 import { FloorRepo } from "../../../domain/repositories/floorRepo";
 import { FloorEntity } from "../../../domain/entities/floorEntity";
 import FloorModel from "../models/floorModel";
+import OfficeModel from "../models/officeModel";
+import CourtModel from "../models/courtModel";
+import ApiError from "../../../shared/errors/apiError";
 import { QueryBuilder } from "../../../shared/utils/queryBuilder";
 import listType from "../../../shared/constants/types";
 
@@ -30,6 +33,13 @@ class FloorRepoImpl implements FloorRepo {
         return floor ? (floor.toJSON() as FloorEntity) : null;
     }
 
+    async updateFloorById(id: string, data: Partial<FloorEntity>): Promise<FloorEntity | null> {
+        return FloorModel.findByIdAndUpdate(id, { $set: data }, {
+            new: true,
+            runValidators: true,
+        }).lean<FloorEntity | null>();
+    }
+
     async getFloorsByCourtId(court: string): Promise<listType<FloorEntity>> {
         return await new QueryBuilder<FloorEntity>(FloorModel, { court })
             .filter()
@@ -43,6 +53,12 @@ class FloorRepoImpl implements FloorRepo {
             return null;
         }
 
+        if (await OfficeModel.exists({ floor: id })) {
+            throw new ApiError(400, "Delete the floor's offices before deleting the floor");
+        }
+
+        await CourtModel.updateOne({ _id: floor.court } as any, { $pull: { floors: floor._id } });
+        await floor.deleteOne();
         return floor.toJSON() as FloorEntity;
     }
 }

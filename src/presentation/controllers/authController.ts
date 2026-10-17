@@ -48,5 +48,11 @@ class AuthController {
         await this.userUseCases.resetPassword(email, newPassword);
         res.status(200).json(formatJson({ message: req.t("Password changed successfully", { ns: "common" }), status: true }));
     };
+    changePassword=async (req: any, res: any) => {
+        const user = req.user;
+        const newPassword = req.body.newPassword;
+        await this.userUseCases.changePassword(user, newPassword);
+        res.status(200).json(formatJson({ message: req.t("Password changed successfully", { ns: "common" }), status: true }));
+    };
 }
 export default AuthController;

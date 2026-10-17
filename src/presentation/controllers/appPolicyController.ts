@@ -42,5 +42,15 @@ class AppPolicyController {
 
         
     })
+
+    deleteAppPolicy = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const deletedAppPolicy = await this.appPolicyUseCases.deleteAppPolicy(req.params.type as string);
+        if (!deletedAppPolicy) {
+            res.status(404).json(formatJson({ data: null, message: req.t("App policy not found", { ns: "common" }), status: false }));
+            return;
+        }
+
+        res.status(200).json(formatJson({ data: deletedAppPolicy, message: req.t("App policy deleted successfully", { ns: "common" }), status: true }));
+    })
 }
 export default AppPolicyController;

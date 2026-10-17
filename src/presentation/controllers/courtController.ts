@@ -6,6 +6,8 @@ import { printBlue, printRed } from "../../shared/utils/printColors";
 import CourtEntity from "../../domain/entities/courtEntity";
 import listType from "../../shared/constants/types";
 import { stringToList } from "../../shared/utils/helpers";
+import ApiError from "../../shared/errors/apiError";
+import pickAllowedFields from "../../shared/utils/pickAllowedFields";
 
 const toFilterValues = (value: unknown): string[] => {
     if (Array.isArray(value)) {
@@ -36,6 +38,19 @@ export class CourtController {
         const courtData = (req as any).courtData;
         const createdCourt = await this.courtUseCases.createCourt(courtData);
         res.status(201).json(formatJson({ data: createdCourt, message: req.t("Court created successfully", { ns: "common" }), status: true }));
+    });
+    updateCourt = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const updates = pickAllowedFields(req.body, [
+            "name", "address", "governorate", "courtType", "startingWorkingHours", "endWorkingHours",
+        ]);
+        const updatedCourt = await this.courtUseCases.updateCourtById(req.params.id as string, updates as any);
+        if (!updatedCourt) throw new ApiError(404, "Court not found");
+        res.status(200).json(formatJson({ data: updatedCourt, message: req.t("Court updated successfully", { ns: "common" }), status: true }));
+    });
+    deleteCourt = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const deletedCourt = await this.courtUseCases.deleteCourtById(req.params.id as string);
+        if (!deletedCourt) throw new ApiError(404, "Court not found");
+        res.status(200).json(formatJson({ data: deletedCourt, message: req.t("Court deleted successfully", { ns: "common" }), status: true }));
     });
     getAllCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const otherQueries = getCourtOtherQueries(req);

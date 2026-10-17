@@ -21,6 +21,12 @@ export class CourtUseCases {
     async getCourtById(id: string, userId?: string): Promise<CourtEntity | null> {
         return await this.courtRepo.getCourtById(id, userId);
     }
+    async updateCourtById(id: string, courtData: Partial<CourtEntity>): Promise<CourtEntity | null> {
+        return await this.courtRepo.updateCourtById(id, courtData);
+    }
+    async deleteCourtById(id: string): Promise<CourtEntity | null> {
+        return await this.courtRepo.deleteCourtById(id);
+    }
     async getMostSeenCourts(
         userId: string,
         query: Record<string, any> = {},

@@ -99,6 +99,11 @@ class AppConfigRepositoryImpl implements AppConfigRepository {
       stats: liveStats,
     });
   }
+
+  async deleteAppConfig(): Promise<AppConfigEntity | null> {
+    const deleted = await AppConfigModel.findOneAndDelete({}).lean();
+    return deleted ? this.mapToEntity(deleted) : null;
+  }
 }
 
 export default new AppConfigRepositoryImpl();

@@ -13,6 +13,8 @@ export class FloorUseCases {
     getFloors = async (query: Record<string, any> = {}): Promise<listType<FloorEntity>> => this.floorRepo.getFloors(query);
     getFloorById = async (id: string): Promise<FloorEntity | null> => this.floorRepo.getFloorById(id);
 
+    updateFloorById = async (id: string, data: Partial<FloorEntity>): Promise<FloorEntity | null> => this.floorRepo.updateFloorById(id, data);
+
     deleteFloorById = async (id: string): Promise<FloorEntity | null> => this.floorRepo.deleteFloorById(id);
     countDocuments = async (): Promise<number> => this.floorRepo.countDocuments();
 }

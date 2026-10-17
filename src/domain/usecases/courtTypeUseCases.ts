@@ -18,6 +18,9 @@ export class CourtTypeUseCases {
   getCourtTypeById = async (id: string): Promise<CourtTypeEntity | null> =>
     this.courtTypeRepo.getCourtTypeById(id);
 
+  updateCourtTypeById = async (id: string, data: Partial<CourtTypeEntity>): Promise<CourtTypeEntity | null> =>
+    this.courtTypeRepo.updateCourtTypeById(id, data);
+
   deleteCourtTypeById = async (id: string): Promise<CourtTypeEntity | null> =>
     this.courtTypeRepo.deleteCourtTypeById(id);
 

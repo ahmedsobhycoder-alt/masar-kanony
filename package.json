@@ -5,16 +5,16 @@
   "type": "commonjs",
   "main": "dist/server.js",
   "exports": {
-  ".": {
-    "require": "./bundle.js",
-    "import": "./bundle.js"
+    ".": {
+      "require": "./bundle.js",
+      "import": "./bundle.js"
+    },
+    "./styled-components": {
+      "require": "./build/utils/styled.js",
+      "import": "./build/utils/styled.js",
+      "types": "./types/src/utils/styled.d.ts"
+    }
   },
-  "./styled-components": {
-    "require": "./build/utils/styled.js",
-    "import": "./build/utils/styled.js",
-    "types": "./types/src/utils/styled.d.ts"
-  }
-},
   "scripts": {
     "build": "tsc --project tsconfig.json && node scripts/copy-locales.cjs",
     "start": "node dist/server.js",
@@ -50,6 +50,7 @@
     "@adminjs/express": "^5.1.0",
     "@adminjs/mongoose": "^3.0.3",
     "adminjs": "^6.8.7",
+    "axios": "^1.20.0",
     "bcrypt": "^6.0.0",
     "connect-mongo": "^6.0.0",
     "dotenv": "^17.4.2",

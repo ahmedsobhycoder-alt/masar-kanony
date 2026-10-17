@@ -6,6 +6,7 @@ export interface CourtRepo {
     createCourt(courtData: CourtEntity): Promise<CourtEntity>;
     getCourts(userId: string,query?: Record<string, any>,  otherQueries?: Record<string, any>): Promise<listType<CourtEntity>>;
     getCourtById(id: string, userId?: string): Promise<CourtEntity | null>;
+    updateCourtById(id: string, courtData: Partial<CourtEntity>): Promise<CourtEntity | null>;
     deleteCourtById(id: string): Promise<CourtEntity | null>;
     getMostSeenCourts(userId?: string, query?: Record<string, any>, otherQueries?: Record<string, any>): Promise<listType<CourtEntity>>
     addToSaved(court: CourtEntity,userId:string) : Promise<CourtEntity|null>

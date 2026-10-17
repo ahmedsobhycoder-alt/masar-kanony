@@ -32,5 +32,21 @@ updateAppConfig = asyncHandler(
     );
   }
 );
+
+deleteAppConfig = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const deletedAppConfig = await this.appConfigUseCases.deleteAppConfig();
+  if (!deletedAppConfig) {
+    res.status(404).json(formatJson({ data: null, message: "App config not found", status: false }));
+    return;
+  }
+
+  res.status(200).json(
+    formatJson({
+      data: deletedAppConfig,
+      message: "App config deleted successfully",
+      status: true,
+    })
+  );
+});
 }    
 export default AppConfigController

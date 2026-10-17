@@ -21,6 +21,10 @@ class OfficeUseCases {
         return this.officeRepo.getOfficeById(id);
     }
 
+    updateOfficeById(id: string, data: Partial<OfficeEntity>): Promise<OfficeEntity | null> {
+        return this.officeRepo.updateOfficeById(id, data);
+    }
+
     deleteOfficeById(id: string): Promise<OfficeEntity | null> {
         return this.officeRepo.deleteOfficeById(id);
     }

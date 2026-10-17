@@ -56,3 +56,8 @@ export const resetPasswordValidator = [
     check("newPassword").isString().withMessage("password must be a string").isLength({ min: 6 }).withMessage("Password must be at least 6 characters").trim(),
     validatorMiddleware,
 ];
+export const changePasswordValidator = [
+   
+    check("newPassword").isString().withMessage("password must be a string").isLength({ min: 6 }).withMessage("Password must be at least 6 characters").trim(),
+    validatorMiddleware,
+];

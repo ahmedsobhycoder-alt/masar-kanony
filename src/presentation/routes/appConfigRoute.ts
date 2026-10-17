@@ -12,4 +12,5 @@ const appConfigController = new AppConfigController(
 appConfigRouter.post("/",protect, allowedTo([UserRole.ADMIN]), createAppConfigValidator, appConfigController.createAppConfig);
 appConfigRouter.get("/", appConfigController.getAppConfig);
 appConfigRouter.put("/",protect, allowedTo([UserRole.ADMIN]), updateAppConfigValidator, appConfigController.updateAppConfig);
+appConfigRouter.delete("/", protect, allowedTo([UserRole.ADMIN]), appConfigController.deleteAppConfig);
 export default appConfigRouter;

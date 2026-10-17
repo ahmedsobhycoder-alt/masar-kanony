@@ -13,6 +13,6 @@ appPolicyRouter.get("/",  appPolicyController.getAppPolicy);
 appPolicyRouter.post("/:type", protect, allowedTo([UserRole.ADMIN]), createAppPolicyValidator, appPolicyController.createAppPolicy);
 appPolicyRouter.get("/:type",  appPolicyController.getAppPolicy);
 appPolicyRouter.put("/:type", protect, allowedTo([UserRole.ADMIN]), updateAppPolicyValidator, appPolicyController.updateAppPolicy);
-// appPolicyRouter.delete("/:type", protect, allowedTo([UserRole.ADMIN]), appPolicyController.deleteAppPolicy);
+appPolicyRouter.delete("/:type", protect, allowedTo([UserRole.ADMIN]), appPolicyController.deleteAppPolicy);
 
 export default appPolicyRouter;

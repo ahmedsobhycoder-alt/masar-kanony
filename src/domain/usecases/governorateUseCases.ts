@@ -17,6 +17,9 @@ export class GovernorateUseCases {
   getGovernorateById = async (id: string): Promise<GovernorateEntity | null> =>
     this.governorateRepo.getGovernorateById(id);
 
+  updateGovernorateById = async (id: string, data: Partial<GovernorateEntity>): Promise<GovernorateEntity | null> =>
+    this.governorateRepo.updateGovernorateById(id, data);
+
   deleteGovernorateById = async (id: string): Promise<GovernorateEntity | null> =>
     this.governorateRepo.deleteGovernorateById(id);
 

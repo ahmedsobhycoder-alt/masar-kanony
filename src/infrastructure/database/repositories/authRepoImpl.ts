@@ -9,6 +9,7 @@ import { printGreen, printYellow } from "../../../shared/utils/printColors";
 import { throwError } from "../../../shared/utils/helpers";
 import RevokedTokenModel from "../models/revokedTokenModel";
 import jwt from "jsonwebtoken";
+import { HydratedDocument } from "mongoose";
 class AuthRepoImpl implements AuthRepo {
    
 
@@ -138,13 +139,13 @@ class AuthRepoImpl implements AuthRepo {
         }
 
         // 2. Hash the new password and update the user
-        user.password = await UserUtils.hashPassword(newPassword);
         user.passwordChangedAt = new Date();
 
         // 3. Clean up the reset fields so they can't be reused
         user.resetCode = undefined;
         user.resetCodeExpires = undefined;
         user.resetCodeVerified = undefined;
+        user.password=newPassword;
 
         await user.save();
     }
@@ -158,6 +159,14 @@ class AuthRepoImpl implements AuthRepo {
             tokenHash: UserUtils.hashToken(token),
             expiresAt: new Date(decoded.exp * 1000),
         });
+    }
+   async changePassword(user:HydratedDocument<UserEntity>,newPassword:string):Promise<UserEntity|null>{
+      // 2. Hash the new password and update the user
+        user.passwordChangedAt = new Date();
+
+      user.password=newPassword;
+     const updateUser=  await user.save();
+     return updateUser;
     }
 }
 

@@ -7,6 +7,7 @@ import {
     forgetPasswordValidator,
     verifyResetCodeValidator,
     resetPasswordValidator,
+    changePasswordValidator,
 } from "../validators/authValidaor";
 import { AuthUseCases } from "../../domain/usecases/authUseCases";
 import authRepoImpl from "../../infrastructure/database/repositories/authRepoImpl";
@@ -20,6 +21,8 @@ authRouter
     .post("/verify", verifyValidator, authController.verify)
     .post("/login", loginValidator, authController.login)
     .post("/logout", protect, authController.logout)
+        .post("/changePassword", protect,changePasswordValidator, authController.changePassword)
+
     .post("/forgetPassword", forgetPasswordValidator, authController.forgetPassword)
     .post("/verifyResetCode", verifyResetCodeValidator, authController.verifyResetCode)
     .post("/resetPassword", resetPasswordValidator, authController.resetPassword);

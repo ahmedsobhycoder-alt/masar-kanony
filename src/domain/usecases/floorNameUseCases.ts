@@ -18,6 +18,9 @@ export class FloorNameUseCases {
   getFloorNameById = async (id: string): Promise<FloorNameEntity | null> =>
     this.floorNameRepo.getFloorNameById(id);
 
+  updateFloorNameById = async (id: string, data: Partial<FloorNameEntity>): Promise<FloorNameEntity | null> =>
+    this.floorNameRepo.updateFloorNameById(id, data);
+
   deleteFloorNameById = async (id: string): Promise<FloorNameEntity | null> =>
     this.floorNameRepo.deleteFloorNameById(id);
 

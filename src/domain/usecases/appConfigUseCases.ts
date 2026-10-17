@@ -10,5 +10,6 @@ class AppConfigUseCases {
     getAppConfig = (): Promise<AppConfigEntity | null> => this.appConfigRepository.getAppConfig();
     createAppConfig = (appConfig: AppConfigEntity): Promise<AppConfigEntity> => this.appConfigRepository.createAppConfig(appConfig);
     updateAppConfig = (appConfig: AppConfigEntity): Promise<AppConfigEntity | null> => this.appConfigRepository.updateAppConfig(appConfig);
+    deleteAppConfig = (): Promise<AppConfigEntity | null> => this.appConfigRepository.deleteAppConfig();
 }
 export default AppConfigUseCases;

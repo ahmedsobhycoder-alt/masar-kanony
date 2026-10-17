@@ -10,5 +10,6 @@ class AppPolicyUseCases {
 
 
     updateAppPolicy = async (appPolicy: AppPolicyEntity): Promise<AppPolicyEntity | null> => this.appPolicyRepo.updateAppPolicy( appPolicy)
+    deleteAppPolicy = async (type: string): Promise<AppPolicyEntity | null> => this.appPolicyRepo.deleteAppPolicy(type)
 }
 export default AppPolicyUseCases;

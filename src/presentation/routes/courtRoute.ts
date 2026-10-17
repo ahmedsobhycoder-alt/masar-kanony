@@ -11,6 +11,7 @@ import CourtModel from "../../infrastructure/database/models/courtModel";
 import ApiError from "../../shared/errors/apiError";
 import asyncHandler from "express-async-handler";
 import CourtEntity from "../../domain/entities/courtEntity";
+import { resourceIdValidator, resourceUpdateBodyValidator } from "../validators/adminResourceValidator";
 const courtRouter = Router({ mergeParams: true });
 const courtController = new CourtController(new CourtUseCases({ courtRepo: courtRepoImpl }));
 const ensureNotSaved = (req: Request, res: Response, next: NextFunction) => {
@@ -67,6 +68,8 @@ courtRouter.post(
 ); 
 
 courtRouter.post("/", protect, allowedTo([UserRole.ADMIN]), createCourtValidator, courtController.createCourt)
+    .put("/:id", protect, allowedTo([UserRole.ADMIN]), resourceIdValidator, resourceUpdateBodyValidator, courtController.updateCourt)
+    .delete("/:id", protect, allowedTo([UserRole.ADMIN]), resourceIdValidator, courtController.deleteCourt)
     .get("/mostseen", courtController.getMostSeenCourts).
     get("/:id",optionalProtect ,getCourtByIdValidator, courtController.getCourtById)
     .get("/",optionalProtect, getCourtsValidator, courtController.getAllCourts);

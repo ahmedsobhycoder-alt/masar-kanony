@@ -102,9 +102,8 @@ const userSchema = new Schema<UserEntity>({
 userSchema.pre("save", async function () {
     // Only hash the password if it has actually been modified (or is new)
     printGreen("password", `Password before hashing: ${this.password}`);
-    if (!this.isModified("password")) return;
+    if (!this.isModified("password")|| !this.password) return;
     printGreen("password", `Password after hashing: ${this.password}`);
-
     this.password = await UserUtils.hashPassword(this.password!);
 });
 
