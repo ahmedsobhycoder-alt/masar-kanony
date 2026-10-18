@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { protect, allowedTo } from "../middlewares/authMiddleware";
+import { protect, allowedTo, optionalProtect } from "../middlewares/authMiddleware";
 import UserRole from "../../shared/constants/user-roles.enum";
 import SubscriptionPlanController from "../controllers/subscriptionPlanController";
 import SubscriptionPlanUseCases from "../../domain/usecases/subscriptionPlanUseCases";
@@ -13,6 +13,7 @@ import {
     updateSubscriptionPlanValidator,
 } from "../validators/subscriptionPlanValidator";
 import ApiError from "../../shared/errors/apiError";
+import { getSubscriptionPlanStatistics } from "../../infrastructure/services/subscriptionPlanAnalytics";
 
 const subscriptionPlanRouter = Router();
 const subscriptionPlanController = new SubscriptionPlanController(
@@ -29,20 +30,28 @@ const onlyOne = asyncHandler(async (req: Request, res: Response, next: NextFunct
 
     next();
 });
+subscriptionPlanRouter.get("/stats", protect, allowedTo([UserRole.ADMIN]), asyncHandler(async (req, res) => {
+    res.json({ status: true, message: "Success", data: await getSubscriptionPlanStatistics() });
+}));
+subscriptionPlanRouter.get("/admin", protect, allowedTo([UserRole.ADMIN]), (req, res, next) => {
+    (req as any).skipPlanAnalytics = true;
+    next();
+}, subscriptionPlanController.getSubscriptionPlans);
+
 subscriptionPlanRouter
     .route("/")
-    .get(subscriptionPlanController.getSubscriptionPlans)
+    .get(optionalProtect, subscriptionPlanController.getSubscriptionPlans)
     .post(
         protect,
-        onlyOne,
         allowedTo([UserRole.ADMIN]),
+        onlyOne,
         createSubscriptionPlanValidator,
         subscriptionPlanController.createSubscriptionPlan
     );
 
 subscriptionPlanRouter
     .route("/:id")
-    .get(getSubscriptionPlanByIdValidator, subscriptionPlanController.getSubscriptionPlanById)
+    .get(optionalProtect, getSubscriptionPlanByIdValidator, subscriptionPlanController.getSubscriptionPlanById)
     .put(
         protect,
         allowedTo([UserRole.ADMIN]),

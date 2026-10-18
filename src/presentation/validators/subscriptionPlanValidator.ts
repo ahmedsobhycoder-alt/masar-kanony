@@ -5,7 +5,7 @@ import { throwError } from "../../shared/utils/helpers";
 
 const billingPeriods = ["monthly", "quarterly", "yearly"];
 
-const featureArrayValidator = check("features")
+const featureArrayValidator = () => check("features")
     .isArray({ min: 1 })
     .withMessage("At least one feature is required")
     .custom((features) => {
@@ -37,7 +37,7 @@ export const createSubscriptionPlanValidator = [
     check("currencySymbol").isString().withMessage("Currency symbol must be a string").notEmpty().withMessage("Currency symbol is required").trim(),
     check("billingPeriod").isIn(billingPeriods).withMessage("Billing period must be monthly, quarterly, or yearly").trim(),
     check("billingLabel").isString().withMessage("Billing label must be a string").notEmpty().withMessage("Billing label is required").trim(),
-    featureArrayValidator,
+    featureArrayValidator(),
     check("isPopular").isBoolean().withMessage("isPopular must be a boolean"),
     validatorMiddleware,
 ];
@@ -67,7 +67,7 @@ export const updateSubscriptionPlanValidator = [
     check("currencySymbol").optional().isString().withMessage("Currency symbol must be a string").notEmpty().withMessage("Currency symbol is required").trim(),
     check("billingPeriod").optional().isIn(billingPeriods).withMessage("Billing period must be monthly, quarterly, or yearly").trim(),
     check("billingLabel").optional().isString().withMessage("Billing label must be a string").notEmpty().withMessage("Billing label is required").trim(),
-    featureArrayValidator.optional(),
+    featureArrayValidator().optional(),
     check("isPopular").optional().isBoolean().withMessage("isPopular must be a boolean"),
     validatorMiddleware,
 ];

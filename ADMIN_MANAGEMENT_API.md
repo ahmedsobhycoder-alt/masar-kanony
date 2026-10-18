@@ -41,3 +41,20 @@ curl -i 'https://masar.aes-designstudio.com/api/v1/admin-management/wallets?page
 Without a bearer token, the updated backend returns HTTP 401. HTTP 404 indicates the running server still does not contain the route registration. Sign in to the dashboard as an administrator to verify the actual records and summary cards.
 
 Run the API tests with `npm run test:admin-management`. They use mocked database operations and do not modify the application database.
+
+## Subscription plan
+
+The dashboard page `/subscription-plans` manages the existing single subscription plan.
+
+| Method | Route | Access |
+| --- | --- | --- |
+| GET | `/api/v1/subscriptionPlan` | Public; records a successful GET request |
+| GET | `/api/v1/subscriptionPlan/:id` | Public; records successful reads of existing plans |
+| GET | `/api/v1/subscriptionPlan/admin` | Admin; reads the plan without affecting analytics |
+| GET | `/api/v1/subscriptionPlan/stats` | Admin; total, authenticated, guest, and unique signed-in user statistics |
+| POST | `/api/v1/subscriptionPlan` | Admin; creates the plan if none exists |
+| PUT | `/api/v1/subscriptionPlan/:id` | Admin; edits the plan |
+
+Authenticated public GET requests identify a user when the client sends its bearer token. Repeat requests increase the request count, but each signed-in user is counted once in `uniqueUsers`. Guests are counted as requests, not unique people. Administrator reads and failed requests are excluded. Tracking begins after deploying this change; past requests cannot be reconstructed. Statistics persist independently of the plan and are cumulative across edits.
+
+Run `npm run test:subscription-plans` to verify editing, authentication, unique viewers, and request counters over HTTP with mocked database operations.

@@ -2,6 +2,18 @@ import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import SubscriptionPlanUseCases from "../../domain/usecases/subscriptionPlanUseCases";
 import { formatJson } from "../../shared/utils/formatJson";
+import { recordSubscriptionPlanGet } from "../../infrastructure/services/subscriptionPlanAnalytics";
+import pickAllowedFields from "../../shared/utils/pickAllowedFields";
+
+const planFields = ["title", "subtitle", "price", "currency", "currencySymbol", "billingPeriod", "billingLabel", "features", "isPopular"];
+const trackGet = async (req: Request) => {
+    if ((req as any).skipPlanAnalytics) return;
+    try {
+        await recordSubscriptionPlanGet((req as any).user);
+    } catch {
+        console.error("Unable to record subscription plan GET statistics");
+    }
+};
 
 class SubscriptionPlanController {
     readonly subscriptionPlanUseCases: SubscriptionPlanUseCases;
@@ -12,6 +24,7 @@ class SubscriptionPlanController {
 
     getSubscriptionPlans = asyncHandler(async (req: Request, res: Response) => {
         const supscriptionPlan = await this.subscriptionPlanUseCases.getSubscriptionPlans(req.query as Record<string, any>);
+        await trackGet(req);
 
         res.status(200).json(formatJson({
             data: supscriptionPlan,
@@ -33,6 +46,7 @@ class SubscriptionPlanController {
             return;
         }
 
+        await trackGet(req);
         res.status(200).json(formatJson({
             data: subscriptionPlan,
             message: req.t("Subscription plan fetched successfully", { ns: "common" }),
@@ -41,7 +55,7 @@ class SubscriptionPlanController {
     });
 
     createSubscriptionPlan = asyncHandler(async (req: Request, res: Response) => {
-        const createdSubscriptionPlan = await this.subscriptionPlanUseCases.createSubscriptionPlan(req.body);
+        const createdSubscriptionPlan = await this.subscriptionPlanUseCases.createSubscriptionPlan(pickAllowedFields(req.body, planFields) as any);
 
         res.status(201).json(formatJson({
             data: createdSubscriptionPlan,
@@ -52,7 +66,7 @@ class SubscriptionPlanController {
 
     updateSubscriptionPlan = asyncHandler(async (req: Request, res: Response) => {
         const id = String(req.params.id);
-        const updatedSubscriptionPlan = await this.subscriptionPlanUseCases.updateSubscriptionPlan(id, req.body);
+        const updatedSubscriptionPlan = await this.subscriptionPlanUseCases.updateSubscriptionPlan(id, pickAllowedFields(req.body, planFields));
 
         if (!updatedSubscriptionPlan) {
             res.status(404).json(formatJson({

@@ -1,0 +1,87 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { once } = require('node:events');
+const jwt = require('jsonwebtoken');
+const app = require('../../dist/app').default;
+const UserModel = require('../../dist/infrastructure/database/models/userModel').default;
+const PlanModel = require('../../dist/infrastructure/database/models/subscriptionPlanModel').default;
+const RevokedTokenModel = require('../../dist/infrastructure/database/models/revokedTokenModel').default;
+const { SubscriptionPlanAnalytics, SubscriptionPlanViewer } = require('../../dist/infrastructure/database/models/subscriptionPlanAnalyticsModel');
+
+test('plan editing and public GET statistics work through the compiled application', async (context) => {
+    const originalSecret = process.env.JWT_SECRET;
+    process.env.JWT_SECRET = 'subscription-plan-integration-test';
+    context.after(() => {
+        if (originalSecret === undefined) delete process.env.JWT_SECRET;
+        else process.env.JWT_SECRET = originalSecret;
+    });
+    const planId = '507f1f77bcf86cd799439011';
+    const adminId = '507f1f77bcf86cd799439012';
+    const userId = '507f1f77bcf86cd799439013';
+    const otherUserId = '507f1f77bcf86cd799439014';
+    let plan = { _id: planId, title: 'Basic', subtitle: 'Access the directory', price: 100, currency: 'EGP', currencySymbol: 'EGP', billingPeriod: 'monthly', billingLabel: 'per month', features: ['Directory access'], isPopular: false };
+    const totals = { requests: 0, guestRequests: 0, authenticatedRequests: 0 };
+    const viewers = new Set();
+    context.mock.method(UserModel, 'findById', async (id) => ({ _id: id, role: id === adminId ? 'admin' : 'user', active: true }));
+    context.mock.method(RevokedTokenModel, 'exists', async () => false);
+    context.mock.method(PlanModel, 'find', () => ({ async lean() { return plan ? [plan] : []; } }));
+    context.mock.method(PlanModel, 'findById', (id) => ({ async lean() { return id === planId ? plan : null; } }));
+    context.mock.method(PlanModel, 'findOne', async () => null);
+    context.mock.method(PlanModel, 'findByIdAndUpdate', (id, update) => ({ async lean() { plan = { ...plan, ...update.$set }; return plan; } }));
+    context.mock.method(SubscriptionPlanAnalytics, 'updateOne', async (filter, update) => {
+        for (const [key, value] of Object.entries(update.$inc)) totals[key] += value;
+        totals.startedAt ||= update.$setOnInsert.startedAt;
+        totals.lastRequestedAt = update.$set.lastRequestedAt;
+    });
+    context.mock.method(SubscriptionPlanAnalytics, 'findById', () => ({ async lean() { return totals; } }));
+    context.mock.method(SubscriptionPlanViewer, 'updateOne', async (filter) => { viewers.add(filter._id); });
+    context.mock.method(SubscriptionPlanViewer, 'countDocuments', async () => viewers.size);
+    const server = app.listen(0, '127.0.0.1');
+    context.after(() => new Promise((resolve, reject) => {
+        server.close((error) => error ? reject(error) : resolve());
+        server.closeAllConnections();
+    }));
+    await once(server, 'listening');
+    const base = `http://127.0.0.1:${server.address().port}/api/v1/subscriptionPlan`;
+    const request = async (path, id, options = {}) => fetch(`${base}${path}`, {
+        ...options, headers: { ...(id ? { Authorization: `Bearer ${jwt.sign({ id }, process.env.JWT_SECRET)}` } : {}), 'Content-Type': 'application/json' },
+    });
+    assert.equal((await request('')).status, 200);
+    assert.equal((await request('', userId)).status, 200);
+    assert.equal((await request('', userId)).status, 200);
+    assert.equal((await request(`/${planId}`, otherUserId)).status, 200);
+    assert.equal((await request('/507f1f77bcf86cd799439099')).status, 404);
+    assert.equal((await request('/admin', adminId)).status, 200);
+    assert.equal((await request('', adminId)).status, 200);
+    const statistics = await request('/stats', adminId);
+    assert.equal(statistics.status, 200);
+    const result = (await statistics.json()).data;
+    assert.equal(result.requests, 4);
+    assert.equal(result.authenticatedRequests, 3);
+    assert.equal(result.guestRequests, 1);
+    assert.equal(result.uniqueUsers, 2);
+    assert.ok(result.startedAt);
+    assert.equal((await request('/stats')).status, 401);
+    assert.equal((await request('/stats', userId)).status, 403);
+    const edit = await request(`/${planId}`, adminId, { method: 'PUT', body: JSON.stringify({ title: 'Updated plan', price: 150, injected: true }) });
+    assert.equal(edit.status, 200);
+    const updated = (await edit.json()).data;
+    assert.equal(updated.title, 'Updated plan');
+    assert.equal(updated.price, 150);
+    assert.equal(updated.injected, undefined);
+    assert.equal((await request(`/${planId}`, userId, { method: 'PUT', body: JSON.stringify({ price: 1 }) })).status, 403);
+    assert.equal(totals.requests, 4);
+    assert.equal((await request(`/${planId}`, adminId, { method: 'PUT', body: JSON.stringify({ features: [] }) })).status, 400);
+    const payload = { ...plan };
+    delete payload._id;
+    plan = null;
+    context.mock.method(PlanModel, 'countDocuments', async () => plan ? 1 : 0);
+    context.mock.method(PlanModel, 'exists', async () => false);
+    context.mock.method(PlanModel, 'create', async (data) => { plan = { _id: planId, ...data }; return plan; });
+    const { features, ...missingFeatures } = payload;
+    assert.equal((await request('', adminId, { method: 'POST', body: JSON.stringify(missingFeatures) })).status, 400);
+    assert.equal((await request('', userId, { method: 'POST', body: JSON.stringify(payload) })).status, 403);
+    assert.equal((await request('', adminId, { method: 'POST', body: JSON.stringify(payload) })).status, 201);
+    assert.equal((await request('', adminId, { method: 'POST', body: JSON.stringify(payload) })).status, 400);
+    assert.equal(totals.requests, 4);
+});
