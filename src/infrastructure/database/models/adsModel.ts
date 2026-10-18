@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import AdsEntity from "../../../domain/entities/adsEntity";
-import { printGreen } from "src/shared/utils/printColors";
+import { printGreen } from "../../../shared/utils/printColors";
 
 const adsSchema = new Schema<AdsEntity>({
   title: {

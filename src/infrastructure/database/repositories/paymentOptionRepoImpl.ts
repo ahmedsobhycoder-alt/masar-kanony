@@ -6,7 +6,8 @@ import listType from "../../../shared/constants/types";
 
 class PaymentOptionRepoImpl implements PaymentOptionRepo {
     async getPaymentOptions(query: Record<string, any> = {}): Promise<listType<PaymentOptionEntity>> {
-        return await new QueryBuilder<PaymentOptionEntity>(PaymentOptionModel.find(), query)
+        const { active, ...publicQuery } = query;
+        return await new QueryBuilder<PaymentOptionEntity>(PaymentOptionModel.find({ active: { $ne: false } }), publicQuery)
             .filter()
             .sort()
             .limitFields()

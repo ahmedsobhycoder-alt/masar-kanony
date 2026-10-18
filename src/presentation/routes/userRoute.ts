@@ -4,11 +4,11 @@ import UserUseCases from "../../domain/usecases/userUseCases";
 import userRepoImpl from "../../infrastructure/database/repositories/userRepoImpl";
 import { getUserByIdValidator, deleteUserByIdValidator } from "../validators/userValidator";
 import { allowedTo, protect } from "../middlewares/authMiddleware";
-import UserRole from "src/shared/constants/user-roles.enum";
+import UserRole from "../../shared/constants/user-roles.enum";
 import { verify } from "node:crypto";
-import { throwError } from "src/shared/utils/helpers";
-import UserEntity from "src/domain/entities/userEntity";
-import UserModel from "src/infrastructure/database/models/userModel";
+import { throwError } from "../../shared/utils/helpers";
+import UserEntity from "../../domain/entities/userEntity";
+import UserModel from "../../infrastructure/database/models/userModel";
 import asyncHandler from "express-async-handler";
 const userRouter = Router();
 const userController = new UserController({

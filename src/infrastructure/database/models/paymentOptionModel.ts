@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import PaymentOptionEntity from "../../../domain/entities/paymentOption";
 const PaymentOptionSchema = new Schema<PaymentOptionEntity>({
+    active: { type: Boolean, default: true },
     paymentType: {
         type: String,
         required: [true, "wallet type is required"],

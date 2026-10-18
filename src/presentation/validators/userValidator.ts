@@ -1,8 +1,8 @@
 import { check } from "express-validator";
 import validatorMiddleware from "../middlewares/validatorMiddleWare";
-import UserModel from "src/infrastructure/database/models/userModel";
-import { throwError } from "src/shared/utils/helpers";
-import UserUtils from "src/shared/utils/userUtils";
+import UserModel from "../../infrastructure/database/models/userModel";
+import { throwError } from "../../shared/utils/helpers";
+import UserUtils from "../../shared/utils/userUtils";
 
 export const getUserByIdValidator = [
     check("id").isMongoId().withMessage("User ID must be a valid Mongo ID"),

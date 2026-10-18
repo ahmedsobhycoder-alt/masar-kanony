@@ -3,10 +3,10 @@ import UserRepo from "../../../domain/repositories/userRepo";
 import UserModel from "../models/userModel";
 import { QueryBuilder } from "../../../shared/utils/queryBuilder";
 import listType from "../../../shared/constants/types";
-import UserUtils from "src/shared/utils/userUtils";
-import { sendAuthEmail } from "src/infrastructure/services/emailService";
+import UserUtils from "../../../shared/utils/userUtils";
+import { sendAuthEmail } from "../../services/emailService";
 import { HydratedDocument } from "mongoose";
-import { throwError } from "src/shared/utils/helpers";
+import { throwError } from "../../../shared/utils/helpers";
 
 class UserRepoImpl implements UserRepo {
 

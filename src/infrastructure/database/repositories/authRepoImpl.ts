@@ -73,7 +73,7 @@ class AuthRepoImpl implements AuthRepo {
         token: string;
     }> {
         const user = await UserModel.findOne({ email });
-        if (!user) {
+        if (!user || user.active === false) {
             return throwError(400, "Invalid email");
         }
         if (!user.password) {

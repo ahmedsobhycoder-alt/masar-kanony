@@ -34,7 +34,7 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
   }
 
   const currentUser = await UserModel.findById(decoded.id);
-  if (!currentUser) {
+  if (!currentUser || currentUser.active === false) {
     return next(new ApiError(401, req.t("user_not_found", { ns: "errors" })));
   }
 
@@ -77,7 +77,7 @@ export const optionalProtect = asyncHandler(async (req: Request, res: Response, 
 
     // 3. Find user in DB
     const currentUser = await UserModel.findById(decoded.id);
-    if (!currentUser) {
+    if (!currentUser || currentUser.active === false) {
       (req as any).user = null;
       (req as any).userId = null;
       return next();

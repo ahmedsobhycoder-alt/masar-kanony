@@ -12,8 +12,8 @@ const createPaymentValidator = [
         .withMessage("Wallet number is required")
         .isString().withMessage("Wallet number must be a string")
         .isLength({ min: 11, max: 11 }).withMessage("Wallet number must be between 10 and 20 characters")
-        .trim().custom(async (walletNumber) => {
-            const isWalletExisted = await PaymentOptionModel.exists({ phone: walletNumber });
+        .trim().custom(async (walletNumber, { req }) => {
+            const isWalletExisted = await PaymentOptionModel.exists({ phone: walletNumber, paymentType: req.body.walletType, active: { $ne: false } });
             if (!isWalletExisted) {
                 return throwError(400, "wallet number is not exist");
             }
@@ -68,10 +68,10 @@ const createPaymentValidator = [
         .withMessage("Wallet number is required")
         .isString()
         .withMessage("Wallet number must be a string")
-        .trim().isLength({ min: 2, max: 10 })
-        .withMessage("Wallet number must be between 10 and 20 characters")
+        .trim().isLength({ min: 2, max: 50 })
+        .withMessage("Wallet type must be between 2 and 50 characters")
         .custom(async (walletType) => {
-            const isWalletExisted = await PaymentOptionModel.exists({ paymentType: walletType });
+            const isWalletExisted = await PaymentOptionModel.exists({ paymentType: walletType, active: { $ne: false } });
             if (!isWalletExisted) {
                 return throwError(400, "wallet number is not exist");
             }

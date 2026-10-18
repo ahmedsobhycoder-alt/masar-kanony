@@ -35,7 +35,7 @@ export class FloorController {
     })
 
     updateFloor = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const updates = pickAllowedFields(req.body, ["floorName"]);
+        const updates = pickAllowedFields(req.body, ["floorName", "image"]);
         const floor = await this.floorUseCases.updateFloorById(req.params.id as string, updates as any);
         if (!floor) throw new ApiError(404, "Floor not found");
         res.status(200).json(formatJson({ data: floor, message: req.t("Floor updated successfully", { ns: "common" }), status: true }));

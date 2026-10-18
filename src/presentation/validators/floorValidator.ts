@@ -1,4 +1,4 @@
-import { check } from "express-validator";
+import { body, check } from "express-validator";
 import validatorMiddleware from "../middlewares/validatorMiddleWare";
 import CourtModel from "../../infrastructure/database/models/courtModel";
 import { throwError } from "../../shared/utils/helpers";
@@ -50,6 +50,31 @@ export const createFloorValidator = [
 
     validatorMiddleware,
 ];
+export const updateFloorValidator = [
+    check("floorName").optional().isString().bail().trim().notEmpty()
+        .withMessage("Floor name is required")
+        .custom(async (floorName, { req }) => {
+            const floor = await FloorModel.findById(req.params?.id);
+            if (!floor) throw new Error("Floor not found");
+            const duplicate = await FloorModel.exists({
+                court: floor.court, floorName, _id: { $ne: floor._id },
+            });
+            if (duplicate) throw new Error("This floor already exists in the specified court");
+            return true;
+        }),
+    check("image").optional().custom((image, { req }) => {
+        if (!req.file) throw new Error("Upload an image file to replace the floor image");
+        return true;
+    }),
+    body().custom((data) => {
+        if (data.floorName === undefined && data.image === undefined) {
+            throw new Error("At least one update field is required");
+        }
+        return true;
+    }),
+    validatorMiddleware,
+];
+
 export const getFloorsValidator = [
     check("courtId")
         .optional()
