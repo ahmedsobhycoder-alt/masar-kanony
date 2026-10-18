@@ -5,6 +5,7 @@ import { formatJson } from "../../shared/utils/formatJson";
 import { printBlue } from "../../shared/utils/printColors";
 import PaymentStatus from "../../shared/constants/payment-status.enums";
 import PaymentEntity from "src/domain/entities/paymentEntity";
+import ApiError from "../../shared/errors/apiError";
 
 class PaymentController {
     readonly paymentUseCases: PaymentUseCases;
@@ -46,6 +47,7 @@ class PaymentController {
     getPaymentById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params as Record<string, any>;
         const payment = await this.paymentUseCases.getPaymentById(id);
+        if (!payment) throw new ApiError(404, "Payment not found");
 
         res.status(200).json(
             formatJson({
@@ -57,7 +59,7 @@ class PaymentController {
     });
     approvePayment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params as Record<string, any>;
-        const approvedPayment = await this.paymentUseCases.approvePayment(id);
+        const approvedPayment = await this.paymentUseCases.approvePayment(id, (req as any).user._id.toString());
 
         res.status(200).json(
             formatJson({
@@ -69,7 +71,7 @@ class PaymentController {
     });
     declinePayment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params as Record<string, any>;
-        const declinedPayment = await this.paymentUseCases.declinePayment(id);
+        const declinedPayment = await this.paymentUseCases.declinePayment(id, (req as any).user._id.toString(), req.body?.rejectionReason, req.body?.rejectionMessage);
 
         res.status(200).json(
             formatJson({
@@ -84,7 +86,7 @@ class PaymentController {
         async (req: Request, res: Response, next: NextFunction) => {
             const { id } = req.params as Record<string, any>;
             const { status } = req.body;
-            const updatedPayment = await this.paymentUseCases.updatePaymentStatus(id, status);
+            const updatedPayment = await this.paymentUseCases.updatePaymentStatus(id, status, (req as any).user._id.toString(), req.body?.rejectionReason, req.body?.rejectionMessage);
 
             res.status(200).json(
                 formatJson({

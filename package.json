@@ -21,6 +21,7 @@
     "start:fresh": "npm run build && npm start",
     "test:admin-management": "npm run build && node --test --test-isolation=none tests/unit/adminManagement.test.cjs tests/integration/adminManagement.test.cjs",
     "test:subscription-plans": "npm run build && node --test --test-isolation=none tests/integration/subscriptionPlan.test.cjs",
+    "test:payment-review": "npm run build && node --test --test-isolation=none tests/integration/paymentReview.test.cjs",
     "dev": "nodemon --exec tsx src/server.ts",
     "check": "npm run build",
     "seed:governorates": "tsx src/infrastructure/database/migrations/seeders/governoratesSeeder.ts -i",

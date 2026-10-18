@@ -58,3 +58,22 @@ The dashboard page `/subscription-plans` manages the existing single subscriptio
 Authenticated public GET requests identify a user when the client sends its bearer token. Repeat requests increase the request count, but each signed-in user is counted once in `uniqueUsers`. Guests are counted as requests, not unique people. Administrator reads and failed requests are excluded. Tracking begins after deploying this change; past requests cannot be reconstructed. Statistics persist independently of the plan and are cumulative across edits.
 
 Run `npm run test:subscription-plans` to verify editing, authentication, unique viewers, and request counters over HTTP with mocked database operations.
+
+## Court search and payment review
+
+`GET /api/v1/courts?name=North&courtType=Civil&governorate=Cairo` combines court-name search with court-type and governorate filters. Type and governorate values are names returned by their existing lookup APIs.
+
+The dashboard's `/payments` page lists pending payment requests. `/invoices` also opens this queue for existing links.
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| GET | `/api/v1/payment?status=PENDING&page=1&limit=10` | Pending payments with subscriber names and contact details |
+| GET | `/api/v1/payment/:id` | Full payment record, attached receipt, subscriber, and reviewer |
+| POST | `/api/v1/payment/approve/:id` | Approve a pending payment and activate the subscription |
+| POST | `/api/v1/payment/decline/:id` | Reject a pending payment; accepts rejectionReason and rejectionMessage |
+| PUT | `/api/v1/payment/:id/status` | Review a pending payment using status APPROVED or REJECTED |
+| GET | `/api/v1/admin-management/users/:id` | User profile, account status, subscription details, and timestamps |
+
+All payment and user-detail routes require administrator authentication. User responses exclude passwords and verification/reset secrets. Reviews record the reviewing administrator and time, and update payment and subscription state in a database transaction. Already-reviewed requests return HTTP 409. Rejecting a separate pending request does not revoke an already-active subscription.
+
+Run `npm run test:payment-review` for the payment-review, receipt-URL, user-detail, and combined court-filter checks. Rebuild and restart the deployed backend to enable these changes on the live dashboard.

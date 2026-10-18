@@ -5,6 +5,7 @@ import {
     updatePaymentStatusValidator,
     getPaymentByIdValidator,
     getPaymentsValidator,
+    reviewPaymentValidator,
 } from "../validators/paymentValidator";
 import PaymentController from "../controllers/paymentController";
 import PaymentUseCases from "../../domain/usecases/paymentUseCases";
@@ -42,6 +43,7 @@ paymentRouter.put(
     protect,
     allowedTo([UserRole.ADMIN]),
     updatePaymentStatusValidator,
+    reviewPaymentValidator,
     paymentController.updatePaymentStatus
 );
 
@@ -49,6 +51,7 @@ paymentRouter.post(
     "/approve/:id",
     protect,
     allowedTo([UserRole.ADMIN]),
+    reviewPaymentValidator,
     paymentController.approvePayment
 );
 
@@ -56,6 +59,7 @@ paymentRouter.post(
     "/decline/:id",
     protect,
     allowedTo([UserRole.ADMIN]),
+    reviewPaymentValidator,
     paymentController.declinePayment
 );
 // isSubscripedBefore is a middleware function that checks if the user has an active subscription before allowing them to create a payment. If the user does not have an active subscription, it will return a 403 Forbidden response.

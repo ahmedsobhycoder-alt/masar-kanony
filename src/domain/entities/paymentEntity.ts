@@ -14,8 +14,8 @@ interface PaymentEntity {
     requestNumber: string
 
 
-    rejectionReason: string;      // Shown on screen when REJECTED (e.g., "صورة الإيصال غير واضحة")
-    rejectionMessage: string;     // Shown on screen when REJECTED (e.g., "يرجى تحديث صورة الإيصال")
+    rejectionReason: string | null;
+    rejectionMessage: string | null;
     reviewedAt: Date;              // Timestamp when admin verified payment
     reviewedByAdminId: mongoose.Types.ObjectId;
     createdAt: Date;

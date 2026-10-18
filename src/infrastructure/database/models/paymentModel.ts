@@ -17,7 +17,7 @@ const paymentSchema = new Schema<PaymentEntity>(
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User", // Adjust reference to match your User model name
+      ref: "users",
       required: [true, "User is required"],
       index: true,
     },
@@ -54,7 +54,7 @@ const paymentSchema = new Schema<PaymentEntity>(
     },
     reviewedByAdminId: {
       type: Schema.Types.ObjectId,
-      ref: "User", // Adjust reference to match your User model name
+      ref: "users",
 
 
     },
@@ -130,9 +130,9 @@ paymentSchema.post(
   }
 );
 const formatImageUrl = (doc: PaymentEntity) => {
-  if (doc.receiptImageUrl) {
+  if (doc.receiptImageUrl && !/^(https?:\/\/|\/)/i.test(doc.receiptImageUrl)) {
     if (process.env.NODE_ENV === "production") {
-      doc.receiptImageUrl = `${process.env.BASE_URL}:/uploads/payments/${doc.receiptImageUrl}`;
+      doc.receiptImageUrl = `${(process.env.BASE_URL || "").replace(/\/+$/, "")}/uploads/payments/${doc.receiptImageUrl}`;
     } else {
       doc.receiptImageUrl = `${process.env.BASE_URL}:${process.env.PORT}/uploads/payments/${doc.receiptImageUrl}`;
     }

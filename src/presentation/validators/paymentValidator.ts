@@ -103,7 +103,7 @@ const updatePaymentStatusValidator = [
         .notEmpty()
         .withMessage("Status is required")
         .trim()
-        .isIn(PaymentStatusValues)
+        .isIn(["APPROVED", "REJECTED"])
         .withMessage("Invalid payment status"),
 
     validatorMiddleware,
@@ -114,6 +114,12 @@ const getPaymentByIdValidator = [
         .isMongoId()
         .withMessage("Invalid payment ID format"),
 
+    validatorMiddleware,
+];
+export const reviewPaymentValidator = [
+    check("id").isMongoId().withMessage("Invalid payment ID format"),
+    check("rejectionReason").optional().isString().bail().trim().isLength({ max: 200 }),
+    check("rejectionMessage").optional().isString().bail().trim().isLength({ max: 1000 }),
     validatorMiddleware,
 ];
 

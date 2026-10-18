@@ -53,6 +53,11 @@ router.get("/users/stats", asyncHandler(async (req, res) => {
     send(res, { total, subscribed, unsubscribed: total - subscribed });
 }));
 router.get("/users", paginationValidator, asyncHandler(async (req, res) => { send(res, await list(UserModel, req, userFields)); }));
+router.get("/users/:id", resourceIdValidator, asyncHandler(async (req, res) => {
+    const user = await UserModel.findById(req.params.id).select(`${userFields} profileImage`).lean();
+    if (!user) throw new ApiError(404, "User not found");
+    send(res, user);
+}));
 router.post("/users", userValidator(true), asyncHandler(async (req, res) => {
     const data = pickAllowedFields(req.body, ["name", "email", "phone", "password", "role", "active"]);
     if (await UserModel.exists({ $or: [{ email: data.email }, { phone: data.phone }] } as any)) throw new ApiError(400, "Email or phone already exists");

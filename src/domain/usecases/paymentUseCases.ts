@@ -21,13 +21,13 @@ class PaymentUseCases {
     this.paymentRepo.getPaymentById(id);
 
 
-  updatePaymentStatus = (id: string, status: string): Promise<PaymentEntity | null> =>
-    this.paymentRepo.updatePaymentStatus(id, status);
+  updatePaymentStatus = (id: string, status: string, reviewerId?: string, reason?: string, message?: string): Promise<PaymentEntity | null> =>
+    this.paymentRepo.updatePaymentStatus(id, status, reviewerId, reason, message);
 
   deletePaymentById = (id: string): Promise<PaymentEntity | null> =>
     this.paymentRepo.deletePaymentById(id);
-    approvePayment=(id: string): Promise<PaymentEntity >=> this.paymentRepo.approvePayment(id);
-    declinePayment=(id: string): Promise<PaymentEntity >=> this.paymentRepo.declinePayment(id);
+    approvePayment=(id: string, reviewerId?: string): Promise<PaymentEntity >=> this.paymentRepo.approvePayment(id, reviewerId);
+    declinePayment=(id: string, reviewerId?: string, reason?: string, message?: string): Promise<PaymentEntity >=> this.paymentRepo.declinePayment(id, reviewerId, reason, message);
     getPaymentStatus=(id: string): Promise<PaymentEntity | null> => this.paymentRepo.getPaymentStatus(id);
 }
 
