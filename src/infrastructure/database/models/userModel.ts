@@ -5,6 +5,10 @@ import { printGreen } from "../../../shared/utils/printColors";
 import UserRole from "../../../shared/constants/user-roles.enum";
 import { SubscriptionStatus, SubscriptionStatusValues } from "../../../shared/constants/payment-status.enums";
 const userSchema = new Schema<UserEntity>({
+    fcmTokens: {
+        type: [String],
+        default: [],
+    },
     name: {
         type: String,
         trim: true,
@@ -66,16 +70,16 @@ const userSchema = new Schema<UserEntity>({
         type: String,
         default: null
     },
-  pendingEmail: {
-    type: String,
-    lowercase: true,
-  },
-  emailChangeOtp: {
-    type: String, // Stored as a hashed string
-  },
-  emailChangeOtpExpires: {
-    type: Date,
-  }
+    pendingEmail: {
+        type: String,
+        lowercase: true,
+    },
+    emailChangeOtp: {
+        type: String, // Stored as a hashed string
+    },
+    emailChangeOtpExpires: {
+        type: Date,
+    }
 
 
 
@@ -101,7 +105,7 @@ const userSchema = new Schema<UserEntity>({
     });
 userSchema.pre("save", async function () {
     // Only hash the password if it has actually been modified (or is new)
-    if (!this.isModified("password")|| !this.password) return;
+    if (!this.isModified("password") || !this.password) return;
     this.password = await UserUtils.hashPassword(this.password!);
 });
 

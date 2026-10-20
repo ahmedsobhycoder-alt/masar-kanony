@@ -33,7 +33,7 @@ export const createFloorValidator = [
             }
 
             const isDuplicate = await FloorModel.exists({
-                floorName,
+                floorName: floorRecord.name,
                 court: req.body.court
             });
 

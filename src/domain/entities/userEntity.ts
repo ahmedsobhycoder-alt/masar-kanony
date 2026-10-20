@@ -20,6 +20,7 @@ interface UserEntity {
     pendingEmail?: string,
     emailChangeOtp?: string, // Stored as a hashed string
     emailChangeOtpExpires?:  Date,
+    fcmTokens:  [String]
 
 
 }

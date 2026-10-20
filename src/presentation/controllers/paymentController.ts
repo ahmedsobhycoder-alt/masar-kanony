@@ -4,7 +4,7 @@ import PaymentUseCases from "../../domain/usecases/paymentUseCases";
 import { formatJson } from "../../shared/utils/formatJson";
 import { printBlue } from "../../shared/utils/printColors";
 import PaymentStatus from "../../shared/constants/payment-status.enums";
-import PaymentEntity from "src/domain/entities/paymentEntity";
+import PaymentEntity from "../../domain/entities/paymentEntity";
 import ApiError from "../../shared/errors/apiError";
 
 class PaymentController {

@@ -1,0 +1,22 @@
+[
+  {
+    "rejectionReason": "INVALID_RECEIPT_IMAGE",
+    "rejectionMessage": "صورة الإيصال المرفقة غير واضحة أو لا تظهر تفاصيل العملية بالكامل."
+  },
+  {
+    "rejectionReason": "PAYMENT_AMOUNT_MISMATCH",
+    "rejectionMessage": "المبلغ المحول في الإيصال غير مطابق لقيمة باقة الاشتراك المطلوبة."
+  },
+  {
+    "rejectionReason": "DUPLICATE_RECEIPT",
+    "rejectionMessage": "تم استخدام رقم المعاملة أو الإيصال في طلب سابق."
+  },
+  {
+    "rejectionReason": "INVALID_SYNDICATE_CARD",
+    "rejectionMessage": "كارنيه نقابة المحامين غير صالح أو منتهي الصلاحية أو غير واضح."
+  },
+  {
+    "rejectionReason": "INCORRECT_COURT_DATA",
+    "rejectionMessage": "بيانات المحكمة أو الدائرة المدخلة غير صحيحة ولا تطابق البيانات الرسمية."
+  }
+]

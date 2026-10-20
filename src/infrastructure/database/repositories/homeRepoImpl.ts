@@ -5,7 +5,7 @@ import CourtModel from "../models/courtModel";
 import { QueryBuilder, QueryPagination } from "../../../shared/utils/queryBuilder";
 import { query } from "express-validator";
 import CourtEntity from "../../../domain/entities/courtEntity";
-import PaymentEntity from "src/domain/entities/paymentEntity";
+import PaymentEntity from "../../../domain/entities/paymentEntity";
 import PaymentModel from "../models/paymentModel";
 class HomeRepoImpl implements HomeRepo {
   private readonly courtQueryBuilder: QueryBuilder = new QueryBuilder(

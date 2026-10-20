@@ -33,7 +33,18 @@ export class CourtController {
     constructor(courtUseCases: CourtUseCases) {
         this.courtUseCases = courtUseCases;
     }
+   getAllCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const otherQueries = getCourtOtherQueries(req);
+        
+        printBlue("otherQueries", JSON.stringify(otherQueries));
+        const list: listType<CourtEntity> = await this.courtUseCases.getAllCourts(
+            (req as any).user?._id,
+            req.query as Record<string, any>,
+            otherQueries
+        );
 
+        res.status(200).json(formatJson({ data: { list: list.data, paginationResult: list.pagination }, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }));
+    })
     createCourt = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const courtData = (req as any).courtData;
         const createdCourt = await this.courtUseCases.createCourt(courtData);
@@ -52,17 +63,7 @@ export class CourtController {
         if (!deletedCourt) throw new ApiError(404, "Court not found");
         res.status(200).json(formatJson({ data: deletedCourt, message: req.t("Court deleted successfully", { ns: "common" }), status: true }));
     });
-    getAllCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const otherQueries = getCourtOtherQueries(req);
-        printBlue("otherQueries", JSON.stringify(otherQueries));
-        const list: listType<CourtEntity> = await this.courtUseCases.getAllCourts(
-            (req as any).user?._id,
-            req.query as Record<string, any>,
-            otherQueries
-        );
-
-        res.status(200).json(formatJson({ data: { list: list.data, paginationResult: list.pagination }, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }));
-    })
+ 
     getSavedCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const otherQueries = getCourtOtherQueries(req);
 

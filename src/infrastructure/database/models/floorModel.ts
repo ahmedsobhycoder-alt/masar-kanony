@@ -16,7 +16,6 @@ export const floorSchema = new Schema<FloorEntity, FloorModelStatic>({
     },
     floorName: {
         type: String,
-        unique: [true, "Floor Name must be unique for court"],
         required: [true, "Floor Name is required"],
     },
     nOfficesPerFloor: {
@@ -35,6 +34,8 @@ export const floorSchema = new Schema<FloorEntity, FloorModelStatic>({
         },
     ],
 });
+
+floorSchema.index({ court: 1, floorName: 1 }, { unique: true });
 
 floorSchema.statics.calculateNumberOfFloorsPerCourt = async function (
     courtId: FloorEntity["court"],
@@ -60,7 +61,7 @@ floorSchema.post("init", function (doc) {
     }
 });
 // 2. Handle database relationships AFTER saving:
-floorSchema.post("save", async function (doc, next) {
+floorSchema.post("save", async function (doc) {
     try {
         // Use doc.constructor to avoid the initialization crash
         const FloorModelStatic = doc.constructor as any;
@@ -72,10 +73,9 @@ floorSchema.post("save", async function (doc, next) {
             $addToSet: { floors: doc._id }
         });
 
-        next(); // Tell Mongoose the hook is successfully finished
     } catch (error) {
         console.error("Error in Floor post-save hook:", error);
-        next(error as mongoose.CallbackError);
+        throw error;
     }
 });
 floorSchema.post("findOneAndDelete", async function (doc) {

@@ -1,0 +1,40 @@
+[
+  {
+    "title": "تمت مراجعة طلب الاشتراك",
+    "body": "تمت الموافقة على إيصال الدفع وتفعيل باقة الاشتراك السنوي بنجاح.",
+    "type": "PAYMENT",
+    "isRead": false,
+    "data": {
+      "paymentId": "651a1b2c3d4e5f6a7b8c9d01",
+      "action": "APPROVED"
+    }
+  },
+  {
+    "title": "تحديث حالة طلب الانضمام",
+    "body": "تم رفض إيصال الدفع لعدم وضوح الصورة، يرجى إعادة رفع إيصال واضح.",
+    "type": "PAYMENT",
+    "isRead": false,
+    "data": {
+      "paymentId": "651a1b2c3d4e5f6a7b8c9d02",
+      "action": "REJECTED",
+      "reason": "INVALID_RECEIPT_IMAGE"
+    }
+  },
+  {
+    "title": "تنبيه جلسة قضائية",
+    "body": "لديك جلسة مجدولة غداً في محكمة جنوب الجيزة الابتدائية - الدائرة 4 مدني.",
+    "type": "COURT_REMINDER",
+    "isRead": false,
+    "data": {
+      "courtId": "651a1b2c3d4e5f6a7b8c9d03",
+      "chamber": "4 مدني"
+    }
+  },
+  {
+    "title": "مرحباً بك في مسار قانوني",
+    "body": "تم إنشاء حسابك وتأكيده بنجاح. يمكنك الآن تصفح دوائر ومحاكم مصر وحفظ أدوار الجلسات.",
+    "type": "GENERAL",
+    "isRead": true,
+    "data": {}
+  }
+]
