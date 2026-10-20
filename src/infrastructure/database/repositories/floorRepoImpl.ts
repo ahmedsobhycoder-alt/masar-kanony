@@ -13,8 +13,19 @@ class FloorRepoImpl implements FloorRepo {
     }
 
     async createFloor(floorData: FloorEntity): Promise<FloorEntity> {
-        const floor = await FloorModel.create(floorData);
-        return await floor.populate(["offices"]);
+        try {
+            const floor = await FloorModel.create(floorData);
+            return await floor.populate(["offices"]);
+        } catch (error: any) {
+            console.error("[Floor create] Database save failed:", error);
+            if (error?.code === 11000 && error?.keyPattern?.floorName) {
+                if (!error.keyPattern.court) {
+                    throw new ApiError(409, "Floor setup requires a database index migration. Contact the administrator.");
+                }
+                throw new ApiError(409, "This floor already exists in the specified court");
+            }
+            throw error;
+        }
     }
 
     async getFloors(
