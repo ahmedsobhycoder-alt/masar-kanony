@@ -14,8 +14,8 @@ export class CourtUseCases {
         return await this.courtRepo.createCourt(courtData);
     }
 
-    async getAllCourts(userId: string , query: Record<string, any> = {},  otherQueries: Record<string, any>={}): Promise<listType<CourtEntity>> {
-        return await this.courtRepo.getCourts(userId,query,otherQueries);
+    async getAllCourts(queries:Record<string, any> = {}): Promise<listType<CourtEntity>> {
+        return await this.courtRepo.getCourts(queries);
     }
 
     async getCourtById(id: string, userId?: string): Promise<CourtEntity | null> {
@@ -28,20 +28,17 @@ export class CourtUseCases {
         return await this.courtRepo.deleteCourtById(id);
     }
     async getMostSeenCourts(
-        userId: string,
-        query: Record<string, any> = {},
-        otherQueries: Record<string, any> = {}
+        queries: Record<string, any> = {}
     ): Promise<listType<CourtEntity>> {
-        return await this.courtRepo.getMostSeenCourts(userId, query, otherQueries);
+        return await this.courtRepo.getMostSeenCourts(queries);
     }
     addToSaved=(court: CourtEntity,
         userId:string) : Promise<CourtEntity|null> => this.courtRepo.addToSaved(court,userId)
     removeFromSaved=(court: CourtEntity,userId:string):Promise<CourtEntity|null>=> this.courtRepo.removeFromSaved(court,userId)
     getSavedCourts = (
-        query: Record<string, any>,
-        userId: string,
-        otherQueries: Record<string, any> = {}
-    ): Promise<listType<CourtEntity>> => this.courtRepo.getSavedCourts(query, userId, otherQueries);
+        queryies: Record<string, any>,
+      
+    ): Promise<listType<CourtEntity>> => this.courtRepo.getSavedCourts(queryies);
 
 
 }

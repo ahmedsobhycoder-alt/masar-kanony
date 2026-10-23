@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 interface OfficeEntity {
 
     court: mongoose.Types.ObjectId;       // Needed because it specifies the court (e.g., الدور الأرضي)   
+    courtName:string
     floor: mongoose.Types.ObjectId;       // Needed because it specifies the floor (e.g., الدور الأرضي)
     officeType: mongoose.Types.ObjectId;
     // Core Details
@@ -20,7 +21,10 @@ interface OfficeEntity {
 
     // Optional / Interactive
     mapUrl: string;       // Needed for the bottom button: "عرض الموقع على الخريطة"
-
+    governorate: string,
+    courtType: string,
+    name:string,
+    floorName:string
 }
 
 export default OfficeEntity

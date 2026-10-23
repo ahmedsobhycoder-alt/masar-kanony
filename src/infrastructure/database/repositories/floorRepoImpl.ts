@@ -45,10 +45,14 @@ class FloorRepoImpl implements FloorRepo {
     }
 
     async updateFloorById(id: string, data: Partial<FloorEntity>): Promise<FloorEntity | null> {
-        return FloorModel.findByIdAndUpdate(id, { $set: data }, {
+        const floor = await FloorModel.findByIdAndUpdate(id, { $set: data }, {
             new: true,
             runValidators: true,
         }).lean<FloorEntity | null>();
+        if (floor && data.floorName !== undefined) {
+            await OfficeModel.updateMany({ floor: id }, { $set: { floorName: floor.floorName } });
+        }
+        return floor;
     }
 
     async getFloorsByCourtId(court: string): Promise<listType<FloorEntity>> {

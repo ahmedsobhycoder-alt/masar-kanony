@@ -2,7 +2,7 @@ import CourtEntity from "../../../domain/entities/courtEntity";
 import { CourtRepo } from "../../../domain/repositories/courtRepo";
 import CourtModel from "../models/courtModel";
 import FloorModel from "../models/floorModel";
-import ApiError from "../../../shared/errors/apiError";
+import OfficeModel from "../models/officeModel";
 import { QueryBuilder } from "../../../shared/utils/queryBuilder";
 import listType from "../../../shared/constants/types";
 
@@ -12,39 +12,57 @@ class CourtRepoImpl implements CourtRepo {
     return await CourtModel.create(courtData);
   }
 
-  async getCourts(
-    userId?: string,
-    query: Record<string, any> = {},
-    otherQueries: Record<string, any>={}
-  ): Promise<listType<CourtEntity>> {
-    // 1. Build base query
-    const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, query);
+ async getCourts(
+    queries: Record<string, any> = {}
+): Promise<listType<CourtEntity>> {
+    const { userId, ...otherQueries } = queries;
 
-    const courts = await queryBuilder.filter(otherQueries)
-      .sort()
-      .limitFields()
-      .populate({
-        path: "floors",
-        select: "-court -_id",
-        populate: [
-          {
-            path: "offices",
-            select: "officeType roomNumber locationDirection startingWorkingHours endWorkingHours services",
-          },
-        ],
-      })
-      .paginate().execute();
-    if (userId)
-      courts.data = this.checkUserSavedCourts(courts.data, userId);
+    // If 'name' is provided, expand it across name, governorate, and courtType
+    if (otherQueries.name && typeof otherQueries.name === "string") {
+        const searchTerm = otherQueries.name;
+        delete otherQueries.name; // remove so it doesn't filter by name alone
+
+        otherQueries.$or = [
+            { name: searchTerm },
+            { governorate: searchTerm },
+            { courtType: searchTerm }
+        ];
+    }
+
+    // Pass the modified query object to the QueryBuilder
+    const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, otherQueries);
+
+    const courts = await queryBuilder
+        .filter(otherQueries)
+        .sort()
+        .limitFields()
+        .populate({
+            path: "floors",
+            select: "-court",
+            populate: [
+                {
+                    path: "offices",
+                    select: "officeType roomNumber locationDirection startingWorkingHours endWorkingHours services",
+                },
+            ],
+        })
+        .paginate()
+        .execute();
+
+    if (userId) {
+        courts.data = this.checkUserSavedCourts(courts.data, userId);
+    }
+
     return courts;
-  }
+}
    async getSavedCourts(
-    query: Record<string, any>,
-    userId: string,
-    otherQueries: Record<string, any> = {}
+
+    queries: Record<string, any> = {}
   ): Promise<listType<CourtEntity>> {
+        const {userId,...otherQueries}=queries;
+
     const queryBuilder = new QueryBuilder<CourtEntity>(CourtModel, {
-      ...query,
+      ...otherQueries,
       savedBy: userId, // ✅ Matches userId inside the savedBy array
     })
     const courts= await queryBuilder.filter(otherQueries)
@@ -95,25 +113,36 @@ class CourtRepoImpl implements CourtRepo {
   }
 
   async updateCourtById(id: string, courtData: Partial<CourtEntity>): Promise<CourtEntity | null> {
-    return CourtModel.findByIdAndUpdate(id, { $set: courtData }, {
+    const court = await CourtModel.findByIdAndUpdate(id, { $set: courtData }, {
       new: true,
       runValidators: true,
     }).lean<CourtEntity | null>();
+    if (court) await OfficeModel.updateMany({ court: id }, { $set: {
+      courtName: court.name, governorate: court.governorate, courtType: court.courtType,
+    } });
+    return court;
   }
 
 
   async deleteCourtById(id: string) {
-    if (await FloorModel.exists({ court: id } as any)) {
-      throw new ApiError(400, "Delete the court's floors before deleting the court");
-    }
+    const court = await CourtModel.findById(id);
+    if (!court) return null;
+
+    const floors = await FloorModel.find({ court: id } as any).select("_id").lean();
+    // Match both ownership links, including offices missing from floor.offices.
+    await OfficeModel.deleteMany({
+      $or: [{ court: id }, { floor: { $in: floors.map((floor) => floor._id) } }],
+    });
+    await FloorModel.deleteMany({ court: id } as any);
+    // Keep the court until child deletion succeeds so failed requests can be retried.
     return await CourtModel.findByIdAndDelete(id);
   }
   async getMostSeenCourts(
-    userId?: string,
-    query: Record<string, any> = {},
-    otherQueries: Record<string, any> = {}
+    queries: Record<string, any> = {}
   ): Promise<listType<CourtEntity>> {
-    const courts= await new QueryBuilder<CourtEntity>(CourtModel, query)
+            const {userId,...otherQueries}=queries;
+
+    const courts= await new QueryBuilder<CourtEntity>(CourtModel, queries)
       .filter(otherQueries)
       .sort({ nViews: -1 })
       .limitFields()

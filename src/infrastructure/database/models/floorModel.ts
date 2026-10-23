@@ -23,6 +23,7 @@ export const floorSchema = new Schema<FloorEntity, FloorModelStatic>({
         required: false,
         default: 0,
     },
+   
     image: {
         type: String,
         required: [true, "Floor images is required"],
@@ -35,7 +36,6 @@ export const floorSchema = new Schema<FloorEntity, FloorModelStatic>({
     ],
 });
 
-floorSchema.index({ court: 1, floorName: 1 }, { unique: true });
 
 floorSchema.statics.calculateNumberOfFloorsPerCourt = async function (
     courtId: FloorEntity["court"],

@@ -11,15 +11,26 @@ export default class OfficesController {
     constructor({ officeUseCases }: { officeUseCases: OfficeUseCases }) {
         this.officeUseCases = officeUseCases;
     }
+getOfficeQueries = (req: Request): Record<string, any> => {
+    const queries: Record<string, any> = {};
+    for (const key of ["name", "courtName", "governorate", "courtType", "court", "floor", "page", "limit", "sort"]) {
+        const value = req.query[key];
+        if (typeof value === "string" && value.trim()) queries[key] = value.trim();
+    }
+    return queries;
+};
 
     createOffice = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const officeData = req.body;
+        const officeData = (req as any).office;
+           
         const createdOffice = await this.officeUseCases.createOffice(officeData);
         res.status(201).json(formatJson({ data: createdOffice, message: req.t("Office created successfully", { ns: "common" }), status: true }));
     })
 
     getOffices = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const { data, pagination } = await this.officeUseCases.getOffices(req.query as Record<string, any>);
+        
+        const queries = this.getOfficeQueries(req);
+        const { data, pagination } = await this.officeUseCases.getOffices(queries);
         res.status(200).json(formatJson({ data: { list: data, paginationResult: pagination }, message: req.t("Offices fetched successfully", { ns: "common" }), status: true }));
     })
 

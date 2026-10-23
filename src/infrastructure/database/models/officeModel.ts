@@ -19,14 +19,34 @@ const officeSchema = new mongoose.Schema<OfficeEntity, OfficeModelStatic>({
         ref: "Courts",
         required: [true, "Court ID is required"],
     },
+    courtName: {
+        type: String,
+        required: [true, "Court Name is required"],
+    },
     officeType: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "OfficeTypes",
         required: [true, "Office type ID is required"],
     },
-    roomNumber: { type: String, required: [true, "Room number is required"] }, 
+    governorate: {
+        type: String,
+        required: [true, "governorate is required"],
+    },
+    courtType: {
+        type: String,
+        required: [true, "court type is required"],
+    },
+    name: {
+        type: String,
+        required: [true, "office name is required"],
+    },
+    floorName: {
+        type: String,
+        required: [true, "floor name is required"],
+    },
+    roomNumber: { type: String, required: [true, "Room number is required"] },
     description: { type: String, required: false },
-    locationDirection: { type: String, required: [true, "Location direction is required"] },
+    locationDirection: { type: String },
     startingWorkingHours: {
         type: String, required: false,
         default: "10:00"
@@ -52,8 +72,8 @@ officeSchema.statics.calculateNumberOfFOfficesPerCourt = async function (court: 
 officeSchema.pre("save", async function () {
     try {
         const court = await CourtModel.findById(this.court);
-        if (court) {
-            this.description = `${court.name} - ${this.locationDirection}`;
+        if (court && !this.description) {
+            this.description = [court.name, this.locationDirection].filter(Boolean).join(" - ");
         }
     } catch (error) {
         console.error("Error in office pre-save hook:", error);
@@ -67,7 +87,7 @@ officeSchema.post("save", async function (doc) {
         await FloorModel.updateOne({ _id: doc.floor }, {
             $addToSet: { offices: doc._id }
         });
-   
+
     } catch (error) {
         console.error("Error in office post-save hook:", error);
     }

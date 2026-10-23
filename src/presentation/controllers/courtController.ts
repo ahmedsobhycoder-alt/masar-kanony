@@ -2,30 +2,13 @@ import { CourtUseCases } from "../../domain/usecases/courtUseCases";
 import { Request, Response, NextFunction } from "express";
 import { formatJson } from "../../shared/utils/formatJson";
 import asyncHandler from "express-async-handler"
-import { printBlue, printRed } from "../../shared/utils/printColors";
+import { printBlue, printGreen, printRed } from "../../shared/utils/printColors";
 import CourtEntity from "../../domain/entities/courtEntity";
 import listType from "../../shared/constants/types";
-import { stringToList } from "../../shared/utils/helpers";
+import { fromStringToList } from "../../shared/utils/helpers";
 import ApiError from "../../shared/errors/apiError";
 import pickAllowedFields from "../../shared/utils/pickAllowedFields";
 
-const toFilterValues = (value: unknown): string[] => {
-    if (Array.isArray(value)) {
-        return value.flatMap(toFilterValues);
-    }
-    return typeof value === "string" ? stringToList(value) : [];
-};
-
-const getCourtOtherQueries = (req: Request): Record<string, string[]> => {
-    const governorates = toFilterValues((req as any).governorate ?? req.query.governorate);
-    const courtTypes = toFilterValues((req as any).courtType ?? req.query.courtType);
-    const otherQueries: Record<string, string[]> = {};
-
-    if (governorates.length) otherQueries.governorate = governorates;
-    if (courtTypes.length) otherQueries.courtType = courtTypes;
-
-    return otherQueries;
-};
 
 export class CourtController {
     private readonly courtUseCases: CourtUseCases;
@@ -33,14 +16,46 @@ export class CourtController {
     constructor(courtUseCases: CourtUseCases) {
         this.courtUseCases = courtUseCases;
     }
-   getAllCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const otherQueries = getCourtOtherQueries(req);
+ 
+
+    getCourtQueries = (req: Request): Record<string, any> => {
+        // 1. Debug what actually arrives on the request
+        console.log("Incoming req.query:", req.query);
+        console.log("Incoming req.user:", (req as any).user);
+
+        const rawGov = (req as any).governorate ?? req.query.governorate;
+        const rawCourtType = (req as any).courtType ?? req.query.courtType;
+        const rawName = (req as any).name ?? req.query.name;
+
+        const governorates = fromStringToList(rawGov);
+        const courtTypes = fromStringToList(rawCourtType);
+
+        const queries: Record<string, any> = {};
+
+        // Only assign userId if it actually exists
+        const userId = (req as any).user?._id ?? null;
+        queries.userId = userId;
         
-        printBlue("otherQueries", JSON.stringify(otherQueries));
+
+        // Capture name from either middleware attachment or URL query
+        if (rawName && typeof rawName === "string" && rawName.trim()) {
+            queries.name = rawName.trim();
+        }
+
+        if (governorates.length) queries.governorate = governorates;
+        if (courtTypes.length) queries.courtType = courtTypes;
+
+        printGreen("otherQueries", JSON.stringify(queries));
+
+        return queries;
+    };
+
+    getAllCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const queries = this.getCourtQueries(req);
+
+        printBlue("otherQueries", JSON.stringify(queries));
         const list: listType<CourtEntity> = await this.courtUseCases.getAllCourts(
-            (req as any).user?._id,
-            req.query as Record<string, any>,
-            otherQueries
+            queries
         );
 
         res.status(200).json(formatJson({ data: { list: list.data, paginationResult: list.pagination }, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }));
@@ -63,14 +78,12 @@ export class CourtController {
         if (!deletedCourt) throw new ApiError(404, "Court not found");
         res.status(200).json(formatJson({ data: deletedCourt, message: req.t("Court deleted successfully", { ns: "common" }), status: true }));
     });
- 
+
     getSavedCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const otherQueries = getCourtOtherQueries(req);
+        const queries = this.getCourtQueries(req);
 
         const list: listType<CourtEntity> = await this.courtUseCases.getSavedCourts(
-            req.query as Record<string, any>,
-            (req as any).user._id,
-            otherQueries
+            queries
         );
         res.status(200).json(formatJson({
             data: {
@@ -87,11 +100,10 @@ export class CourtController {
     })
     getMostSeenCourts = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const list: listType<CourtEntity> = await this.courtUseCases.getMostSeenCourts(
-            (req as any).user?._id,
-            req.query as Record<string, any>,
-            getCourtOtherQueries(req)
+
+            this.getCourtQueries(req)
         );
-        res.status(200).json(formatJson({ data: { list: list.data, paginationResult: list.pagination }, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }))    ;
+        res.status(200).json(formatJson({ data: { list: list.data, paginationResult: list.pagination }, message: req.t("Courts fetched successfully", { ns: "common" }), status: true }));
     })
     addToSaved = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const court = (req as any).court as CourtEntity;

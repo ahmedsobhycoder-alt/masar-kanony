@@ -1,5 +1,6 @@
 import ApiError from "../errors/apiError";
 import { printGreen } from "./printColors";
+  export const fromStringToList = (value: unknown): string[] => typeof value === "string" ? stringToList(value) : [];
 
 export const stringToList = (value: string) => {
     if (!(value === 'string' && value.trim() !== '')) {
@@ -17,6 +18,28 @@ export const stringToList = (value: string) => {
 
     return []
 }
+ export function buildBilingualFuzzyRegex(searchTerm: string): string {
+        if (!searchTerm) return "";
+
+        const cleanTerm = searchTerm.replace(/[\u064B-\u065F\u0670]/g, "").trim();
+        const tokens: string[] = [];
+
+        for (const char of cleanTerm) {
+            if (/[أإآا]/.test(char)) {
+                tokens.push("[أإآا]");
+            } else if (/[يى]/.test(char)) {
+                tokens.push("[يى]");
+            } else if (/[ةه]/.test(char)) {
+                tokens.push("[ةه]");
+            } else if (/\s+/.test(char)) {
+                tokens.push("\\s*");
+            } else {
+                tokens.push(char.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+            }
+        }
+
+        return tokens.join(".*?");
+    }
 export const throwError = (code: number, message: string): never => {
     throw new ApiError(
         code,

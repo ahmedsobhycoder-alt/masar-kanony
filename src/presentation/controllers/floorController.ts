@@ -24,6 +24,9 @@ export class FloorController {
         );
         res.status(201).json(formatJson({ data: createdFloor, message: req.t("Floor created successfully", { ns: "common" }), status: true }));
     })
+
+
+    
     getAllFloors = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 
         const query = {

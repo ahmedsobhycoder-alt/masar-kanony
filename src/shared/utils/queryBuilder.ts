@@ -4,6 +4,7 @@ import ApiError from "../errors/apiError";
 import { printBlue, printGreen, printYellow } from "./printColors";
 import { json } from "node_modules/@types/body-parser";
 import { stringify } from "node:querystring";
+import { buildBilingualFuzzyRegex } from "./helpers";
 
 export interface PaginationDetails {
     page: number;
@@ -59,53 +60,68 @@ export class QueryBuilder<T = any> {
 
 
 
-    filter(customQuery:  Record<string, any> = {}) {
-        const queryObj = { ...this.query, ...customQuery };
+ filter(customQuery: Record<string, any> = {}) {
+    const queryObj = { ...this.query, ...customQuery };
 
-        const excludedFields = ["page", "sort", "limit", "fields", "search"];
-        excludedFields.forEach((field) => delete queryObj[field]);
+    const excludedFields = ["page", "sort", "limit", "fields", "search"];
+    excludedFields.forEach((field) => delete queryObj[field]);
 
-        // Convert comparison operators (gte, gt, lte, lt) to MongoDB syntax ($gte, etc.)
-        let queryStr = JSON.stringify(queryObj);
-        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-        const parsedQuery = JSON.parse(queryStr) as Record<string, any>;
+    // Convert comparison operators (gte, gt, lte, lt)
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    const parsedQuery = JSON.parse(queryStr) as Record<string, any>;
 
-        const isObjectId = /^[0-9a-fA-F]{24}$/;
-        const isBooleanOrNumber = /^(true|false|\d+)$/i;
+    const isObjectId = /^[0-9a-fA-F]{24}$/;
+    const isBooleanOrNumber = /^(true|false|\d+)$/i;
 
-        Object.keys(parsedQuery).forEach((key) => {
-            const val = parsedQuery[key];
+    // Helper function to build regex object for text values
+    const toRegexFilter = (val: string) => {
+        const pattern = buildBilingualFuzzyRegex(val.trim());
+        return { $regex: pattern,$options: "i" };
+    };
 
-            // 1. Array handling: Governorates come directly as string[] from validator
-            if (Array.isArray(val)) {
-                printGreen("parsedQuery=", val);
-                const regexArray = val
-                    .filter(Boolean)
-                    .map((item) => {
-                        const cleaned = String(item).trim();
-                        const pattern = this.buildBilingualFuzzyRegex(cleaned);
-                        return new RegExp(pattern, "i");
-                    });
-                printBlue("regexArray", regexArray);
-                // Match ANY of the provided governorates/values
-                parsedQuery[key] = { $in: regexArray };
+    Object.keys(parsedQuery).forEach((key) => {
+        const val = parsedQuery[key];
 
-            }
+        // --- Handle $or explicitly ---
+        if (key === "$or" && Array.isArray(val)) {
+            parsedQuery.$or = val.map((conditionObj) => {
+                const [targetKey] = Object.keys(conditionObj);
+                const targetVal = conditionObj[targetKey];
 
-            // 2. Single text field handling
-            if (
-                typeof val === "string" &&
-                !isObjectId.test(val) &&
-                !isBooleanOrNumber.test(val)
-            ) {
-                const regexPattern = this.buildBilingualFuzzyRegex(val.trim());
-                parsedQuery[key] = { $regex: regexPattern, $options: "i" };
-            }
-        });
+                if (typeof targetVal === "string" && !isObjectId.test(targetVal) && !isBooleanOrNumber.test(targetVal)) {
+                    return { [targetKey]: toRegexFilter(targetVal) };
+                }
+                return conditionObj;
+            });
+            return;
+        }
 
-        this.mongooseQuery = this.mongooseQuery.find(parsedQuery as any);
-        return this;
-    }
+        // 1. Array handling: Governorates come directly as string[] from validator
+        if (Array.isArray(val)) {
+            const regexArray = val
+                .filter(Boolean)
+                .map((item) => {
+                    const cleaned = String(item).trim();
+                    const pattern = buildBilingualFuzzyRegex(cleaned);
+                    return new RegExp(pattern, "i");
+                });
+            parsedQuery[key] = { $in: regexArray };
+        }
+
+        // 2. Single text field handling
+        if (
+            typeof val === "string" &&
+            !isObjectId.test(val) &&
+            !isBooleanOrNumber.test(val)
+        ) {
+            parsedQuery[key] = toRegexFilter(val);
+        }
+    });
+
+    this.mongooseQuery = this.mongooseQuery.find(parsedQuery as any);
+    return this;
+}
 sort(defaultSort: Record<string, any> | string = { createdAt: -1, _id: 1 }) {
     if (this.query.sort) {
         // Appends _id to custom user sorts as well to prevent tie collisions
@@ -135,7 +151,7 @@ sort(defaultSort: Record<string, any> | string = { createdAt: -1, _id: 1 }) {
         const searchValue = this.query.search;
         if (!searchValue) return this;
 
-        const regexPattern = this.buildBilingualFuzzyRegex(String(searchValue));
+        const regexPattern = buildBilingualFuzzyRegex(String(searchValue));
         const regex = { $regex: regexPattern, $options: "i" };
 
         const searchQuery = {
@@ -161,28 +177,7 @@ sort(defaultSort: Record<string, any> | string = { createdAt: -1, _id: 1 }) {
         return this;
     }
 
-    buildBilingualFuzzyRegex(searchTerm: string): string {
-        if (!searchTerm) return "";
-
-        const cleanTerm = searchTerm.replace(/[\u064B-\u065F\u0670]/g, "").trim();
-        const tokens: string[] = [];
-
-        for (const char of cleanTerm) {
-            if (/[أإآا]/.test(char)) {
-                tokens.push("[أإآا]");
-            } else if (/[يى]/.test(char)) {
-                tokens.push("[يى]");
-            } else if (/[ةه]/.test(char)) {
-                tokens.push("[ةه]");
-            } else if (/\s+/.test(char)) {
-                tokens.push("\\s*");
-            } else {
-                tokens.push(char.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-            }
-        }
-
-        return tokens.join(".*?");
-    }
+   
 async execute(): Promise<listType<T>> {
     if (!this.isPaginationEnabled) {
         const data = (await this.mongooseQuery.lean().exec()) as unknown as T[];
