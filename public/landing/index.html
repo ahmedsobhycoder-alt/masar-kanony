@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#08283b" />
+    <meta name="description" content="مسار قانوني — نعمل على تجهيز تجربة تجعل طريقك إلى الخدمات القانونية أكثر وضوحًا. قريبًا." />
+    <title>مسار قانوني | قريبًا</title>
+    <style>
+      :root { color-scheme: light; --navy: #08283b; --gold: #bc925e; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; min-height: 100svh; background: #f7f5f0; color: var(--navy); font-family: Tahoma, Arial, sans-serif; }
+      body::before { content: ""; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 10% 15%, #bc925e13, transparent 45%), radial-gradient(ellipse at 90% 85%, #08283b0a, transparent 45%); }
+      .page { position: relative; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; padding: 30px clamp(20px, 6vw, 90px) 22px; }
+      header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 22px; border-bottom: 1px solid #08283b16; }
+      .brand { font-size: 16px; font-weight: 700; }
+      .status { display: inline-flex; align-items: center; gap: 9px; color: #70624f; font-size: 12px; }
+      .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px #bc925e15; }
+      main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 48px 0; }
+      .card { width: min(100%, 680px); text-align: center; }
+      .logo-frame { width: min(88%, 390px); margin: 0 auto 34px; background: white; border-radius: 24px; overflow: hidden; border: 1px solid #08283b0b; box-shadow: 0 16px 50px #08283b07; }
+      .logo { display: block; width: 100%; height: auto; }
+      .eyebrow { display: inline-flex; align-items: center; gap: 12px; color: #89663b; font-size: 12px; margin: 0 0 18px; }
+      .eyebrow::before, .eyebrow::after { content: ""; width: 30px; height: 1px; background: #bc925e80; }
+      h1 { font-size: clamp(52px, 9vw, 82px); line-height: 1.3; letter-spacing: -2px; margin: 0 0 18px; font-weight: 700; }
+      .intro { font-size: clamp(17px, 3vw, 21px); line-height: 1.9; margin: 0 0 12px; }
+      .description { max-width: 440px; margin: 0 auto; color: #69757c; font-size: 14px; line-height: 2.1; }
+      .signature { margin-top: 32px; display: inline-flex; align-items: center; gap: 10px; font-size: 12px; color: #7b6a53; }
+      .signature::before { content: ""; width: 5px; height: 5px; background: var(--gold); transform: rotate(45deg); }
+      footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; border-top: 1px solid #08283b16; padding-top: 18px; color: #7b858b; font-size: 11px; line-height: 1.8; }
+      @media (max-width: 480px) { .page { padding-top: 22px; } header { padding-bottom: 18px; } main { padding: 36px 0; } .logo-frame { margin-bottom: 28px; border-radius: 18px; } footer { justify-content: center; text-align: center; } .status { font-size: 11px; } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <span class="brand">مسار قانوني</span>
+        <span class="status"><span class="dot" aria-hidden="true"></span>نعمل على تجهيز الموقع</span>
+      </header>
+      <main>
+        <section class="card" aria-labelledby="coming-soon">
+          <div class="logo-frame"><img class="logo" src="/landing/logo.png" alt="شعار مسار قانوني" width="1536" height="1024" fetchpriority="high" /></div>
+          <p class="eyebrow">خطوة جديدة في الطريق</p>
+          <h1 id="coming-soon">قريبًا</h1>
+          <p class="intro">طريقك القانوني، أكثر وضوحًا.</p>
+          <p class="description">نُجهّز لك تجربة تساعدك على الوصول إلى المحاكم والمكاتب والخدمات القانونية بكل سهولة.</p>
+          <span class="signature">نلتقي قريبًا في مسار قانوني</span>
+        </section>
+      </main>
+      <footer><span>مسار قانوني — جميع الحقوق محفوظة</span><span>بداية أوضح لكل خطوة قانونية</span></footer>
+    </div>
+  </body>
+</html>

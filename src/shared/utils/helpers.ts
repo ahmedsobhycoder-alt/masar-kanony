@@ -1,6 +1,9 @@
 import ApiError from "../errors/apiError";
 import { printGreen } from "./printColors";
-  export const fromStringToList = (value: unknown): string[] => typeof value === "string" ? stringToList(value) : [];
+  export const fromStringToList = (value: unknown): string[] => {
+      const values = Array.isArray(value) ? value : [value];
+      return values.flatMap(item => typeof item === "string" ? stringToList(item) : []);
+  };
 
 export const stringToList = (value: string) => {
     if (!(value === 'string' && value.trim() !== '')) {

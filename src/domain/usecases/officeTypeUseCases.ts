@@ -9,7 +9,7 @@ export class OfficeTypeUseCases {
     this.officeTypeRepo = officeTypeRepo;
   }
 
-  createOfficeType = async (officeTypeData: OfficeTypeEntity): Promise<OfficeTypeEntity> =>
+  createOfficeType = async (officeTypeData: Omit<OfficeTypeEntity, "id" | "_id">): Promise<OfficeTypeEntity> =>
     this.officeTypeRepo.createOfficeType(officeTypeData);
 
   getOfficeTypes = async (query: Record<string, any> = {}): Promise<listType<OfficeTypeEntity>> =>
@@ -17,6 +17,9 @@ export class OfficeTypeUseCases {
 
   getOfficeTypeById = async (id: string): Promise<OfficeTypeEntity | null> =>
     this.officeTypeRepo.getOfficeTypeById(id);
+
+  updateOfficeTypeById = (id: string, data: Partial<OfficeTypeEntity>) =>
+    this.officeTypeRepo.updateOfficeTypeById(id, data);
 
   deleteOfficeTypeById = async (id: string): Promise<OfficeTypeEntity | null> =>
     this.officeTypeRepo.deleteOfficeTypeById(id);

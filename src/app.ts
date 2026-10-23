@@ -36,6 +36,7 @@ server.use(bodyParser.urlencoded({ extended: true }));
 server.use(i18nMiddleware); // Use the i18n middleware to handle language detection and translation
 server.set('query parser', 'extended');
 server.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+server.use('/landing', express.static(path.join(__dirname, '../public/landing')));
 // -----------------------------------------------------------------------------
 // Application routes
 // -----------------------------------------------------------------------------
@@ -76,10 +77,10 @@ server.use("/api/v1/notifications", notificationRouter);
 server.use('/api/v1/courts/:courtId/floors', floorRouter);
 
 // -----------------------------------------------------------------------------
-// Health check / base route
+// Public landing page
 // -----------------------------------------------------------------------------
 server.get('/', (req: any, res: any) => {
-  res.send(req.t('hello_world', { ns: 'common' }));
+  res.sendFile(path.join(__dirname, '../public/landing/index.html'));
 });
 
 // -----------------------------------------------------------------------------

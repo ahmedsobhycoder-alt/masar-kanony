@@ -1,3 +1,5 @@
+import { query } from "express-validator";
+import validatorMiddleware from "../middlewares/validatorMiddleWare";
 import { Router } from "express";
 import { Request, Response, NextFunction } from 'express';
 
@@ -45,6 +47,12 @@ const ensureAlreadySaved = (req: Request, res: Response, next: NextFunction) => 
     next();
 };
 
+
+courtRouter.get("/activity", protect, allowedTo([UserRole.ADMIN]),
+    query("court").optional().isMongoId(),
+    query("page").optional().isInt({ min: 1 }),
+    query("limit").optional().isInt({ min: 1, max: 100 }),
+    validatorMiddleware, courtController.getActivity);
 
 courtRouter.get("/saved",protect, getAllMySavedCourts ,courtController.getSavedCourts);
 

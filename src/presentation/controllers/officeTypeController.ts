@@ -4,6 +4,9 @@ import { Request, Response, NextFunction } from "express";
 import { OfficeTypeUseCases } from "../../domain/usecases/officeTypeUseCases";
 import { formatJson } from "../../shared/utils/formatJson";
 
+import ApiError from "../../shared/errors/apiError";
+import pickAllowedFields from "../../shared/utils/pickAllowedFields";
+
 export class OfficeTypeController {
   private readonly officeTypeUseCases: OfficeTypeUseCases;
 
@@ -12,7 +15,7 @@ export class OfficeTypeController {
   }
 
   createOfficeType = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const officeTypeData = req.body;
+    const officeTypeData = pickAllowedFields(req.body, ["name", "description"]) as any;
     const createdOfficeType = await this.officeTypeUseCases.createOfficeType(officeTypeData);
     res.status(201).json(
       formatJson({
@@ -21,6 +24,19 @@ export class OfficeTypeController {
         status: true,
       })
     );
+  });
+
+  updateOfficeType = asyncHandler(async (req: Request, res: Response) => {
+    const data = pickAllowedFields(req.body, ["name", "description"]);
+    const type = await this.officeTypeUseCases.updateOfficeTypeById(req.params.id as string, data);
+    if (!type) throw new ApiError(404, "Office type not found");
+    res.json(formatJson({ data: type, message: "Changes saved", status: true }));
+  });
+
+  deleteOfficeType = asyncHandler(async (req: Request, res: Response) => {
+    const type = await this.officeTypeUseCases.deleteOfficeTypeById(req.params.id as string);
+    if (!type) throw new ApiError(404, "Office type not found");
+    res.json(formatJson({ data: type, message: "Item deleted", status: true }));
   });
 
   getAllOfficeTypes = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
