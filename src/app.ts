@@ -48,7 +48,7 @@ const adminBuildPath = path.resolve(__dirname, '../../admin-panel/build');
 server.use('/admin', express.static(adminBuildPath));
 
 // 2. Client-side routing fallback (SPA support)
-server.get('/admin*', (req, res) => {
+server.get(/^\/admin(\/.*)?$/, (req, res) => {
   res.sendFile(path.join(adminBuildPath, 'index.html'));
 });
 server.use('/api/v1/courts/', courtRouter);
