@@ -40,8 +40,7 @@ server.use('/uploads', express.static(path.join(__dirname, '../public/uploads'))
 // Application routes
 // -----------------------------------------------------------------------------
 // Adjust this path if admin-panel is inside ~/htdocs/admin-panel or nested
-const adminBuildPath = path.resolve(__dirname, '../../admin-panel/build');
-// If admin-panel is inside the masar project folder, use:
+const adminBuildPath = '/home/masar/htdocs/admin-panel/build';// If admin-panel is inside the masar project folder, use:
 // const adminBuildPath = path.resolve(__dirname, '../admin-panel/build');
 
 // 1. Serve static JS, CSS, images under /admin
