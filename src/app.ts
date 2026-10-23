@@ -39,6 +39,18 @@ server.use('/uploads', express.static(path.join(__dirname, '../public/uploads'))
 // -----------------------------------------------------------------------------
 // Application routes
 // -----------------------------------------------------------------------------
+// Adjust this path if admin-panel is inside ~/htdocs/admin-panel or nested
+const adminBuildPath = path.resolve(__dirname, '../../admin-panel/build');
+// If admin-panel is inside the masar project folder, use:
+// const adminBuildPath = path.resolve(__dirname, '../admin-panel/build');
+
+// 1. Serve static JS, CSS, images under /admin
+server.use('/admin', express.static(adminBuildPath));
+
+// 2. Client-side routing fallback (SPA support)
+server.get('/admin*', (req, res) => {
+  res.sendFile(path.join(adminBuildPath, 'index.html'));
+});
 server.use('/api/v1/courts/', courtRouter);
 server.use('/api/v1/floors/', floorRouter);
 server.use('/api/v1/offices/', officeRouter);
