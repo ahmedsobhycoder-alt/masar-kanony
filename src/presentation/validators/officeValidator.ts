@@ -113,6 +113,7 @@ export const createOfficeValidator = [
     validatorMiddleware,
 ];
 export const updateOfficeValidator = [
+    ...["floor", "court"].map(field => check(field).optional().isMongoId()),
     check("officeType").optional().isMongoId(),
     check("roomNumber").optional().isString().trim().notEmpty(),
     ...["description", "locationDirection", "startingWorkingHours", "endWorkingHours", "mapUrl"].map(field => check(field).optional().isString()),

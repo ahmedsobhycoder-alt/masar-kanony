@@ -36,7 +36,7 @@ getOfficeQueries = (req: Request): Record<string, any> => {
 
     updateOffice = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const updates = pickAllowedFields(req.body, [
-            "officeType", "roomNumber", "description", "locationDirection",
+            "court", "floor", "officeType", "roomNumber", "description", "locationDirection",
             "startingWorkingHours", "endWorkingHours", "services", "mapUrl",
         ]);
         const office = await this.officeUseCases.updateOfficeById(req.params.id as string, updates as any);

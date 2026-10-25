@@ -1,9 +1,12 @@
+import { Types } from "mongoose";
 import OfficeRepo from "../../../domain/repositories/officeRepo";
 import OfficesModel from "../models/officeModel";
 import { QueryBuilder } from "../../../shared/utils/queryBuilder";
 import listType from "../../../shared/constants/types";
 import OfficeEntity from "../../../domain/entities/officeEntity";
 import OfficeTypeModel from "../models/officeTypeModel";
+import FloorModel from "../models/floorModel";
+import CourtModel from "../models/courtModel";
 import ApiError from "../../../shared/errors/apiError";
 
 class OfficeRepoImpl implements OfficeRepo {
@@ -54,16 +57,43 @@ async getOffices(
             if (!type) throw new ApiError(400, "Office type does not exist");
             data.name = type.name;
         }
+        if (data.floor !== undefined || data.court !== undefined) {
+            const floor = await FloorModel.findById(data.floor ?? office.floor);
+            if (!floor) throw new ApiError(400, "Floor does not exist");
+            if (data.court && String(floor.court) !== String(data.court)) {
+                throw new ApiError(400, "Floor does not belong to the selected court");
+            }
+            const court = await CourtModel.findById(floor.court);
+            if (!court) throw new ApiError(400, "Court does not exist");
+            Object.assign(data, {
+                floor: floor._id, floorName: floor.floorName, court: court._id,
+                courtName: court.name, governorate: court.governorate, courtType: court.courtType,
+            });
+        }
         if (data.roomNumber !== undefined) {
             data.roomNumber = String(data.roomNumber).trim();
             if (!data.roomNumber) throw new ApiError(400, "Room number is required");
-            const duplicate = await OfficesModel.exists({ floor: office.floor, roomNumber: data.roomNumber, _id: { $ne: id } });
+        }
+        const moved = data.floor !== undefined && String(data.floor) !== String(office.floor);
+        if (data.roomNumber !== undefined || moved) {
+            const duplicate = await OfficesModel.exists({ floor: data.floor ?? office.floor, roomNumber: data.roomNumber ?? office.roomNumber, _id: { $ne: id } });
             if (duplicate) throw new ApiError(400, "An office with this room number already exists on this floor");
         }
-        return OfficesModel.findByIdAndUpdate(id, { $set: data }, {
+        const updated = await OfficesModel.findByIdAndUpdate(id, { $set: data }, {
             new: true,
             runValidators: true,
         }).lean<OfficeEntity | null>();
+        if (updated && moved) {
+            await FloorModel.updateOne({ _id: office.floor }, { $pull: { offices: id } });
+            await FloorModel.updateOne({ _id: updated.floor }, { $addToSet: { offices: id } });
+            for (const floor of [office.floor, updated.floor]) {
+                await OfficesModel.calculateNumberOfFOfficesPerFloor(floor, "move office");
+            }
+            for (const court of new Set([String(office.court), String(updated.court)])) {
+                await OfficesModel.calculateNumberOfFOfficesPerCourt(new Types.ObjectId(court), "move office");
+            }
+        }
+        return updated;
     }
 
     async deleteOfficeById(id: string): Promise<any> {

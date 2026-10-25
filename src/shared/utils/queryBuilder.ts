@@ -1,5 +1,6 @@
 import { Model, PopulateOptions, Query } from "mongoose";
 import listType, { QueryPagination } from "../constants/types";
+export type { QueryPagination } from "../constants/types";
 import ApiError from "../errors/apiError";
 import { printBlue, printGreen, printYellow } from "./printColors";
 import { json } from "node_modules/@types/body-parser";
