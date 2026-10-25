@@ -189,7 +189,7 @@ class CourtRepoImpl implements CourtRepo {
  
   checkUserSavedCourts = (courts: CourtEntity[], userId: string) =>
     (courts || []).map((court) => {
-      const isSaved = Boolean(court.savedBy?.some((id: any) => id.toString() === userId.toString));
+      const isSaved = Boolean(court.savedBy?.some((id: any) => id.toString() === userId.toString()));
       // Delete savedBy so it's not exposed to the client
       delete court.savedBy;
       court.isSaved = isSaved;

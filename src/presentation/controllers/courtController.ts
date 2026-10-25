@@ -3,8 +3,9 @@ import { Request, Response, NextFunction } from "express";
 import { formatJson } from "../../shared/utils/formatJson";
 import asyncHandler from "express-async-handler"
 import { printBlue, printGreen, printRed } from "../../shared/utils/printColors";
-import CourtEntity from "../../domain/entities/courtEntity";
 import listType from "../../shared/constants/types";
+import CourtEntity from "../../domain/entities/courtEntity";
+
 import { fromStringToList } from "../../shared/utils/helpers";
 import ApiError from "../../shared/errors/apiError";
 import pickAllowedFields from "../../shared/utils/pickAllowedFields";
@@ -20,7 +21,7 @@ export class CourtController {
     constructor(courtUseCases: CourtUseCases) {
         this.courtUseCases = courtUseCases;
     }
- 
+
 
     getCourtQueries = (req: Request): Record<string, any> => {
         // 1. Debug what actually arrives on the request
@@ -39,7 +40,7 @@ export class CourtController {
         // Only assign userId if it actually exists
         const userId = (req as any).user?._id ?? null;
         queries.userId = userId;
-        
+
 
         // Capture name from either middleware attachment or URL query
         if (rawName && typeof rawName === "string" && rawName.trim()) {

@@ -1,29 +1,12 @@
 import { Model, PopulateOptions, Query } from "mongoose";
-import listType from "../constants/types";
+import listType, { QueryPagination } from "../constants/types";
 import ApiError from "../errors/apiError";
 import { printBlue, printGreen, printYellow } from "./printColors";
 import { json } from "node_modules/@types/body-parser";
 import { stringify } from "node:querystring";
 import { buildBilingualFuzzyRegex } from "./helpers";
 
-export interface PaginationDetails {
-    page: number;
-    limit: number;
-}
 
-export interface QueryPagination {
-    page: number;
-    limit: number;
-    numberOfPages: number;
-    totalDocuments: number;
-    next?: PaginationDetails;
-    prev?: PaginationDetails;
-}
-
-export interface QueryResult<T> {
-    data: T[];
-    pagination?: QueryPagination;
-}
 
 export class QueryBuilder<T = any> {
     mongooseQuery: Query<any, any>;

@@ -26,7 +26,7 @@ import i18nMiddleware from './presentation/middlewares/i18nMiddleware';
 import rejectionRouter from './presentation/routes/rejectionRouter';
 
 import notificationRouter from "./presentation/routes/notificationRoute";
-
+import courtAndOfficeRoute from "./presentation/routes/courtAndOfficeRoute";
 // Load environment variables before anything else that depends on them.
 dotenv.config();
 
@@ -72,6 +72,7 @@ server.use('/api/v1/appPolicies/', appPolicyRouter);
 server.use('/api/v1/rejection/', rejectionRouter);
 
 server.use("/api/v1/notifications", notificationRouter);
+server.use("/api/v1/courtAndOffice", courtAndOfficeRoute);
 
 // Nested route for floors under a specific court.
 server.use('/api/v1/courts/:courtId/floors', floorRouter);
