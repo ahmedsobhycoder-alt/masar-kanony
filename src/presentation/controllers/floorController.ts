@@ -49,5 +49,10 @@ export class FloorController {
         if (!floor) throw new ApiError(404, "Floor not found");
         res.status(200).json(formatJson({ data: floor, message: req.t("Floor deleted successfully", { ns: "common" }), status: true }));
     });
+    
+    getFloorById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const floor = await this.floorUseCases.getFloorById(req.params.id as string);
+        res.status(200).json(formatJson({ data: floor, message: req.t("Floor fetched successfully", { ns: "common" }), status: true }));
+    });
 
 }

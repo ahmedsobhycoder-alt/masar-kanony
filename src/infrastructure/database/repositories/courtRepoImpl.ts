@@ -101,7 +101,7 @@ class CourtRepoImpl implements CourtRepo {
     }
 
     const isSaved = userId
-      ? Boolean((court.savedBy ?? []).some((savedUserId: any) => savedUserId?.toString() === userId))
+      ? Boolean((court.savedBy ?? []).some((savedUserId: any) => savedUserId?.toString() === userId.toString()))
       : false;
 
     delete (court as Partial<CourtEntity>).savedBy;

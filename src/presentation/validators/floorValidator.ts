@@ -96,3 +96,16 @@ export const getFloorsValidator = [
 
     validatorMiddleware,
 ];
+export const getFloorByIdValidator = [
+    check('id').isMongoId().withMessage("floor id must be valid id").custom(async (id, { req }) => {
+        printGreen("id is ", id);
+        const isFloorExisted = await FloorModel.exists({
+            _id: id
+        });
+        if (!isFloorExisted) {
+            return throwError(400, "floor does not exist");
+
+        }
+
+    })
+]

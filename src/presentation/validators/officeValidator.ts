@@ -121,6 +121,7 @@ export const updateOfficeValidator = [
     check("services.*").optional().isString(),
     validatorMiddleware,
 ];
+
 export const getOfficeValidator = [
     ...["name", "courtName", "governorate", "courtType"].map(field => check(field).optional().isString().trim()),
     ...["court", "floor"].map(field => check(field).optional().isMongoId()),

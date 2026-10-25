@@ -11,7 +11,7 @@ import RevokedTokenModel from "../models/revokedTokenModel";
 import jwt from "jsonwebtoken";
 import { HydratedDocument } from "mongoose";
 class AuthRepoImpl implements AuthRepo {
-   
+
 
     async signup(userData: UserEntity): Promise<void> {
         // 2. Generate the OTP
@@ -79,8 +79,8 @@ class AuthRepoImpl implements AuthRepo {
         if (!user.password) {
             return throwError(400, "User account password is not set");
         }
-        printGreen("email",`User found: ${user.email}, ID: ${user._id}`);
-        printGreen("hased password",`Password provided: ${user.password}`);
+        printGreen("email", `User found: ${user.email}, ID: ${user._id}`);
+        printGreen("hased password", `Password provided: ${user.password}`);
         const isPasswordCorrect = await UserUtils.comparePassword(
             password, user.password);
         if (!isPasswordCorrect) {
@@ -145,7 +145,7 @@ class AuthRepoImpl implements AuthRepo {
         user.resetCode = undefined;
         user.resetCodeExpires = undefined;
         user.resetCodeVerified = undefined;
-        user.password=newPassword;
+        user.password = newPassword;
 
         await user.save();
     }
@@ -160,13 +160,13 @@ class AuthRepoImpl implements AuthRepo {
             expiresAt: new Date(decoded.exp * 1000),
         });
     }
-   async changePassword(user:HydratedDocument<UserEntity>,newPassword:string):Promise<UserEntity|null>{
-      // 2. Hash the new password and update the user
+    async changePassword(user: HydratedDocument<UserEntity>, newPassword: string): Promise<UserEntity | null> {
+        // 2. Hash the new password and update the user
         user.passwordChangedAt = new Date();
 
-      user.password=newPassword;
-     const updateUser=  await user.save();
-     return updateUser;
+        user.password = newPassword;
+        const updateUser = await user.save();
+        return updateUser;
     }
 }
 

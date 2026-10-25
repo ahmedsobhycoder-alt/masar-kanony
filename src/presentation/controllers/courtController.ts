@@ -14,6 +14,7 @@ import pickAllowedFields from "../../shared/utils/pickAllowedFields";
 import { auditCourtAction } from "../../shared/utils/courtActivity";
 import CourtActivity from "../../infrastructure/database/models/courtActivityModel";
 import { QueryBuilder } from "../../shared/utils/queryBuilder";
+import CourtModel from "src/infrastructure/database/models/courtModel";
 
 export class CourtController {
     private readonly courtUseCases: CourtUseCases;
@@ -63,7 +64,7 @@ export class CourtController {
     getActivity = asyncHandler(async (req: Request, res: Response) => {
         const { page, limit, court } = req.query;
         const queries = { page, limit, status: { $eq: "completed" }, ...(court ? { court } : {}) };
-        const result = await new QueryBuilder(CourtActivity, queries).filter().sort().paginate().execute();
+        const result = await new QueryBuilder(CourtModel, queries).filter().sort().paginate().execute();
         res.json(formatJson({ data: { list: result.data, paginationResult: result.pagination }, message: "Court activity", status: true }));
     });
 
@@ -111,7 +112,7 @@ export class CourtController {
     })
     getCourtById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const courtId = req.params.id as string;
-        const userId = (req as any).user?._id?.toString();
+        const userId = (req as any).user?._id;
         const court = await this.courtUseCases.getCourtById(courtId, userId);
         res.status(200).json(formatJson({ data: court, message: req.t("Court fetched successfully", { ns: "common" }), status: true }));
     })

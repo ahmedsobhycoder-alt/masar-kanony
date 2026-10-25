@@ -6,6 +6,7 @@ import CourtModel from "../models/courtModel";
 import ApiError from "../../../shared/errors/apiError";
 import { QueryBuilder } from "../../../shared/utils/queryBuilder";
 import listType from "../../../shared/constants/types";
+import { ref } from "node:process";
 
 class FloorRepoImpl implements FloorRepo {
     async countDocuments(): Promise<number> {
@@ -40,7 +41,14 @@ class FloorRepoImpl implements FloorRepo {
             .execute();
     }
     async getFloorById(id: string): Promise<FloorEntity | null> {
-        const floor = await FloorModel.findById(id);
+        const floor = await FloorModel.findById(id).populate(
+            [
+                {
+                   path: "offices",
+                    select: "name roomNumber locationDirection startingWorkingHours endWorkingHours services -_id",
+                }
+            ]
+        );
         return floor ? (floor.toJSON() as FloorEntity) : null;
     }
 

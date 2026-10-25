@@ -49,4 +49,8 @@ getOfficeQueries = (req: Request): Record<string, any> => {
         if (!office) throw new ApiError(404, "Office not found");
         res.status(200).json(formatJson({ data: office, message: req.t("Office deleted successfully", { ns: "common" }), status: true }));
     })
+    getOfficeById= asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const office = await this.officeUseCases.getOfficeById(req.params.id as string);
+        res.status(200).json(formatJson({ data: office, message: req.t("Office fetched successfully", { ns: "common" }), status: true }));
+    })
 }
