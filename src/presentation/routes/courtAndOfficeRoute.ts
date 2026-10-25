@@ -7,5 +7,5 @@ import { protect } from "../middlewares/authMiddleware";
 const courtAndOfficeController = new CourtAndOfficeController(
     new CourtAndOfficeUseCases({ courtAndOfficeRepo: courtAndOfficeRepoImpl })
 );
-courtAndOfficeRouter.get("/",protect, courtAndOfficeController.getCourtsAndOffices);
+courtAndOfficeRouter.get("/", courtAndOfficeController.getCourtsAndOffices);
 export default courtAndOfficeRouter;
