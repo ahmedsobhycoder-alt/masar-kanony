@@ -13,7 +13,7 @@ const floorRouter = Router({ mergeParams: true });
 const floorController = new FloorController(new FloorUseCases({ floorRepo: floorRepoImpl }));
 floorRouter.post("/", protect, allowedTo([UserRole.ADMIN]), uploadSingleImageAndDoIMageProcessing('image',
     'public/uploads/floors'), createFloorValidator, floorController.createFloor)
-    .get("/:id",protect,getFloorByIdValidator,floorController.getFloorById)
+    .get("/:id",getFloorByIdValidator,floorController.getFloorById)
     .put("/:id", protect, allowedTo([UserRole.ADMIN]), resourceIdValidator,
         uploadSingleImageAndDoIMageProcessing('image', 'public/uploads/floors'),
         resourceUpdateBodyValidator, updateFloorValidator, floorController.updateFloor)
