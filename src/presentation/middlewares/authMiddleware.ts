@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import ApiError from "../../shared/errors/apiError";
 import UserModel from "../../infrastructure/database/models/userModel";
-import { printBlue } from "../../shared/utils/printColors";
+import { printBlue, printGreen } from "../../shared/utils/printColors";
 import UserEntity from "../../domain/entities/userEntity";
 import RevokedTokenModel from "../../infrastructure/database/models/revokedTokenModel";
 import UserUtils from "../../shared/utils/userUtils";
@@ -52,7 +52,6 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
 });
 export const optionalProtect = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   let token: string | undefined;
-
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
   }
@@ -69,6 +68,8 @@ export const optionalProtect = asyncHandler(async (req: Request, res: Response, 
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayloadCustom;
 
     const isTokenRevoked = await RevokedTokenModel.exists({ tokenHash: UserUtils.hashToken(token) });
+      printGreen("token is",(req as any).user )
+
     if (isTokenRevoked) {
       (req as any).user = null;
       (req as any).userId = null;

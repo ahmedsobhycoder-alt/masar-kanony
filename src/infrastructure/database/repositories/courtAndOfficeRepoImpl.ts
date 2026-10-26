@@ -74,12 +74,14 @@ class CourtAndOfficeRepoImpl implements CourtAndOfficeRepo {
             ])
             .sort()
             .paginate()
-            .execute();
-            printGreen("result", query.userId.toString());
+            .execute(); printGreen("result", query.userId);
+
+
+
         result.data.forEach((item: any) => {
             item.isOffice = item.officeType != null;
             if (!item.isOffice) {
-                const isSaved = Boolean((item as any).savedBy?.some((id: any) => id.toString() === query.userId.toString()));
+                const isSaved = query.userId ? Boolean((item as any).savedBy?.some((id: any) => id.toString() === query.userId.toString())):false;
                 // Delete savedBy so it's not exposed to the client
                 delete item.savedBy;
                 item.isSaved = isSaved;
@@ -87,6 +89,7 @@ class CourtAndOfficeRepoImpl implements CourtAndOfficeRepo {
             //   courts.data = this.checkUserSavedCourts(courts.data, userId);
 
         });
+
         return result as listType<CourtAndOfficeEntity>;
     }
 }
