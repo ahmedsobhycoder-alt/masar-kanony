@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 interface OfficeEntity {
-
+    _id: mongoose.Types.ObjectId;
     court: mongoose.Types.ObjectId;       // Needed because it specifies the court (e.g., الدور الأرضي)   
     courtName:string
     floor: mongoose.Types.ObjectId;       // Needed because it specifies the floor (e.g., الدور الأرضي)
@@ -24,7 +24,9 @@ interface OfficeEntity {
     governorate: string,
     courtType: string,
     name:string,
-    floorName:string
+    floorName:string,
+    savedBy?: mongoose.Types.ObjectId[],
+    isSaved: Boolean,
 }
 
 export default OfficeEntity

@@ -128,3 +128,30 @@ export const getOfficeValidator = [
     ...["page", "limit"].map(field => check(field).optional().isInt({ min: 1 })),
     validatorMiddleware,
 ];
+
+export const savedOfficeValidator = [
+    check("officeId")
+        .isMongoId()
+        .withMessage("Office ID must be a valid ID")
+        .custom(async (officeId, { req }) => {
+            const office = await OfficeModel.findById(officeId).lean();
+            if (!office) {
+                return throwError(400, "Office does not exist");
+            }
+            req.office = office;
+            return true;
+        }),
+    validatorMiddleware,
+];
+
+export const getSavedOfficesValidator = [
+    ...["name", "courtName", "governorate", "courtType"].map(field => check(field).optional().isString().trim()),
+    ...["court", "floor"].map(field => check(field).optional().isMongoId()),
+    ...["page", "limit"].map(field => check(field).optional().isInt({ min: 1 })),
+    validatorMiddleware,
+];
+
+export const getOfficeByIdValidator = [
+    check("id").isMongoId().withMessage("Office ID must be a valid Mongo ID"),
+    validatorMiddleware,
+];

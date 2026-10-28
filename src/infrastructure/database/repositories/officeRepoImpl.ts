@@ -41,12 +41,42 @@ async getOffices(
         .paginate()
         .execute();
 
+    if (userId) {
+        offices.data = this.checkUserSavedOffices(offices.data, userId);
+    }
 
     return offices;
 }
-    async getOfficeById(id: string): Promise<any> {
-        const office = await OfficesModel.findById(id);
-        return office;
+    async getSavedOffices(queries: Record<string, any> = {}): Promise<listType<OfficeEntity>> {
+        const { userId, ...otherQueries } = queries;
+        const queryBuilder = new QueryBuilder<OfficeEntity>(OfficesModel, {
+            ...otherQueries,
+            savedBy: userId,
+        });
+        const offices = await queryBuilder
+            .filter(otherQueries)
+            .sort()
+            .limitFields("-__v -savedBy")
+            .paginate()
+            .execute();
+
+        offices.data.forEach((office) => {
+            office.isSaved = true;
+            delete (office as Partial<OfficeEntity>).savedBy;
+        });
+        return offices;
+    }
+
+    async getOfficeById(id: string, userId?: string): Promise<OfficeEntity | null> {
+        const office = await OfficesModel.findById(id).lean<OfficeEntity | null>();
+        if (!office) return null;
+
+        const isSaved = userId
+            ? Boolean((office.savedBy ?? []).some((savedUserId: any) => savedUserId?.toString() === userId.toString()))
+            : false;
+        delete (office as Partial<OfficeEntity>).savedBy;
+
+        return { ...office, isSaved } as OfficeEntity;
     }
 
     async updateOfficeById(id: string, data: Partial<OfficeEntity>): Promise<OfficeEntity | null> {
@@ -100,6 +130,41 @@ async getOffices(
         const office = await OfficesModel.findByIdAndDelete(id);
         return office;
     }
+
+    async addToSaved(office: OfficeEntity, userId: string): Promise<OfficeEntity | null> {
+        const updatedOffice = await OfficesModel.findOneAndUpdate(
+            { _id: office._id },
+            { $addToSet: { savedBy: userId } },
+            { returnDocument: "after" },
+        );
+        if (!updatedOffice) return null;
+
+        const result = updatedOffice.toObject();
+        result.isSaved = true;
+        const { savedBy, ...savedOffice } = result;
+        return savedOffice as OfficeEntity;
+    }
+
+    async removeFromSaved(office: OfficeEntity, userId: string): Promise<OfficeEntity | null> {
+        const updatedOffice = await OfficesModel.findOneAndUpdate(
+            { _id: office._id },
+            { $pull: { savedBy: userId } },
+            { returnDocument: "after" },
+        );
+        if (!updatedOffice) return null;
+
+        const result = updatedOffice.toObject();
+        result.isSaved = false;
+        const { savedBy, ...removedOffice } = result;
+        return removedOffice as OfficeEntity;
+    }
+
+    private checkUserSavedOffices = (offices: OfficeEntity[], userId: string): OfficeEntity[] =>
+        (offices || []).map((office) => {
+            office.isSaved = Boolean(office.savedBy?.some((id: any) => id.toString() === userId.toString()));
+            delete (office as Partial<OfficeEntity>).savedBy;
+            return office;
+        });
 }
 
 const officeRepoImpl = new OfficeRepoImpl();

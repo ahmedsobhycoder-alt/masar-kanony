@@ -4,8 +4,6 @@ import { CourtTypeEntity } from "../../../domain/entities/courtTypeEntity";
 const courtTypeSchema = new Schema<CourtTypeEntity>({
   id: {
     type: Number,
-    required: [true, "Court type id is required"],
-    unique: true,
   },
   name: {
     type: String,

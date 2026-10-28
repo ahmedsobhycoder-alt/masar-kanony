@@ -13,6 +13,7 @@ export default class OfficesController {
     }
 getOfficeQueries = (req: Request): Record<string, any> => {
     const queries: Record<string, any> = {};
+    queries.userId = (req as any).user?._id ?? null;
     for (const key of ["name", "courtName", "governorate", "courtType", "court", "floor", "page", "limit", "sort"]) {
         const value = req.query[key];
         if (typeof value === "string" && value.trim()) queries[key] = value.trim();
@@ -34,6 +35,12 @@ getOfficeQueries = (req: Request): Record<string, any> => {
         res.status(200).json(formatJson({ data: { list: data, paginationResult: pagination }, message: req.t("Offices fetched successfully", { ns: "common" }), status: true }));
     })
 
+    getSavedOffices = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const queries = this.getOfficeQueries(req);
+        const { data, pagination } = await this.officeUseCases.getSavedOffices(queries);
+        res.status(200).json(formatJson({ data: { list: data, paginationResult: pagination }, message: req.t("Offices fetched successfully", { ns: "common" }), status: true }));
+    })
+
     updateOffice = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const updates = pickAllowedFields(req.body, [
             "court", "floor", "officeType", "roomNumber", "description", "locationDirection",
@@ -50,7 +57,20 @@ getOfficeQueries = (req: Request): Record<string, any> => {
         res.status(200).json(formatJson({ data: office, message: req.t("Office deleted successfully", { ns: "common" }), status: true }));
     })
     getOfficeById= asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const office = await this.officeUseCases.getOfficeById(req.params.id as string);
+        const office = await this.officeUseCases.getOfficeById(req.params.id as string, (req as any).user?._id);
+        if (!office) throw new ApiError(404, "Office not found");
         res.status(200).json(formatJson({ data: office, message: req.t("Office fetched successfully", { ns: "common" }), status: true }));
+    })
+
+    addToSaved = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const office = (req as any).office;
+        const savedOffice = await this.officeUseCases.addToSaved(office, (req as any).user._id);
+        res.status(200).json(formatJson({ data: savedOffice, message: req.t("Office added to saved successfully", { ns: "common" }), status: true }));
+    })
+
+    removeFromSaved = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const office = (req as any).office;
+        const removedOffice = await this.officeUseCases.removeFromSaved(office, (req as any).user._id);
+        res.status(200).json(formatJson({ data: removedOffice, message: req.t("Office removed from saved successfully", { ns: "common" }), status: true }));
     })
 }

@@ -58,6 +58,16 @@ const officeSchema = new mongoose.Schema<OfficeEntity, OfficeModelStatic>({
     // Fix: Write either [String] directly or [{ type: String }]
     services: [{ type: String }],
     mapUrl: { type: String },
+    savedBy: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    }],
+    isSaved: {
+        type: Boolean,
+        required: false,
+        default: false,
+        virtual: true,
+    },
 }, { timestamps: true, versionKey: false });
 officeSchema.statics.calculateNumberOfFOfficesPerFloor = async function (floor: mongoose.Types.ObjectId, method: string) {
     const nOffices = await this.countDocuments({ floor });
