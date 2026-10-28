@@ -82,5 +82,7 @@
 	"Subscription plan not found": "Subscription plan not found",
 	"Subscription plan updated successfully": "Subscription plan updated successfully",
 	"Subscription plans fetched successfully": "Subscription plans fetched successfully",
-	"User updated successfully": "User updated successfully"
+	"User updated successfully": "User updated successfully",
+	"Office added to saved successfully": "Office added to saved items successfully",
+	"Office removed from saved successfully": "Office removed from saved items successfully"
 }

@@ -157,5 +157,11 @@
   "Working hours cannot be empty": "Working hours cannot be empty",
   "Working hours must be a string": "Working hours must be a string",
   "You already have an active subscription. ": "You already have an active subscription.",
-  "You have already saved this court": "You have already saved this court"
+  "You have already saved this court": "You have already saved this court",
+  "You have already saved this office": "You have already saved this office",
+  "Office is not in your saved list": "Office is not in your saved list",
+  "Office ID must be a valid ID": "Office ID must be a valid ID",
+  "Office ID must be a valid Mongo ID": "Office ID must be a valid Mongo ID",
+  "Office does not exist": "Office does not exist",
+  "Office not found": "Office not found"
 }

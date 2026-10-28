@@ -82,5 +82,7 @@
 	"Subscription plan not found": "لم يتم العثور على خطة الاشتراك",
 	"Subscription plan updated successfully": "تم تحديث خطة الاشتراك بنجاح",
 	"Subscription plans fetched successfully": "تم جلب خطط الاشتراك بنجاح",
-	"User updated successfully": "تم تحديث المستخدم بنجاح"
+	"User updated successfully": "تم تحديث المستخدم بنجاح",
+	"Office added to saved successfully": "تمت إضافة المكتب إلى المحفوظات بنجاح",
+	"Office removed from saved successfully": "تمت إزالة المكتب من المحفوظات بنجاح"
 }

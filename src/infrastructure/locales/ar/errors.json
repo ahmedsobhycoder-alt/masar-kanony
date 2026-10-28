@@ -157,5 +157,11 @@
     "Court name must be a string": "يجب أن يكون اسم المحكمة نصًا",
     "Court address must be a string": "يجب أن يكون عنوان المحكمة نصًا",
     "Court type must be a valid String": "يجب أن يكون نوع المحكمة نصًا صالحًا",
-    "Governorate must be a valid String": "يجب أن تكون المحافظة نصًا صالحًا"
+    "Governorate must be a valid String": "يجب أن تكون المحافظة نصًا صالحًا",
+    "You have already saved this office": "لقد أضفت هذا المكتب إلى قائمتك المحفوظة بالفعل",
+    "Office is not in your saved list": "هذا المكتب ليس ضمن قائمتك المحفوظة",
+    "Office ID must be a valid ID": "يجب أن يكون معرّف المكتب صالحًا",
+    "Office ID must be a valid Mongo ID": "يجب أن يكون معرّف المكتب صالحًا",
+    "Office does not exist": "المكتب غير موجود",
+    "Office not found": "لم يتم العثور على المكتب"
 }

@@ -20,7 +20,7 @@ const ensureNotSaved = (req: Request, res: Response, next: NextFunction) => {
   const office = (req as any).office as OfficeEntity;
   const user = (req as any).user;
   const alreadySaved = office.savedBy?.some((id: any) => id.toString() === user._id.toString());
-  if (alreadySaved) return next(new ApiError(400, "You have already saved this office"));
+  if (alreadySaved) return next(new ApiError(400, req.t("You have already saved this office", { ns: "errors" })));
   next();
 };
 
@@ -28,7 +28,7 @@ const ensureAlreadySaved = (req: Request, res: Response, next: NextFunction) => 
   const office = (req as any).office as OfficeEntity;
   const user = (req as any).user;
   const alreadySaved = office.savedBy?.some((id: any) => id.toString() === user._id.toString());
-  if (!alreadySaved) return next(new ApiError(400, "Office is not in your saved list"));
+  if (!alreadySaved) return next(new ApiError(400, req.t("Office is not in your saved list", { ns: "errors" })));
   next();
 };
 
