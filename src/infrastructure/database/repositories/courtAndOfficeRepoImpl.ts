@@ -79,13 +79,12 @@ class CourtAndOfficeRepoImpl implements CourtAndOfficeRepo {
 
 
         result.data.forEach((item: any) => {
-            item.isOffice = item.officeType != null;
-            if (!item.isOffice) {
+            
                 const isSaved = query.userId ? Boolean((item as any).savedBy?.some((id: any) => id.toString() === query.userId.toString())):false;
                 // Delete savedBy so it's not exposed to the client
                 delete item.savedBy;
                 item.isSaved = isSaved;
-            }
+            
             //   courts.data = this.checkUserSavedCourts(courts.data, userId);
 
         });
