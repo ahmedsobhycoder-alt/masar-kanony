@@ -79,7 +79,8 @@ export const createOfficeValidator = [
 export const updateOfficeValidator = [
     ...["floor", "court"].map(field => check(field).optional().isMongoId()),
     check("officeType").optional().isMongoId(),
-    check("roomNumber").optional().isString().trim().notEmpty(),
+    // A room number is optional and may be shared by multiple offices.
+    check("roomNumber").optional().isString().trim(),
     ...["description", "locationDirection", "startingWorkingHours", "endWorkingHours", "mapUrl"].map(field => check(field).optional().isString()),
     check("services").optional().isArray(),
     check("services.*").optional().isString(),

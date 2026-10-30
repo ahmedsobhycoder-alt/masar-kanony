@@ -102,13 +102,8 @@ async getOffices(
         }
         if (data.roomNumber !== undefined) {
             data.roomNumber = String(data.roomNumber).trim();
-            if (!data.roomNumber) throw new ApiError(400, "Room number is required");
         }
         const moved = data.floor !== undefined && String(data.floor) !== String(office.floor);
-        if (data.roomNumber !== undefined || moved) {
-            const duplicate = await OfficesModel.exists({ floor: data.floor ?? office.floor, roomNumber: data.roomNumber ?? office.roomNumber, _id: { $ne: id } });
-            if (duplicate) throw new ApiError(400, "An office with this room number already exists on this floor");
-        }
         const updated = await OfficesModel.findByIdAndUpdate(id, { $set: data }, {
             new: true,
             runValidators: true,

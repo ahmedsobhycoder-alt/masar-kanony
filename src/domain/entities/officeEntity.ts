@@ -7,7 +7,7 @@ interface OfficeEntity {
     officeType: mongoose.Types.ObjectId;
     // Core Details
 
-    roomNumber: string;    // Maps to the room badge: "غرفة G04"
+    roomNumber?: string;   // Optional room label; duplicate values are allowed.
 
     description: string;   // Maps to the long description under the title
 

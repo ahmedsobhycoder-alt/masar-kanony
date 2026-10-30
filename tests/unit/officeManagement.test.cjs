@@ -46,9 +46,11 @@ test("office type update refreshes stored office name", async context => {
   await repo.updateOfficeById(id, { officeType: id });
 });
 
-test("office update rejects duplicate room on same floor", async context => {
+test("office update allows a blank or duplicate room number", async context => {
   context.mock.method(Office, "findById", async () => ({ floor: id }));
-  context.mock.method(Office, "exists", async () => ({ _id: id }));
-  context.mock.method(Office, "findByIdAndUpdate", () => assert.fail("must reject duplicate"));
-  await assert.rejects(repo.updateOfficeById(id, { roomNumber: "101" }), /already exists/);
+  context.mock.method(Office, "findByIdAndUpdate", (value, update) => {
+    assert.equal(update.$set.roomNumber, "");
+    return { lean: async () => update.$set };
+  });
+  await repo.updateOfficeById(id, { roomNumber: "   " });
 });

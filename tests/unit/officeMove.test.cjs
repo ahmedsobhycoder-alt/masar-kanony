@@ -40,13 +40,15 @@ test('move rejects a floor from another court', async context => {
   await assert.rejects(repo.updateOfficeById(office._id, { floor: floor._id, court: office.court }), /does not belong/);
 });
 
-test('move checks unchanged room number against destination floor', async context => {
+test('move allows a duplicate room number on the destination floor', async context => {
   context.mock.method(Office, 'findById', async () => office);
   context.mock.method(Floor, 'findById', async () => floor);
   context.mock.method(Court, 'findById', async () => court);
-  context.mock.method(Office, 'exists', async () => ({ _id: ids[2] }));
-  context.mock.method(Office, 'findByIdAndUpdate', () => assert.fail('must not write'));
-  await assert.rejects(repo.updateOfficeById(office._id, { floor: floor._id }), /already exists/);
+  context.mock.method(Office, 'findByIdAndUpdate', (id, update) => ({ lean: async () => ({ ...office, ...update.$set }) }));
+  context.mock.method(Floor, 'updateOne', async () => {});
+  context.mock.method(Office, 'calculateNumberOfFOfficesPerFloor', async () => {});
+  context.mock.method(Office, 'calculateNumberOfFOfficesPerCourt', async () => {});
+  await repo.updateOfficeById(office._id, { floor: floor._id });
 });
 
 test('move rejects missing destination floor', async context => {
