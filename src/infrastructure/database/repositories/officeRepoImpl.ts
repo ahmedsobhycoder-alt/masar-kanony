@@ -15,9 +15,17 @@ class OfficeRepoImpl implements OfficeRepo {
     }
 
     async createOffice(officeData: any): Promise<any> {
-     
-        const office = await OfficesModel.create(officeData);
-        return office;
+        try {
+            return await OfficesModel.create(officeData);
+        } catch (error: any) {
+            // A deployment that has not restarted yet can still have the old
+            // unique compound index. Return an actionable response instead of
+            // hiding it behind a generic 500 error.
+            if (error?.code === 11000 && error?.keyPattern?.floor && error?.keyPattern?.roomNumber) {
+                throw new ApiError(409, "Office room-number index is still active. Restart the backend to apply the database migration.");
+            }
+            throw error;
+        }
     }
 
 async getOffices(
