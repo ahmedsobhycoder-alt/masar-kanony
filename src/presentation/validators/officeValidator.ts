@@ -15,7 +15,7 @@ export const createOfficeValidator = [
             if (!floor) {
                 return throwError(400, "Floor does not exist");
             }
-
+            (req as any).selectedFloor = floor;
             return true;
         }),
 
@@ -26,9 +26,7 @@ export const createOfficeValidator = [
             if (!selectedOfficeType) {
                 return throwError(400, "Office type does not exist");
             }
-
-            req.office.officeType = selectedOfficeType._id;
-            req.office.name = selectedOfficeType.name;
+            (req as any).selectedOfficeType = selectedOfficeType;
             return true;
         }),
 
