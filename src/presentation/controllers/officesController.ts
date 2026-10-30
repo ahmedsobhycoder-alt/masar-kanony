@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from "express";
 import { formatJson } from "../../shared/utils/formatJson"; 
 import ApiError from "../../shared/errors/apiError";
 import pickAllowedFields from "../../shared/utils/pickAllowedFields";
+import CourtModel from "../../infrastructure/database/models/courtModel";
 
 export default class OfficesController {
     private readonly officeUseCases: OfficeUseCases
@@ -24,6 +25,8 @@ getOfficeQueries = (req: Request): Record<string, any> => {
     createOffice = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const floor = (req as any).selectedFloor;
         const officeType = (req as any).selectedOfficeType;
+        const court = await CourtModel.findById(floor.court);
+        if (!court) throw new ApiError(400, "Court does not exist");
         const allowedFields = [
             "roomNumber", "description", "locationDirection", "startingWorkingHours",
             "endWorkingHours", "services", "mapUrl",
@@ -36,7 +39,11 @@ getOfficeQueries = (req: Request): Record<string, any> => {
         const officeData = {
             ...optionalFields,
             floor: floor._id,
-            court: floor.court,
+            floorName: floor.floorName,
+            court: court._id,
+            courtName: court.name,
+            governorate: court.governorate,
+            courtType: court.courtType,
             officeType: officeType._id,
             // The selected type is the office name; the client does not send a floor name.
             name: officeType.name,
