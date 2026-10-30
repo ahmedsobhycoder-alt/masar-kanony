@@ -8,6 +8,13 @@ import OfficeTypeModel from "../models/officeTypeModel";
 import FloorModel from "../models/floorModel";
 import CourtModel from "../models/courtModel";
 import ApiError from "../../../shared/errors/apiError";
+import { removeLegacyOfficeRoomIndex } from "../../config/database";
+
+const isLegacyOfficeRoomIndexError = (error: any): boolean =>
+    error?.code === 11000 && (
+        (error?.keyPattern?.floor && error?.keyPattern?.roomNumber) ||
+        /floor_1_roomNumber_1/i.test(String(error?.message || ""))
+    );
 
 class OfficeRepoImpl implements OfficeRepo {
     async countDocuments(): Promise<number> {
@@ -18,11 +25,18 @@ class OfficeRepoImpl implements OfficeRepo {
         try {
             return await OfficesModel.create(officeData);
         } catch (error: any) {
-            // A deployment that has not restarted yet can still have the old
-            // unique compound index. Return an actionable response instead of
-            // hiding it behind a generic 500 error.
-            if (error?.code === 11000 && error?.keyPattern?.floor && error?.keyPattern?.roomNumber) {
-                throw new ApiError(409, "Office room-number index is still active. Restart the backend to apply the database migration.");
+            // Some existing deployments still have the old unique compound
+            // index. Repair only that exact obsolete index and retry once.
+            if (isLegacyOfficeRoomIndexError(error)) {
+                try {
+                    await removeLegacyOfficeRoomIndex();
+                    return await OfficesModel.create(officeData);
+                } catch (retryError: any) {
+                    if (retryError?.code === 11000) {
+                        throw new ApiError(409, "The legacy office room-number index could not be removed. Contact the administrator.");
+                    }
+                    throw retryError;
+                }
             }
             throw error;
         }

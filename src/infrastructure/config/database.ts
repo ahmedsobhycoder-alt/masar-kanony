@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 // import dns from 'node:dns';
 // dns.setServers(['8.8.8.8', '8.8.4.4']); // Overrides your ISP DNS with Google DNS
-const removeLegacyOfficeRoomIndex = async () => {
+export const removeLegacyOfficeRoomIndex = async () => {
   const collection = mongoose.connection.collection('offices');
   let indexes;
   try {
