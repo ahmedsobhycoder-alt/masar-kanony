@@ -22,9 +22,28 @@ getOfficeQueries = (req: Request): Record<string, any> => {
 };
 
     createOffice = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const officeData = (req as any).office;
-           
-        const createdOffice = await this.officeUseCases.createOffice(officeData);
+        const floor = (req as any).selectedFloor;
+        const officeType = (req as any).selectedOfficeType;
+        const allowedFields = [
+            "roomNumber", "description", "locationDirection", "startingWorkingHours",
+            "endWorkingHours", "services", "mapUrl",
+        ];
+        const optionalFields = Object.fromEntries(
+            allowedFields
+                .filter((field) => Object.prototype.hasOwnProperty.call(req.body, field))
+                .map((field) => [field, req.body[field]]),
+        );
+        const officeData = {
+            ...optionalFields,
+            floor: floor._id,
+            court: floor.court,
+            officeType: officeType._id,
+            // The selected type is the office name; the client does not send a floor name.
+            name: officeType.name,
+            // An explicit office description takes precedence over the type description.
+            description: req.body.description ?? officeType.description,
+        };
+        const createdOffice = await this.officeUseCases.createOffice(officeData as any);
         res.status(201).json(formatJson({ data: createdOffice, message: req.t("Office created successfully", { ns: "common" }), status: true }));
     })
 

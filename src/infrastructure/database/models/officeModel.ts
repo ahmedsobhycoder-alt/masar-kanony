@@ -44,7 +44,7 @@ const officeSchema = new mongoose.Schema<OfficeEntity, OfficeModelStatic>({
         type: String,
         required: [true, "floor name is required"],
     },
-    roomNumber: { type: String, required: [true, "Room number is required"] },
+    roomNumber: { type: String},
     description: { type: String, required: false },
     locationDirection: { type: String },
     startingWorkingHours: {

@@ -9,7 +9,7 @@ test("office search covers all four fields and retains pagination", async contex
   let filter;
   let skip;
   const query = {
-    find(value) { filter = value; return this; }, sort() { return this; }, select() { return this; },
+    find(value) { filter = value; return this; }, sort() { return this; }, select() { return this; }, populate() { return this; },
     getOptions() { return { sort: {} }; }, clone() { return this; },
     countDocuments() { return { exec: async () => 25 }; },
     skip(value) { skip = value; return this; }, limit() { return this; }, lean() { return this; }, exec: async () => [],
@@ -24,7 +24,7 @@ test("office search covers all four fields and retains pagination", async contex
 test("court name filter does not become a court ID filter", async context => {
   let filter;
   const query = {
-    find(value) { filter = value; return this; }, sort() { return this; }, select() { return this; },
+    find(value) { filter = value; return this; }, sort() { return this; }, select() { return this; }, populate() { return this; },
     getOptions() { return { sort: {} }; }, clone() { return this; },
     countDocuments() { return { exec: async () => 0 }; },
     skip() { return this; }, limit() { return this; }, lean() { return this; }, exec: async () => [],
