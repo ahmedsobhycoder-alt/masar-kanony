@@ -18,6 +18,7 @@ const paginationValidator = [
     query("page").optional().isInt({ min: 1, max: 1000000 }),
     query("limit").optional().isInt({ min: 1, max: 100 }),
     query("search").optional().isString().isLength({ max: 100 }),
+    query("role").optional().isIn(["admin", "user"]),
     validatorMiddleware,
 ];
 const userValidator = (creating: boolean) => [
@@ -47,7 +48,8 @@ const list = async (model: any, req: any, fields?: string) => {
     const search = String(req.query.search || "").trim();
     const regex = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const keys = fields ? ["name", "email", "phone"] : ["paymentType", "phone"];
-    const filter = search ? { $or: keys.map((key) => ({ [key]: { $regex: regex, $options: "i" } })) } : {};
+    const filter: any = search ? { $or: keys.map((key) => ({ [key]: { $regex: regex, $options: "i" } })) } : {};
+    if (fields && req.query.role) filter.role = req.query.role;
     const [rows, total] = await Promise.all([
         model.find(filter).select(fields || "paymentType phone active createdAt updatedAt").sort({ createdAt: -1, _id: -1 }).skip((page - 1) * limit).limit(limit).lean(),
         model.countDocuments(filter),
