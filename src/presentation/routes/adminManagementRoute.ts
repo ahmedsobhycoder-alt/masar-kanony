@@ -4,15 +4,16 @@ import { body, query } from "express-validator";
 import UserModel from "../../infrastructure/database/models/userModel";
 import WalletModel from "../../infrastructure/database/models/paymentOptionModel";
 import PaymentModel from "../../infrastructure/database/models/paymentModel";
-import { protect, allowedTo } from "../middlewares/authMiddleware";
+import { protect, allowedTo, requireAdminPermission, requireSuperAdmin } from "../middlewares/authMiddleware";
 import validatorMiddleware from "../middlewares/validatorMiddleWare";
 import { resourceIdValidator } from "../validators/adminResourceValidator";
 import ApiError from "../../shared/errors/apiError";
 import pickAllowedFields from "../../shared/utils/pickAllowedFields";
+import { ADMIN_PERMISSIONS } from "../../shared/constants/admin-permissions";
 
 const router = Router();
 router.use(protect, allowedTo(["admin"]));
-const userFields = "name email phone role active verified isSubscribed currentsubscriptionStatus currentSubscriptionId createdAt updatedAt";
+const userFields = "name email phone role isSuperAdmin adminPermissions active verified isSubscribed currentsubscriptionStatus currentSubscriptionId createdAt updatedAt";
 const paginationValidator = [
     query("page").optional().isInt({ min: 1, max: 1000000 }),
     query("limit").optional().isInt({ min: 1, max: 100 }),
@@ -25,9 +26,14 @@ const userValidator = (creating: boolean) => [
     body("phone").optional(!creating).isString().bail().matches(/^01[0125]\d{8}$/),
     body("password").optional(!creating).isString().bail().isLength({ min: 8, max: 72 }),
     body("role").optional().isIn(["admin", "user"]),
+    body("isSuperAdmin").optional().isBoolean({ strict: true }),
+    body("adminPermissions").optional().isArray(),
+    body("adminPermissions.*").optional().isIn([...ADMIN_PERMISSIONS]),
     body("active").optional().isBoolean({ strict: true }),
     validatorMiddleware,
 ];
+router.use("/users", requireSuperAdmin);
+router.use("/wallets", requireAdminPermission("wallet-types"));
 const walletValidator = (creating: boolean) => [
     body("paymentType").optional(!creating).isString().bail().trim().isLength({ min: 2, max: 50 }),
     body("phone").optional(!creating).isString().bail().matches(/^01[0125]\d{8}$/),
@@ -59,17 +65,20 @@ router.get("/users/:id", resourceIdValidator, asyncHandler(async (req, res) => {
     send(res, user);
 }));
 router.post("/users", userValidator(true), asyncHandler(async (req, res) => {
-    const data = pickAllowedFields(req.body, ["name", "email", "phone", "password", "role", "active"]);
+    const data: any = pickAllowedFields(req.body, ["name", "email", "phone", "password", "role", "isSuperAdmin", "adminPermissions", "active"]);
+    if (data.role !== "admin") { data.isSuperAdmin = false; data.adminPermissions = []; }
+    else if (data.isSuperAdmin !== true) data.isSuperAdmin = false;
     if (await UserModel.exists({ $or: [{ email: data.email }, { phone: data.phone }] } as any)) throw new ApiError(400, "Email or phone already exists");
     const user = await UserModel.create({ ...data, verified: true } as any);
     send(res, await UserModel.findById(user._id).select(userFields).lean(), 201);
 }));
 router.put("/users/:id", resourceIdValidator, userValidator(false), asyncHandler(async (req, res) => {
-    const data = pickAllowedFields(req.body, ["name", "email", "phone", "role", "active"]);
+    const data: any = pickAllowedFields(req.body, ["name", "email", "phone", "role", "isSuperAdmin", "adminPermissions", "active"]);
     if (!Object.keys(data).length) throw new ApiError(400, "At least one update field is required");
-    if (req.params.id === (req as any).user._id.toString() && (data.active === false || (data.role && data.role !== "admin"))) {
+    if (req.params.id === (req as any).user._id.toString() && (data.active === false || data.isSuperAdmin === false || (data.role && data.role !== "admin"))) {
         throw new ApiError(400, "You cannot block or demote your own account");
     }
+    if (data.role && data.role !== "admin") { data.isSuperAdmin = false; data.adminPermissions = []; }
     const user = await UserModel.findByIdAndUpdate(req.params.id, { $set: data }, { new: true, runValidators: true }).select(userFields).lean();
     if (!user) throw new ApiError(404, "User not found");
     send(res, user);

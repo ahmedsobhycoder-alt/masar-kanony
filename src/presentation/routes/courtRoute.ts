@@ -7,7 +7,7 @@ import { CourtController } from "../controllers/courtController";
 import { CourtUseCases } from "../../domain/usecases/courtUseCases";
 import { addToSavedListValidator, createCourtValidator, getAllMySavedCourts, getCourtByIdValidator, getCourtsValidator } from "../validators/courtValidator";
 import { courtRepoImpl } from "../../infrastructure/database/repositories/courtRepoImpl";
-import { allowedTo, optionalProtect, protect } from "../middlewares/authMiddleware";
+import { allowedTo, optionalProtect, protect, requireAdminPermission, requireSuperAdmin } from "../middlewares/authMiddleware";
 import UserRole from "../../shared/constants/user-roles.enum";
 import CourtModel from "../../infrastructure/database/models/courtModel";
 import ApiError from "../../shared/errors/apiError";
@@ -48,7 +48,7 @@ const ensureAlreadySaved = (req: Request, res: Response, next: NextFunction) => 
 };
 
 
-courtRouter.get("/activity", protect, allowedTo([UserRole.ADMIN]),
+courtRouter.get("/activity", protect, allowedTo([UserRole.ADMIN]), requireSuperAdmin,
     query("court").optional().isMongoId(),
     query("page").optional().isInt({ min: 1 }),
     query("limit").optional().isInt({ min: 1, max: 100 }),
@@ -75,9 +75,9 @@ courtRouter.post(
     courtController.removeFromSaved // Fixed controller target
 ); 
 
-courtRouter.post("/", protect, allowedTo([UserRole.ADMIN]), createCourtValidator, courtController.createCourt)
-    .put("/:id", protect, allowedTo([UserRole.ADMIN]), resourceIdValidator, resourceUpdateBodyValidator, courtController.updateCourt)
-    .delete("/:id", protect, allowedTo([UserRole.ADMIN]), resourceIdValidator, courtController.deleteCourt)
+courtRouter.post("/", protect, allowedTo([UserRole.ADMIN]), requireAdminPermission("courts"), createCourtValidator, courtController.createCourt)
+    .put("/:id", protect, allowedTo([UserRole.ADMIN]), requireAdminPermission("courts"), resourceIdValidator, resourceUpdateBodyValidator, courtController.updateCourt)
+    .delete("/:id", protect, allowedTo([UserRole.ADMIN]), requireAdminPermission("courts"), resourceIdValidator, courtController.deleteCourt)
     .get("/mostseen", courtController.getMostSeenCourts).
     get("/:id",optionalProtect ,getCourtByIdValidator, courtController.getCourtById)
     .get("/",optionalProtect, getCourtsValidator, courtController.getAllCourts);

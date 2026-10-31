@@ -6,6 +6,7 @@ import { formatJson } from "../../shared/utils/formatJson";
 import ApiError from "../../shared/errors/apiError";
 import pickAllowedFields from "../../shared/utils/pickAllowedFields";
 import CourtModel from "../../infrastructure/database/models/courtModel";
+import { auditAdminMutation } from "../../shared/utils/adminAudit";
 
 export default class OfficesController {
     private readonly officeUseCases: OfficeUseCases
@@ -72,13 +73,13 @@ getOfficeQueries = (req: Request): Record<string, any> => {
             "court", "floor", "officeType", "roomNumber", "description", "locationDirection",
             "startingWorkingHours", "endWorkingHours", "services", "mapUrl",
         ]);
-        const office = await this.officeUseCases.updateOfficeById(req.params.id as string, updates as any);
+        const office = await auditAdminMutation({ admin: (req as any).user, resource: "office", action: "updated", id: req.params.id as string, operation: () => this.officeUseCases.updateOfficeById(req.params.id as string, updates as any) });
         if (!office) throw new ApiError(404, "Office not found");
         res.status(200).json(formatJson({ data: office, message: req.t("Office updated successfully", { ns: "common" }), status: true }));
     })
 
     deleteOffice = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const office = await this.officeUseCases.deleteOfficeById(req.params.id as string);
+        const office = await auditAdminMutation({ admin: (req as any).user, resource: "office", action: "deleted", id: req.params.id as string, operation: () => this.officeUseCases.deleteOfficeById(req.params.id as string) });
         if (!office) throw new ApiError(404, "Office not found");
         res.status(200).json(formatJson({ data: office, message: req.t("Office deleted successfully", { ns: "common" }), status: true }));
     })

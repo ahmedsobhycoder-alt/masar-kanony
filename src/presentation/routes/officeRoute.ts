@@ -4,7 +4,7 @@ import OfficesController from "../controllers/officesController";
 import OfficeUseCases from "../../domain/usecases/officeUseCases";
 import { createOfficeValidator, getOfficeByIdValidator, getOfficeValidator, getSavedOfficesValidator, savedOfficeValidator, updateOfficeValidator } from "../validators/officeValidator";
 import  officeRepoImpl  from "../../infrastructure/database/repositories/officeRepoImpl";
-import { protect, allowedTo, optionalProtect } from "../middlewares/authMiddleware";
+import { protect, allowedTo, optionalProtect, requireAdminPermission } from "../middlewares/authMiddleware";
 import UserRole from "../../shared/constants/user-roles.enum";
 import { resourceIdValidator, resourceUpdateBodyValidator } from "../validators/adminResourceValidator";
 import { Request, Response, NextFunction } from "express";
@@ -37,9 +37,9 @@ officeRouter.post("/:officeId/save", protect, allowedTo([UserRole.USER]), savedO
 officeRouter.post("/:officeId/remove", protect, allowedTo([UserRole.USER]), savedOfficeValidator, ensureAlreadySaved, officeController.removeFromSaved);
 
 officeRouter
-  .post("/", protect, allowedTo([UserRole.ADMIN]), createOfficeValidator, officeController.createOffice)
-  .put("/:id", protect, allowedTo([UserRole.ADMIN]), resourceIdValidator, resourceUpdateBodyValidator, updateOfficeValidator, officeController.updateOffice)
-  .delete("/:id", protect, allowedTo([UserRole.ADMIN]), resourceIdValidator, officeController.deleteOffice)
+  .post("/", protect, allowedTo([UserRole.ADMIN]), requireAdminPermission("offices"), createOfficeValidator, officeController.createOffice)
+  .put("/:id", protect, allowedTo([UserRole.ADMIN]), requireAdminPermission("offices"), resourceIdValidator, resourceUpdateBodyValidator, updateOfficeValidator, officeController.updateOffice)
+  .delete("/:id", protect, allowedTo([UserRole.ADMIN]), requireAdminPermission("offices"), resourceIdValidator, officeController.deleteOffice)
   .get("/:id", optionalProtect, getOfficeByIdValidator, officeController.getOfficeById)
   .get("/", optionalProtect, getOfficeValidator, officeController.getOffices);
 

@@ -7,6 +7,8 @@ interface UserEntity {
     password?: string;
     profileImage: string;
     role: string;
+    isSuperAdmin?: boolean;
+    adminPermissions?: string[];
     active: Boolean;
     passwordChangedAt?: Date,
     resetCode?: String,

@@ -57,6 +57,10 @@ const userSchema = new Schema<UserEntity>({
         enum: ["user", "admin", "manager"],
         default: UserRole.USER,
     },
+    // Legacy admin accounts have no value and are treated as super admins.
+    // New sub-admins are explicitly stored with isSuperAdmin=false.
+    isSuperAdmin: { type: Boolean, required: false },
+    adminPermissions: { type: [String], default: [] },
     isSubscribed: {
         type: Boolean,
         default: false

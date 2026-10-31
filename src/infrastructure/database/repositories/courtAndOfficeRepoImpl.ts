@@ -1,13 +1,13 @@
-import CourtAndOfficeEntity from "src/domain/entities/courtAndOfficeEntity";
-import CourtAndOfficeRepo from "src/domain/repositories/courtAndOfficeRepo";
-import listType, { QueryPagination } from "src/shared/constants/types";
+import CourtAndOfficeEntity from "../../../domain/entities/courtAndOfficeEntity";
+import CourtAndOfficeRepo from "../../../domain/repositories/courtAndOfficeRepo";
+import listType, { QueryPagination } from "../../../shared/constants/types";
 import CourtModel from "../models/courtModel";
 import {
     buildBilingualFuzzyRegex,
     fromStringToList,
-} from "src/shared/utils/helpers";
-import { AggregateBuilder } from "src/shared/utils/aggregationBuilder";
-import { printGreen } from "src/shared/utils/printColors";
+} from "../../../shared/utils/helpers";
+import { AggregateBuilder } from "../../../shared/utils/aggregationBuilder";
+import { printGreen } from "../../../shared/utils/printColors";
 
 class CourtAndOfficeRepoImpl implements CourtAndOfficeRepo {
     async getCourtsAndOffices(

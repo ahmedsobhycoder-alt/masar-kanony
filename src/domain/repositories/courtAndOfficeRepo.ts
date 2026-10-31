@@ -1,4 +1,4 @@
-import listType from "src/shared/constants/types";
+import listType from "../../shared/constants/types";
 import CourtAndOfficeEntity from "../entities/courtAndOfficeEntity";
 
 interface CourtAndOfficeRepo {

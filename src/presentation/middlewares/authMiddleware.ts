@@ -8,6 +8,7 @@ import { printBlue, printGreen } from "../../shared/utils/printColors";
 import UserEntity from "../../domain/entities/userEntity";
 import RevokedTokenModel from "../../infrastructure/database/models/revokedTokenModel";
 import UserUtils from "../../shared/utils/userUtils";
+import UserRole from "../../shared/constants/user-roles.enum";
 
 interface JwtPayloadCustom {
   id: string;
@@ -115,4 +116,18 @@ export const allowedTo = (roles: string[]) =>
       return next(new ApiError(403, req.t("forbidden", { ns: "errors" })));
     }
     next();
+  });
+
+export const isSuperAdmin = (user: any) => user?.role === UserRole.ADMIN && user?.isSuperAdmin !== false;
+
+export const requireSuperAdmin = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  if (!isSuperAdmin((req as any).user)) return next(new ApiError(403, req.t("forbidden", { ns: "errors" })));
+  next();
+});
+
+export const requireAdminPermission = (permission: string) =>
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const user: any = (req as any).user;
+    if (isSuperAdmin(user) || user?.adminPermissions?.includes(permission)) return next();
+    return next(new ApiError(403, req.t("forbidden", { ns: "errors" })));
   });

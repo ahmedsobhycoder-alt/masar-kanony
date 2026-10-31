@@ -1,10 +1,10 @@
-import CourtAndOfficeUseCases from "src/domain/usecases/courtAndOfficeUseCases";
+import CourtAndOfficeUseCases from "../../domain/usecases/courtAndOfficeUseCases";
 import { Request, Response, NextFunction } from "express";
 import { formatJson } from "../../shared/utils/formatJson";
 import asyncHandler from "express-async-handler"
 import { printBlue, printGreen, printRed, printYellow } from "../../shared/utils/printColors";
 import listType from "../../shared/constants/types";
-import CourtAndOfficeEntity from "src/domain/entities/courtAndOfficeEntity";
+import CourtAndOfficeEntity from "../../domain/entities/courtAndOfficeEntity";
 class CourtAndOfficeController {
     readonly courtAndOfficeUseCases: CourtAndOfficeUseCases;
     constructor(courtAndOfficeUseCases: CourtAndOfficeUseCases) {

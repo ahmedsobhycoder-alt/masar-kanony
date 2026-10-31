@@ -14,7 +14,7 @@ import pickAllowedFields from "../../shared/utils/pickAllowedFields";
 import { auditCourtAction } from "../../shared/utils/courtActivity";
 import CourtActivity from "../../infrastructure/database/models/courtActivityModel";
 import { QueryBuilder } from "../../shared/utils/queryBuilder";
-import CourtModel from "src/infrastructure/database/models/courtModel";
+import { auditAdminMutation } from "../../shared/utils/adminAudit";
 
 export class CourtController {
     private readonly courtUseCases: CourtUseCases;
@@ -64,7 +64,7 @@ export class CourtController {
     getActivity = asyncHandler(async (req: Request, res: Response) => {
         const { page, limit, court } = req.query;
         const queries = { page, limit, status: { $eq: "completed" }, ...(court ? { court } : {}) };
-        const result = await new QueryBuilder(CourtModel, queries).filter().sort().paginate().execute();
+        const result = await new QueryBuilder(CourtActivity, queries).filter().sort().paginate().execute();
         res.json(formatJson({ data: { list: result.data, paginationResult: result.pagination }, message: "Court activity", status: true }));
     });
 
@@ -87,12 +87,14 @@ export class CourtController {
         const updates = pickAllowedFields(req.body, [
             "name", "address", "governorate", "courtType", "startingWorkingHours", "endWorkingHours",
         ]);
-        const updatedCourt = await auditCourtAction((req as any).user, "updated", req.params.id as string, () => this.courtUseCases.updateCourtById(req.params.id as string, updates as any));
+        const updatedCourt = await auditCourtAction((req as any).user, "updated", req.params.id as string, () =>
+            auditAdminMutation({ admin: (req as any).user, resource: "court", action: "updated", id: req.params.id as string, operation: () => this.courtUseCases.updateCourtById(req.params.id as string, updates as any) }));
         if (!updatedCourt) throw new ApiError(404, "Court not found");
         res.status(200).json(formatJson({ data: updatedCourt, message: req.t("Court updated successfully", { ns: "common" }), status: true }));
     });
     deleteCourt = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const deletedCourt = await auditCourtAction((req as any).user, "deleted", req.params.id as string, () => this.courtUseCases.deleteCourtById(req.params.id as string));
+        const deletedCourt = await auditCourtAction((req as any).user, "deleted", req.params.id as string, () =>
+            auditAdminMutation({ admin: (req as any).user, resource: "court", action: "deleted", id: req.params.id as string, operation: () => this.courtUseCases.deleteCourtById(req.params.id as string) }));
         if (!deletedCourt) throw new ApiError(404, "Court not found");
         res.status(200).json(formatJson({ data: deletedCourt, message: req.t("Court deleted successfully", { ns: "common" }), status: true }));
     });
